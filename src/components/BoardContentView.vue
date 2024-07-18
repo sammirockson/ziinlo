@@ -7,7 +7,7 @@
         <div class="mainBoardConentView">
             <div class="boardListsContainer">
                  <div class="listContainer" v-for="list in this.board.lists" :key="list.id">
-                     <div class="listHeaderView">
+                     <div class="listHeaderView" :style="{display: list.id ==  `listPlaceholder` ? 'none' : 'flex'}">
                          <div class="badgeAndTitleContainer">
                             <div class="colorBadge"></div>
                             <label class="listNameLabel">{{ list.listName }}</label>
@@ -18,13 +18,13 @@
                         <div class="cardContainer"  v-for="card in list.cards" :key="card.id">
                           <div class="cardCell">
                           </div>
-                     </div>
+                        </div>
                      <div class="listFooterView">
                         <span id="addIcon" class="material-symbols-outlined">add</span>
                         <div class="footerTitleContainer">
                             <button class="addCardLabel">New Card</button>
                         </div>
-                     </div>
+                      </div>
                      </div>
                     
                  </div>
@@ -114,17 +114,7 @@ export default {
                 {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
             ]
            }, 
-           { id: "listTwo", listName: "DONE", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
-            ]
-           }, 
-           { id: "listTwo", listName: "DONE", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
-            ]
+           { id: "listPlaceholder", listName: "Add New List", cards: []
            }
          ] 
        }
@@ -152,8 +142,9 @@ export default {
     margin-left: 4px;
 }
 .cardAndFooterContainer {
+    height: 100%;
+    width: 100%;
     overflow-y: scroll;
-    overflow: scroll;
     -webkit-overflow-scrolling: touch;
 }
 .listFooterView {
@@ -162,10 +153,9 @@ export default {
     justify-content: center;
     height: 50px;
     width: 100%;
-    border-bottom-right-radius: var(--border-radius-1);
-    border-bottom-left-radius: var(--border-radius-1);
+    border-radius: var(--border-radius-1);
     border: 1px solid var(--color-light);
-    margin-top: -10px;
+    /* margin-top: -10px; */
 }
 .cardCell {
     width: 100%;
@@ -232,7 +222,7 @@ export default {
     zoom: 1;
     /* overflow: hidden; */
     /* overflow-y: scroll; */
-    overflow: auto;
+    overflow: hidden;
 }
 
 .mainBoardConentView {
