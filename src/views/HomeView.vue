@@ -1,11 +1,11 @@
 <template>
   <div class="home">
-    <SideBarView class="sideBar" @handleMenuTapped="handleChangeContainer" :cachedMenuKey="this.containerType" :style="{width: isExpanded ? '250px' : '80px'}"/>
-    <HomeContentView v-if="containerType == 'home'" class="overviewContainer"/>
-    <BoardView v-else-if="containerType == 'board'" class="posContainer" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
-    <ChatView v-else-if="containerType == 'chat'" class="productContainer"/>
-    <CalendarView v-else-if="containerType == 'calendar'" class="addCategoryContainer"/>
-    <div v-else class="settingsContainer"/>
+    <SideBarView class="sideBar" @handleMenuTapped="handleChangeContainer" :cachedMenuKey="this.containerType" :isExpanded="this.isExpanded" :style="{width: isExpanded ? '250px' : '90px'}" @click="handleSideBarTapped"/>
+    <!-- <HomeContentView v-if="containerType == 'home'" class="overviewContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/> -->
+    <BoardView v-if="containerType == 'board'" class="posContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
+    <ChatView v-else-if="containerType == 'chat'" class="productContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
+    <CalendarView v-else="containerType == 'calendar'" class="addCategoryContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
+    <!-- <div v-else class="settingsContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/> -->
   </div>
 </template>
 
@@ -27,10 +27,13 @@ export default {
   setup() {
     const containerType = ref('home')
     var merchant = ref(Object)
-    var isExpanded = ref(true)
+    var isExpanded = ref(false)
     return { containerType, merchant, isExpanded }
   }, 
   methods: {
+    handleSideBarTapped() {
+      this.isExpanded = false // !this.isExpanded
+    },
     // checkAuthentication() {
     //   let jsonString = localStorage.getItem(PICKMORE_MERCHANT_KEY)
     //    if (jsonString == null) {
@@ -59,6 +62,7 @@ export default {
       console.log("arrived at home: ", cachedKey)
       this.containerType = cachedKey
     }
+    this.$router.push({path: "/boards"})
   }
 }
 </script>
@@ -74,7 +78,6 @@ export default {
   width: 250px;
   height: 100vh;
   background-color: white;
-  box-shadow: var(--box-shadow);
 }
 
 .home {

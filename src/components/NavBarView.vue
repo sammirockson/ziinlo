@@ -1,63 +1,77 @@
 <template>
     <div class="navBar">
        <div class="searchContainer">
-        <v-autocomplete
+        <!-- <v-autocomplete
               :items="searchHistory"
               density="comfortable"
               menu-icon=""
               placeholder="Search..."
               prepend-inner-icon="mdi-magnify"
-              style="background-color: white; max-height: 48px; border-radius: 16px;"
+              :style="{height: '34px'}"
               theme="light"
               variant="solo-filled"
               auto-select-first
               item-props
-          ></v-autocomplete>
+          ></v-autocomplete> -->
        </div>
        <div class="taskNotificationContainer">
-            <button>Create Board</button>
-            <img src="@/assets/totalCustomers.png" class="profileImage">
+            <button @click="handleCreateBoard">       
+            <span class="material-symbols-outlined">add</span>
+            New Board</button>
        </div>      
+       <img src="@/assets/notification.png" class="notificationIcon">
     </div>
 </template>
 <script>
 import { ref } from 'vue'
 export default {
+    props: ["isExpanded"],
     setup() {
         var searchHistory = ref(["Groceries", "Fruits", "Meat", "Meatlo", "Something nice here"])
-        return { searchHistory } 
-    }
-    
+        var isSideBarExpanded = ref(false)
+        return { searchHistory, isSideBarExpanded } 
+    }, 
+    watch: { 
+        isExpanded: function(newVal, oldVal) {
+            console.log('Prop changed isSideBarExpanwded: ', newVal)
+            this.isSideBarExpanded = newVal
+        }
+    }, 
 }
 </script>
 <style scoped>
 .taskNotificationContainer button {
-    background-color: var(--color-bar-dark);
-    border-radius: var(--border-radius-2);
-    height: 50px;
-    width: 160px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
     color: white;
-}
-/* .profileImage {
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    margin-left: 5px;
+    padding-left: 15px;
     margin-top: auto;
     margin-bottom: auto;
-} */
+}
+.notificationIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 15px;
+}
 .searchContainer {
     width: calc(100% - 240px);
     height: 50px;
     padding-right: 400px;
     padding-left: 20px;
+
 }
 .taskNotificationContainer {
-    width: 240px;
-    height: 50px;
+    width: 150px;
+    height: 44px;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    background-color: var(--color-bar-dark);
+    border-radius: var(--border-radius-2);
     margin-right: 30px;
 }
 
@@ -67,13 +81,13 @@ export default {
 }
 
 .navBar {
-  height: 60px;
-  width: calc(100vw - 270px);
+  height: 58px;
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   margin-right: auto;
   margin-left: auto;
-  margin-top: 15px;
+  background-color: white;
 }
 </style>

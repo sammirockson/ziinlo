@@ -2,35 +2,35 @@
     <div class="sideContentView">
         <div class="topNav">
         <img src="@/assets/logo.png" class="logo">
-        <label class="titleLabel">Taskily</label>
+        <label class="titleLabel" :style="{display: isSideBarExpanded ? 'block' : 'none'}">Dashboard</label>
         </div>
-        <div class="containerView">
+        <div class="containerView" :style="{width: isSideBarExpanded ? '210px' : '80px'}">
         <table>
            <tbody>
               <tr v-for="item in menuItems" :key="item.id" @click="handleRowClicked(item)">
-                 <div v-if="item.id == selectedMenuItem" class="tableRowActive">
+                 <div v-if="item.id == selectedMenuItem" class="tableRowActive"  :style="{width: isSideBarExpanded ? '210px' : '50px'}">
                     <img :src="require(`../../src/assets/${item.activeIcon}`)" class="menuIconActive">
-                    <label class="menutTitleLabelActive" :style="{display: isExpanded ? 'block' : 'none'}">{{ item.name }}</label>
+                    <label class="menutTitleLabelActive" :style="{display: isSideBarExpanded ? 'block' : 'none'}">{{ item.name }}</label>
                  </div>
                  <div v-else class="tableRow">
                     <img :src="require(`../../src/assets/${item.icon}`)" class="menuIcon">
-                    <label class="menutTitleLabel" :style="{display: isExpanded ? 'block' : 'none'}">{{ item.name }}</label>
+                    <label class="menutTitleLabel" :style="{display: isSideBarExpanded ? 'block' : 'none'}">{{ item.name }}</label>
                  </div>
               </tr>
            </tbody>
         </table>
         </div>
 
-        <div class="logoutContainer" @click="handleLogoutTapped">
+        <div class="logoutContainer" @click="handleLogoutTapped" :style="{width: isSideBarExpanded ? '200px' : '52px'}">
             <img src="@/assets/totalCustomers.png" class="profileImage">
-            <div class="nameRoleContainer">
+            <div class="nameRoleContainer" :style="{display: isSideBarExpanded ? 'flex' : 'none'}">
                 <label class="nameLabel">User Name</label>
                 <label class="roleLabel">Admin/Member</label>
             </div>
-            <img src="@/assets/arrow-down.png" class="dropDownArrow">
+            <img src="@/assets/arrow-down.png" class="dropDownArrow" :style="{display: isSideBarExpanded ? 'block' : 'none'}">
         </div>
 
-        <div class="subscriptionPlanContainer">
+        <div class="subscriptionPlanContainer" :style="{display: isSideBarExpanded ? 'flex' : 'none'}">
             <label class="nameLabel">Upgrade Your Plan</label>
             <label class="roleLabel">Upgrade your plan today to unlock a world of enhanced features</label>
             <button> <img src="@/assets/seePlansActive.png" alt=""> See plans</button>
@@ -55,13 +55,13 @@ import { ref } from 'vue'
 import { SIDE_BAR_MENU_ITEM_KEY, PICKMORE_MERCHANT_KEY } from '@/config'
 
 export default {
-    props: ["cachedMenuKey"],
+    props: ["cachedMenuKey", "isExpanded"],
     setup() {
         var menuItems = ref([])
-        var selectedMenuItem = ref("home")
+        var selectedMenuItem = ref("board")
         var isLogginOut = ref(false)
-        var isExpanded = ref(true)
-        return { menuItems, selectedMenuItem, isLogginOut, isExpanded}
+        var isSideBarExpanded = ref(false)
+        return { menuItems, selectedMenuItem, isLogginOut, isSideBarExpanded}
     }, 
     methods: {
         handleLogOut() {
@@ -86,13 +86,18 @@ export default {
         cachedMenuKey: function(newVal, oldVal) { 
           console.log('Prop changed: ', newVal, ' | was: ', oldVal)
           this.selectedMenuItem = newVal
+        }, 
+        isExpanded: function(newVal, oldVal) {
+            console.log('Prop changed isSideBarExpanwded: ', newVal)
+            this.isSideBarExpanded = newVal
         }
     },
     mounted() {
+        // {name: "Home", id: "home", icon: "home.png", activeIcon: "homeActive.png"}, 
+        // {name: "Settings", id: "setting", icon: "setting.svg", activeIcon: "setting_active.svg"}
         this.menuItems = [
-            {name: "Home", id: "home", icon: "home.png", activeIcon: "homeActive.png"}, {name: "Board", id: "board", icon: "board.png", activeIcon: "boardActive.png"}, 
+            {name: "Board", id: "board", icon: "board.png", activeIcon: "boardActive.png"}, 
             {name: "Chat", id: "chat", icon: "chat.png", activeIcon: "chatActive.png"}, {name: "Calendar", id: "calendar", icon: "calendar.png", activeIcon: "calendarActive.png"},
-            {name: "Settings", id: "setting", icon: "setting.svg", activeIcon: "setting_active.svg"}
         ]
     }
 }
@@ -251,12 +256,13 @@ export default {
     flex-direction: column;
     padding-left: 20px;
     padding-right: 10px;
+    background-color: white;
 }
 
 .topNav {
     display: flex;
     flex-direction: row;
-    padding-top: 30px;
+    padding-top: 15px;
     padding-left: 2px;
 }
 

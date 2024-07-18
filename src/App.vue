@@ -24,6 +24,7 @@
   --color-primary-variant: #07db71;
   --color-dark-variant: #677483;
   --color-background: #FAFAFA;
+  /* FAFAFA f6f6f9 */
   --color-blue: #4d81E7;
   --color-light-orange: #FDEFD9;
   --color-dark-theme: #1A1C1E;
@@ -38,7 +39,6 @@
   --padding-1: 1.2rem;
   --box-shadow: 0 2rem 3rem var(--color-light);
 }
-
 #app {
   font-family: 'Poppins', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -57,6 +57,10 @@ body {
   overflow: hidden;
   overscroll-behavior: none;
   background-color: var(--color-background);
+}
+
+html, body {
+  overscroll-behavior: none;
 }
 
 #app {
