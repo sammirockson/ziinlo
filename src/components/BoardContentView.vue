@@ -14,13 +14,19 @@
                          </div>
                          <label class="listNameLabel">•••</label>
                      </div>
-                     <div class="cardContainer"  v-for="card in list.cards" :key="card.id">
+                     <div class="cardAndFooterContainer">
+                        <div class="cardContainer"  v-for="card in list.cards" :key="card.id">
                           <div class="cardCell">
                           </div>
                      </div>
                      <div class="listFooterView">
-                        <label class="listNameLabel">Add New Card</label>
+                        <span id="addIcon" class="material-symbols-outlined">add</span>
+                        <div class="footerTitleContainer">
+                            <button class="addCardLabel">New Card</button>
+                        </div>
                      </div>
+                     </div>
+                    
                  </div>
            </div>
         </div>
@@ -58,8 +64,6 @@ export default {
            }, 
            { id: "listTwo", listName: "DOING", cards: [
                 {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
             ]
            }, 
            { id: "listTwo", listName: "QA", cards: [
@@ -68,22 +72,16 @@ export default {
                 {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
             ]
            }, 
-           { id: "listTwo", listName: "DONE", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
-            ]
-           }, 
-           { id: "listTwo", listName: "DONE", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
+           { id: "listTwo", listName: "RELEASE", cards: [
                 {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
                 {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
             ]
            }, 
-           { id: "listTwo", listName: "DONE", cards: [
+           { id: "listTwo", listName: "FEEDBACK", cards: [
+            ]
+           }, 
+           { id: "listTwo", listName: "UPDATES", cards: [
                 {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
             ]
            }, 
            { id: "listTwo", listName: "DONE", cards: [
@@ -134,7 +132,34 @@ export default {
 }
 </script>
 <style scoped>
+.footerTitleContainer {
+    width: auto;
+    height: 24px;
+    margin-top: 15px;
+}
+#addIcon {
+    padding: 0;
+    margin: 0;
+    margin-top: 15px;
+    font-weight: 700;
+}
+
+.addCardLabel {
+    margin: 0;
+    padding: 0;
+    font-weight: 600;
+    font-size: 15px;
+    margin-left: 4px;
+}
+.cardAndFooterContainer {
+    overflow-y: scroll;
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
+}
 .listFooterView {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     height: 50px;
     width: 100%;
     border-bottom-right-radius: var(--border-radius-1);
@@ -205,7 +230,9 @@ export default {
     margin: 0 0.50%;
     display: inline-block;
     zoom: 1;
-    overflow-y: scroll;
+    /* overflow: hidden; */
+    /* overflow-y: scroll; */
+    overflow: auto;
 }
 
 .mainBoardConentView {
