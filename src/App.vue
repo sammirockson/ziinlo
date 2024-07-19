@@ -23,7 +23,7 @@
   --color-light: rgba(132, 139, 200, 0.18);
   --color-primary-variant: #07db71;
   --color-dark-variant: #677483;
-  --color-background: #FAFAFA;
+  --color-background: #f6f6f9;
   /* FAFAFA f6f6f9 */
   --color-blue: #4d81E7;
   --color-light-orange: #FDEFD9;

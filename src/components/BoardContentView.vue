@@ -6,7 +6,7 @@
         </div>
         <div class="mainBoardConentView">
             <div class="boardListsContainer">
-                 <div class="listContainer" v-for="list in this.board.lists" :key="list.id">
+                 <div class="listContainer" v-for="(list, index) in this.board.lists" :key="list.id">
                      <div class="listHeaderView" :style="{display: list.id ==  `listPlaceholder` ? 'none' : 'flex'}">
                          <div class="badgeAndTitleContainer">
                             <div class="colorBadge"></div>
@@ -17,15 +17,21 @@
                      <div class="cardAndFooterContainer">
                         <div class="cardContainer"  v-for="card in list.cards" :key="card.id">
                           <div class="cardCell">
+                             <img src="@/assets/cardPhoto.png" class="cardImage">
+                             <div class="dueDateContainer">
+                             <img src="@/assets/clock.png" class="clockIcon">
+                                 <label class="dueDateLabel">25 Feb 2024</label>
+                             </div>
+                             <label class="cardNameLabel">{{ card.cardName }}</label>
                           </div>
                         </div>
-                      <div class="listFooterView">
+                      <div class="listFooterView" @click="handleAddCard(list, index)">
                         <span id="addIcon" class="material-symbols-outlined">add</span>
                         <div class="footerTitleContainer">
                             <button class="addCardLabel">New Card</button>
                         </div>
                        </div>
-                     </div>
+                    </div>
                     
                  </div>
            </div>
@@ -45,6 +51,21 @@ export default {
         var board = ref([])
         return { isSideBarExpanded, board }
     },
+    methods: {
+        handleAddCard(list, index) {
+            if (list.id == "listPlaceholder") {
+                list.cards.push(
+                 {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
+               )
+            } else {
+                list.cards.push(
+                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
+            )
+            }
+           
+            this.board[index] = list
+        }
+    },
     watch: { 
         isExpanded: function(newVal, oldVal) {
             console.log('Prop changed isSideBarExpanwded: ', newVal)
@@ -54,12 +75,8 @@ export default {
     mounted() {
         this.board = { id: "board1", lists: [
             { id: "listTwo", listName: "TASK", cards: [
+                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "cardPhoto.png", progress: 0, attachments: [File]}, 
                 {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
             ]
            }, 
            { id: "listTwo", listName: "DOING", cards: [
@@ -122,6 +139,40 @@ export default {
 }
 </script>
 <style scoped>
+.cardNameLabel {
+    width: 100%;
+    margin-top: 8px;
+    margin-left: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    text-align: left;
+}
+.clockIcon {
+    width: 14px;
+    height: 14px;
+}
+.dueDateLabel {
+    color: white;
+    font-weight: 400;
+    font-size: 14px;
+    margin-left: 4px;
+}
+.dueDateContainer {
+    width: 124px;
+    height: 30px;
+    margin-top: 8px;
+    margin-left: 8px;
+    border-radius: var(--border-radius-1);
+    background-color: #FC6363;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.cardImage {
+    width: 100%;
+    height: 150px;
+    object-fit: fill;
+}
 .footerTitleContainer {
     width: auto;
     height: 24px;
@@ -147,6 +198,9 @@ export default {
     width: 100%;
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
+    padding-bottom: 50px;
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
 }
 .listFooterView {
     display: flex;
@@ -161,10 +215,17 @@ export default {
     /* margin-top: -10px; */
 }
 .cardCell {
+    overflow: hidden;
     width: 100%;
-    height: 200px;
-    background-color: #eee;;
+    min-height: 50px;
+    padding-bottom: 20px;
+    border: 1px solid var(--color-light);
+    background-color: white;
+    /* height: 200px; */
+    /* background-color: #eee;; */
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 .badgeAndTitleContainer {
