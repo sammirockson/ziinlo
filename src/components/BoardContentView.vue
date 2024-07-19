@@ -19,12 +19,12 @@
                           <div class="cardCell">
                           </div>
                         </div>
-                     <div class="listFooterView">
+                      <div class="listFooterView">
                         <span id="addIcon" class="material-symbols-outlined">add</span>
                         <div class="footerTitleContainer">
                             <button class="addCardLabel">New Card</button>
                         </div>
-                      </div>
+                       </div>
                      </div>
                     
                  </div>
@@ -126,6 +126,7 @@ export default {
     width: auto;
     height: 24px;
     margin-top: 15px;
+    overflow: hidden;
 }
 #addIcon {
     padding: 0;
@@ -155,6 +156,8 @@ export default {
     width: 100%;
     border-radius: var(--border-radius-1);
     border: 1px solid var(--color-light);
+    z-index: 9999;
+    overflow: hidden;
     /* margin-top: -10px; */
 }
 .cardCell {
@@ -210,6 +213,7 @@ export default {
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
+    padding-right: 20px;
 }
 
 .listContainer {

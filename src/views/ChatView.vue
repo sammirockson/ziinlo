@@ -1,6 +1,6 @@
 <template>
     <div class="chat">
-        <NavBar :isExpanded="this.isSideBarExpanded"/>
+        <!-- <NavBar :isExpanded="this.isSideBarExpanded"/> -->
 
     </div>
 </template>
