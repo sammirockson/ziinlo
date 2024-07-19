@@ -37,6 +37,18 @@
                              </v-progress-linear>
                              </div> 
                              <div class="viewMemberContainerView">
+                                <div class="boardInfoView">
+                                    <img src="@/assets/eyeViews.png" class="boardIcon">
+                                    <label for="">4.7k</label>
+                                    <img src="@/assets/comments.png" class="boardIcon">
+                                    <label for="">20</label>
+                                    <img src="@/assets/attachment.png" class="boardIcon">
+                                    <label for="">99</label>
+                                </div>
+                              <div class="membersContainer">
+                                <img src="@/assets/members.png" alt="">
+                                <label for="">+12</label>
+                              </div>
                              </div>
                           </div>
                         </div>
@@ -154,12 +166,45 @@ export default {
 }
 </script>
 <style scoped>
-.viewMemberContainerView {
+.membersContainer {
+    width: 80px;
+    height: 100px;
+    float: right;
+    padding-right: 10px;
+}
+.membersContainer label {
+    font-weight: 500;
+    font-size: 10px;
+    margin-right: 8px;
+    margin-left: 1px;
+    margin-bottom: 20px;
+}
+.boardInfoView label {
+    font-weight: 500;
+    font-size: 10px;
+    margin-right: 8px;
+    margin-left: 1px;
+}
+.boardIcon {
+    width: 15px;
+    height: 15px;
+}
+.boardInfoView {
+    display: flex;
+    width: 120px;
     height: 50px;
+    justify-content: space-evenly;
+    margin-top: 5px;
+}
+.viewMemberContainerView {
+    display: flex;
+    height: 38px;
     width: 100%;
     background-color: white;
     border-bottom-right-radius: var(--border-radius-1);
     border-bottom-left-radius: var(--border-radius-1);
+    margin-left: 8px;
+    justify-content: space-between;
 }
 .progressContainer {
     width: 90%;
