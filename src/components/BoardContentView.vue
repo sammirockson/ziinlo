@@ -23,6 +23,21 @@
                                  <label class="dueDateLabel">25 Feb 2024</label>
                              </div>
                              <label class="cardNameLabel">{{ card.cardName }}</label>
+                             <div class="progressContainer">
+                                <v-progress-linear
+                                :location="false"
+                                bg-color="#92aed9"
+                                buffer-color="#92aed9"
+                                color="#05C597"
+                                height="10"
+                                max="9"
+                                min="0"
+                                model-value="2"
+                                rounded>
+                             </v-progress-linear>
+                             </div> 
+                             <div class="viewMemberContainerView">
+                             </div>
                           </div>
                         </div>
                       <div class="listFooterView" @click="handleAddCard(list, index)">
@@ -75,8 +90,8 @@ export default {
     mounted() {
         this.board = { id: "board1", lists: [
             { id: "listTwo", listName: "TASK", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "cardPhoto.png", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
+                {id: "cardOne", cardName: "[Download portal] Upgrade to node18 & node-cms with vuetify", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "cardPhoto.png", progress: 0, attachments: [File]}, 
+                {id: "cardOne", cardName: "[FGE TEAM] Upcoming Tasks and Bugs (Week 28, July 8 - July 12, 2024)", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
             ]
            }, 
            { id: "listTwo", listName: "DOING", cards: [
@@ -139,14 +154,30 @@ export default {
 }
 </script>
 <style scoped>
-.cardNameLabel {
+.viewMemberContainerView {
+    height: 50px;
     width: 100%;
+    background-color: white;
+    border-bottom-right-radius: var(--border-radius-1);
+    border-bottom-left-radius: var(--border-radius-1);
+}
+.progressContainer {
+    width: 90%;
+    height: 34px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+.cardNameLabel {
+    width: 200px;
     margin-top: 8px;
     margin-left: 10px;
+    margin-right: 10px;
     font-weight: 700;
-    font-size: 15px;
+    font-size: 13px;
     text-align: left;
+    white-space: pre-wrap;
 }
+
 .clockIcon {
     width: 14px;
     height: 14px;
@@ -212,20 +243,20 @@ export default {
     border: 1px solid var(--color-light);
     z-index: 9999;
     overflow: hidden;
+    background-color: white;
     /* margin-top: -10px; */
 }
 .cardCell {
     overflow: hidden;
-    width: 100%;
+    width: 220px;
     min-height: 50px;
-    padding-bottom: 20px;
+    margin-bottom: 10px;
     border: 1px solid var(--color-light);
     background-color: white;
-    /* height: 200px; */
-    /* background-color: #eee;; */
-    margin-bottom: 10px;
     display: flex;
     flex-direction: column;
+    border-bottom-right-radius: var(--border-radius-2);
+    border-bottom-left-radius: var(--border-radius-2);
 }
 
 .badgeAndTitleContainer {
@@ -260,10 +291,11 @@ export default {
     justify-content: space-between;
     height: 50px;
     width: 100%;
-    border-top-right-radius: var(--border-radius-1);
-    border-top-left-radius: var(--border-radius-1);
+    border-top-right-radius: var(--border-radius-2);
+    border-top-left-radius: var(--border-radius-2);
     border: 1px solid var(--color-light);
     padding-right: 15px;
+    background-color: white;
 }
 
 
