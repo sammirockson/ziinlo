@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card" @click.self="handleOverlayClosed">
         <div class="cardInfoContainer">
 
         </div>
@@ -21,23 +21,9 @@ export default {
     //     }
     // },
     methods: {
-        handleCreateList() {
-            if (this.list.id == "listPlaceholder") {
-                this.list.id = "newList"
-                this.list.cards = [
-                  {id: "cardOne", cardName: this.newCardName, subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                ]
-               this.board.lists.push(
-                { id: "listPlaceholder", listName: "Add New List", cards: []
-                }
-               )
-            } else {
-                this.list.cards.push(
-                {id: "cardOne", cardName: this.newCardName, subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "", progress: 0, attachments: [File]}, 
-            )
-            }
-            this.$emit('newCardCreated', this.list)
-            this.isCreateList = false
+        handleOverlayClosed() {
+            console.log("close overlay tapped")
+            this.$emit('overlayDismissed')
         }
     }
     // :style="{height: isCreateList ? '70px' : '96vh'}"
@@ -45,22 +31,32 @@ export default {
 </script>
 <style scoped>
 .cardInfoContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 740px;
-    height: 94vh;
-    margin-right: 30px;
-    margin-left: 30px;
+    min-height: 94vh;
+    margin-right: auto;
+    margin-left: auto;
     margin-top: 3vh;
+    margin-bottom: 3vh;
     background-color: bisque;
-    overflow-y: scroll;
+    border-radius: var(--border-radius-2);
+    z-index: 999999999999;
+    /* overflow-y: scroll; */
 }
  .card {
-    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background-color: transparent;
+    overflow-y: scroll;
+    /* display: flex;
     flex-direction: column;
     width: 800px;
     height: 96vh;
     background-color: white;
     margin-top: 3vh;
     margin-bottom: 1vh;
-    border-radius: var(--border-radius-2);
+    border-radius: var(--border-radius-2); */
  }
 </style>

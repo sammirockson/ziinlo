@@ -95,8 +95,8 @@
                  </div>
            </div>
         </div>
-        <v-overlay  v-model="isCardTapped" class="align-center justify-center" contained>
-            <CardDetailView/>
+        <v-overlay  v-model="isCardTapped" class="align-center justify-center overLayContainer" contained>
+            <CardDetailView @overlayDismissed="handleOverlayDismissed"/>
         </v-overlay>
     </div>
 </template>
@@ -124,6 +124,9 @@ export default {
         return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId}
     },
     methods: {
+        handleOverlayDismissed() {
+            this.isCardTapped = false 
+        },
         handleCardTapped() {
             this.isCardTapped = true 
         },
@@ -264,16 +267,17 @@ export default {
   position: relative;
   margin-left: -12px;
   z-index: 1;
-  height: 22px;
-  width: 22px;
+  height: 18px;
+  width: 18px;
   padding: 1px;
   background-color: white;
+  margin-top: 4px;
 }
 
 .membersContainer {
     display: flex;
-    width: 120px;
-    height: 100px;
+    width: 90px;
+    height: 80px;
     float: right;
     padding-right: 10px;
     direction: ltr;  /* This is to get the stack with left on top */
@@ -285,7 +289,7 @@ export default {
     font-weight: 500;
     font-size: 10px;
     margin-left: 4px;
-    margin-top: 4px;
+    margin-top: 6px;
 }
 
 .boardInfoView label {
