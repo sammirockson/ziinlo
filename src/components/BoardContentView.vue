@@ -7,7 +7,20 @@
         <div class="mainBoardConentView">
             <div class="boardListsContainer">
                  <div class="listContainer" v-for="(list, index) in this.board.lists" :key="list.id">
-                     <div class="listHeaderView" :style="{display: list.id ==  `listPlaceholder` ? 'none' : 'flex'}">
+                    <div class="createNewList" :style="{display: list.headerType ==  `creatingList` ? 'flex' : 'none'}">
+                            <textarea name="text" v-model="newListName" @input="dynamicTextArea(index)" placeholder="Create New List" class="createNewListField" id="createNewListField_id"></textarea>
+                            <button v-if="isSavingCard" class="addListBtn buttonload">
+                               <i class="fa fa-circle-o-notch fa-spin"></i> Creating... 
+                            </button>
+                           <button v-else class="addListBtn" @click="createANewList(list, index)">Create List</button>
+                    </div>
+                    <div class="listFooterView" @click="handleAddList(list, index)" :style="{display: list.headerType ==  `addList` ? 'flex' : 'none'}">
+                        <span id="addIcon" class="material-symbols-outlined">add</span>
+                        <div class="footerTitleContainer">
+                            <button class="addCardLabel">New List</button>
+                        </div>
+                     </div>
+                     <div class="listHeaderView" :style="{display: list.headerType ==  `showListName` ? 'flex' : 'none'}">
                          <div class="badgeAndTitleContainer">
                             <div class="colorBadge"></div>
                             <label class="listNameLabel">{{ list.listName }}</label>
@@ -17,7 +30,7 @@
                      <div class="cardAndFooterContainer">
                         <div class="cardContainer"  v-for="card in list.cards" :key="card.id">
                           <div class="cardCell">
-                             <img src="@/assets/cardPhoto.png" class="cardImage">
+                             <img v-if="card.imgURL.length > 0" src="@/assets/cardPhoto.png" class="cardImage">
                              <div class="dueDateContainer">
                              <img src="@/assets/clock.png" class="clockIcon">
                                  <label class="dueDateLabel">25 Feb 2024</label>
@@ -46,51 +59,123 @@
                                     <label for="">99</label>
                                 </div>
                               <div class="membersContainer">
-                                <img src="@/assets/members.png" alt="">
-                                <label for="">+12</label>
+                                <span class="avatar">
+        <img  src="https://picsum.photos/70">
+    </span>
+  <span class="avatar">
+        <img src="https://picsum.photos/80">
+    </span>
+  <span class="avatar">
+        <img src="https://picsum.photos/90">
+    </span>
+  <span class="avatar">
+       <img src="https://picsum.photos/100">
+    </span>
+    <label for="">+99</label>
                               </div>
                              </div>
                           </div>
                         </div>
-                      <div class="listFooterView" @click="handleAddCard(list, index)">
+                        <div v-if="list.isCreateCard == true" class="createListContainer">
+                            <textarea name="text" v-model="newCardName" @input="autoGrow(index)" placeholder="Give your card a name" class="addListInputField" :id="`newCardField_` + index"></textarea>
+                            <button v-if="isSavingCard" class="addListBtn buttonload">
+                               <i class="fa fa-circle-o-notch fa-spin"></i> Adding... 
+                            </button>
+                           <button v-else class="addListBtn" @click="handleCreateList(list, index)">Add Card</button>
+                        </div>
+                      <div v-else v-if="list.cards.length > 0 || list.isAddCard == true" class="listFooterView" @click="handleAddCard(list, index)">
                         <span id="addIcon" class="material-symbols-outlined">add</span>
                         <div class="footerTitleContainer">
                             <button class="addCardLabel">New Card</button>
                         </div>
                        </div>
+                      
                     </div>
                     
                  </div>
            </div>
         </div>
+        <!-- <v-overlay  v-model="isCreateList" class="align-center justify-center" contained>
+            <CardDetailView @newCardCreated="handleCreateList(list, board, index)" :list="this.currentList" :board="this.board" :index="this.currentIndex"/>
+        </v-overlay> -->
     </div>
 </template>
 <script>
 import NavBar from '@/components/NavBarView.vue'
+import CardDetailView from '@/components/CardDetailView.vue'
 import { ref } from 'vue'
 export default {
     props: ["isExpanded"],
     components: {
-        NavBar
+        NavBar, CardDetailView
     }, 
     setup() {
         var isSideBarExpanded = ref(true)
         var board = ref([])
-        return { isSideBarExpanded, board }
+        // var isCreateCard = ref(false)
+        // var isCreateList = ref(false)
+        var newCardName = ref("")
+        var newListName = ref("")
+        return { isSideBarExpanded, board, newCardName, newListName }
     },
     methods: {
-        handleAddCard(list, index) {
+        createANewList(list, index) {
+            this.board.lists = this.board.lists.filter(listItem => listItem.id != 'listPlaceholder');
+            this.board.lists[index] = { id: "newList", listName: this.newListName, headerType: "showListName", isAddCard: true, isCreateList: false, cards: [] }
+            this.board.lists.push(
+            { id: "listPlaceholder", listName: "New List", headerType: "addList", isAddCard: false, isCreateList: false, cards: []}
+            )
+            this.newListName = ""
+        },
+        handleAddList(list, index) {
+            list.isCreateList = true 
+            list.headerType = "creatingList"
+            this.board.lists[index] = list
+        },
+        dynamicTextArea(index) {
+            let element = document.getElementById("createNewListField_id") // getElementsByClassName("createNewListField")
+            element.style.height = "15px";
+            element.style.height = (element.scrollHeight) + "px";
+        },
+        autoGrow(index) {
+            // let element = document.getElementsByClassName("addListInputField")[index]
+            let element = document.getElementById(`newCardField_` + index)
+            element.style.height = "15px";
+            element.style.height = (element.scrollHeight) + "px";
+        },
+        handleCreateList(list, index) {
             if (list.id == "listPlaceholder") {
-                list.cards.push(
-                 {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
+                list.cards = [
+                  {id: "cardOne", cardName: this.newCardName, subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, isAddCard: false, isCreateList: false, attachments: [File]}, 
+                ]
+               this.board.lists.push(
+                { id: "listPlaceholder", listName: "Add New List", isAddCard: false, isCreateList: false, cards: []}
                )
             } else {
                 list.cards.push(
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
+                {id: "cardOne", cardName: this.newCardName, subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "",isAddCard: false, isCreateList: false, progress: 0, attachments: [File]}, 
             )
             }
            
+            list.isCreateCard = false 
             this.board[index] = list
+            // myDiv[index].scrollTop = myDiv[index].scrollHeight + 100;
+            this.newCardName = ""
+            
+            // this.isCreateCard = false
+            // var myDiv = document.getElementsByClassName('cardAndFooterContainer')[0];
+            // myDiv.scrollIntoView(false);
+        },
+        handleAddCard(list, index) {
+            // this.currentList = list
+            // this.currentIndex = index
+            // console.log("currentList: ", this.currentList, "index: ", index)
+            list.isCreateCard = true 
+            this.board[index] = list
+            // this.isCreateCard = true 
+            // let element = document.getElementsByClassName("addListInputField")
+            // console.log("addListTextArea : ", element.item)
+            // element.focus = true 
         }
     },
     watch: { 
@@ -101,84 +186,48 @@ export default {
     },  
     mounted() {
         this.board = { id: "board1", lists: [
-            { id: "listTwo", listName: "TASK", cards: [
-                {id: "cardOne", cardName: "[Download portal] Upgrade to node18 & node-cms with vuetify", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "cardPhoto.png", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "[FGE TEAM] Upcoming Tasks and Bugs (Week 28, July 8 - July 12, 2024)", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
+            { id: "listTwo", listName: "TASK", headerType: "showListName", footerType: "add",  cards: [
+                {id: "cardOne", cardName: "[FGE TEAM] Upcoming Tasks and Bugs (Week 28, July 8 - July 12, 2024)", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", isAddCard: false, isCreateList: false, progress: 0, attachments: [File]}, 
             ]
-           }, 
-           { id: "listTwo", listName: "DOING", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-            ]
-           }, 
-           { id: "listTwo", listName: "QA", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
-            ]
-           }, 
-           { id: "listTwo", listName: "RELEASE", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
-            ]
-           }, 
-           { id: "listTwo", listName: "FEEDBACK", cards: [
-            ]
-           }, 
-           { id: "listTwo", listName: "UPDATES", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-            ]
-           }, 
-           { id: "listTwo", listName: "DONE", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
-            ]
-           }, 
-           { id: "listTwo", listName: "DONE", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
-            ]
-           }, 
-           { id: "listTwo", listName: "DONE", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
-            ]
-           }, 
-           { id: "listTwo", listName: "DONE", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
-            ]
-           }, 
-           { id: "listTwo", listName: "DONE", cards: [
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}, 
-                {id: "cardOne", cardName: "Explore UI Design", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, attachments: [File]}
-            ]
-           }, 
-           { id: "listPlaceholder", listName: "Add New List", cards: []
-           }
+           },  
+           { id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []}
          ] 
        }
+
+       HTMLCollection.prototype.toArray = function() { return Array.from(this); }
     }
 }
 </script>
 <style scoped>
+.avatar img {
+  border-radius: 50%;
+  position: relative;
+  margin-left: -12px;
+  z-index: 1;
+  height: 22px;
+  width: 22px;
+  padding: 1px;
+  background-color: white;
+}
+
 .membersContainer {
-    width: 80px;
+    display: flex;
+    width: 120px;
     height: 100px;
     float: right;
     padding-right: 10px;
+    direction: ltr;  /* This is to get the stack with left on top */
+    padding-left: 20px;
 }
+
 .membersContainer label {
+    display: block;
     font-weight: 500;
     font-size: 10px;
-    margin-right: 8px;
-    margin-left: 1px;
-    margin-bottom: 20px;
+    margin-left: 4px;
+    margin-top: 4px;
 }
+
 .boardInfoView label {
     font-weight: 500;
     font-size: 10px;
@@ -201,8 +250,9 @@ export default {
     height: 38px;
     width: 100%;
     background-color: white;
-    border-bottom-right-radius: var(--border-radius-1);
-    border-bottom-left-radius: var(--border-radius-1);
+    border-radius: var(--border-radius-1);
+    /* border-bottom-right-radius: var(--border-radius-1);
+    border-bottom-left-radius: var(--border-radius-1); */
     margin-left: 8px;
     justify-content: space-between;
 }
@@ -252,13 +302,13 @@ export default {
 .footerTitleContainer {
     width: auto;
     height: 24px;
-    margin-top: 15px;
+    margin-top: 12px;
     overflow: hidden;
 }
 #addIcon {
     padding: 0;
     margin: 0;
-    margin-top: 15px;
+    margin-top: 12px;
     font-weight: 700;
 }
 
@@ -277,6 +327,7 @@ export default {
     padding-bottom: 50px;
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
     scrollbar-width: none;  /* Firefox */
+    padding-top: 8px;
 }
 .listFooterView {
     display: flex;
@@ -289,8 +340,73 @@ export default {
     z-index: 9999;
     overflow: hidden;
     background-color: white;
-    /* margin-top: -10px; */
+    /* margin-top: -8px; */
 }
+
+.addListBtn {
+    display: block;
+    width: 100px;
+    height: 34px;
+    background-color: #FC6363;
+    color: white;
+    border-radius: var(--border-radius-1);
+    margin-left: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.addListInputField, .createNewListField {
+  padding: 8px;
+  width: 200px;
+  margin-left: 8px;
+  margin-right: 8px;
+  border: 1px solid var(--color-light);
+  border-radius: var(--border-radius-1);
+  text-align: left;
+  resize: none;
+  overflow: hidden;
+  height: 40px;
+  max-height: 500px;
+  max-lines: 200;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.createListContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* height: 140px; */
+    width: 98%;
+    padding-top: 10px;
+    z-index: 9999;
+    overflow: hidden;
+    background-color: white;
+    align-items: center;
+    margin-top: 10px;
+    margin-right: auto;
+    margin-left: auto;
+    border-radius: var(--border-radius-1)
+}
+
+.createNewList {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* height: 140px; */
+    width: 98%;
+    padding-top: 10px;
+    z-index: 9999;
+    overflow: hidden;
+    background-color: white;
+    align-items: center;
+    margin-right: auto;
+    margin-left: auto;
+    border-radius: var(--border-radius-1)
+}
+
+
 .cardCell {
     overflow: hidden;
     width: 220px;
@@ -300,8 +416,9 @@ export default {
     background-color: white;
     display: flex;
     flex-direction: column;
-    border-bottom-right-radius: var(--border-radius-2);
-    border-bottom-left-radius: var(--border-radius-2);
+    border-radius: var(--border-radius-1);
+    /* border-bottom-right-radius: var(--border-radius-2);
+    border-bottom-left-radius: var(--border-radius-2); */
 }
 
 .badgeAndTitleContainer {
@@ -336,8 +453,9 @@ export default {
     justify-content: space-between;
     height: 50px;
     width: 100%;
-    border-top-right-radius: var(--border-radius-2);
-    border-top-left-radius: var(--border-radius-2);
+    border-radius:  var(--border-radius-1);;
+    /* border-top-right-radius: var(--border-radius-2);
+    border-top-left-radius: var(--border-radius-2); */
     border: 1px solid var(--color-light);
     padding-right: 15px;
     background-color: white;
