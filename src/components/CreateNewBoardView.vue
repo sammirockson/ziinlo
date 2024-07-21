@@ -1,0 +1,113 @@
+<template>
+    <div class="createBoard">
+        <div class="createNewList">
+            <textarea name="text" v-model="boardName" placeholder="Project managment starts with a new board" class="createNewListField" id="createNewListField_id"></textarea>
+                <button v-if="isCreatingBoard" class="addListBtn buttonload">
+                   <i class="fa fa-circle-o-notch fa-spin"></i> Creating... 
+                </button>
+            <button v-else :class="boardName.length > 0 ? `addListBtn` : `addListBtnDisabled`" :disabled='boardName.length == 0' @click="createNewBoard()">Create Board</button>
+         </div>
+    </div>
+</template>
+<script>
+import { ref } from 'vue'
+import { BASE_URL } from '@/config'
+import axios from 'axios';
+
+export default {
+    setup() {
+        var boardName = ref("")
+        var isCreatingBoard = ref(false)
+        return { boardName, isCreatingBoard }
+    }, 
+    methods: {
+        async createNewBoard() {
+            this.isCreatingBoard = true 
+            var params = {
+                name : this.boardName, 
+                owner: "1721545684258",
+                list: [],
+                id: Date.now()
+            }
+            var fullURL = BASE_URL + "board/new"
+            console.log("full url: ", fullURL, "params: ", params)
+            await axios.post(fullURL, params).then((response) => {
+              this.isCreatingBoard = false
+              console.log("board response: ", response)
+              if (response.data != null) {
+                let data = response.data
+                if (data.statusCode == 200) {
+                    let board = data.resp
+                    console.log("board: ", board)
+                    // Go to boards
+                    this.$emit('closeOverlay', true)
+                    this.$router.push({path: "/boards"})
+                    // dismiss the overlay
+                } else {
+                    alert(data.msg)
+                }
+               }
+            })
+        }
+    }
+}
+</script>
+<style scoped>
+.addListBtn, .addListBtnDisabled {
+    display: block;
+    width: 140px;
+    height: 40px;
+    background-color: #FC6363;
+    color: white;
+    border-radius: var(--border-radius-1);
+    margin-left: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
+.addListBtnDisabled {
+    background-color: var(--color-light);
+    color: var(--color-dark-variant);
+}
+
+.createNewList {
+    display: flex;
+    justify-content: center;
+    width: 98%;
+    padding-top: 20px;
+    z-index: 9999;
+    overflow: hidden;
+    background-color: white;
+    align-items: center;
+    margin-right: auto;
+    margin-left: auto;
+    border-radius: var(--border-radius-1)
+}
+
+.createNewListField {
+  padding: 8px;
+  width: 80%;
+  margin-left: 8px;
+  margin-right: 8px;
+  border: 1px solid var(--color-light);
+  border-radius: var(--border-radius-1);
+  text-align: left;
+  resize: none;
+  overflow: hidden;
+  height: 44px;
+  font-weight: 500;
+  font-size: 14px;
+}
+.createBoard {
+    display: block;
+    height: 100px;
+    width: 800px;
+    background-color: white;
+    border-radius: var(--border-radius-2);
+    margin-top: -280px;
+}
+    
+</style>

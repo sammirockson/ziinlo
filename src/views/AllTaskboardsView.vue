@@ -1,11 +1,11 @@
 <template>
      <div class="allBoards">
             <div class="boardContentView">
-                <v-row style="overflow: hidden;">
+            <v-row style="overflow: hidden;">
              <v-col v-for="board in boards" :key="board" cols="auto"> 
                <div class="productGridCellWithBorder"  @click="handleBoardTapped(board)">
                   <img src="@/assets/board_placeholder.png" class="productCellImage">
-                  <label class="productNameLabel">{{ board }}</label>
+                  <label class="productNameLabel">{{ board.name }}</label>
                </div>
               </v-col>
             </v-row>
@@ -14,34 +14,56 @@
 </template>
 <script>
 import { ref } from 'vue'
+import { BASE_URL } from '@/config'
+import axios from 'axios';
+
 export default {
     components: {
         
     }, 
-    methods: {
-        handleBoardTapped(board) {
-            console.log("board: ", board)
-            let path = "/board/" + board // this.currentUser._id + "/product/" + product._id
-            this.$router.push({path: path})
-        },
-        handleBoardTypeTapped(item) {
-            this.selectedTaskBoardType = item
-        }
-    },
     setup() {
         var isSideBarExpanded = ref(false)
         var selectedTaskBoardType = ref("All Team")
-        var boards = ref(["All Team", "Accounting Team", "Finance Team", "Creative Team",  "Legal Team", "Management Team", "All Team", "Accounting Team", "Finance Team", "Creative Team",  "Legal Team", "Management Team", "All Team", "Accounting Team", "Finance Team", "Creative Team",  "Legal Team", "Management Team"])
+        var boards = ref([Object])
         return { isSideBarExpanded, boards, selectedTaskBoardType}
     },
+    methods: {
+      handleBoardTapped(board) {
+        console.log("board: ", board)
+        let path = "/board/" + board.id // this.currentUser._id + "/product/" + product._id
+        this.$router.push({path: path})
+      },
+      handleBoardTypeTapped(item) {
+        this.selectedTaskBoardType = item
+      },
     watch: { 
         // isExpanded: function(newVal, oldVal) {
         //     console.log('Prop changed isSideBarExpanwded: ', newVal)
         //     this.isSideBarExpanded = newVal
         // }
     }, 
+    async fetchBoards() {
+        var params = {
+            owner: "1721545684258"
+        }
+        var fullURL = BASE_URL + "board/my"
+        console.log("full url: ", fullURL, "params: ", params)
+        await axios.post(fullURL, params).then((response) => {
+          console.log("board response: ", response)
+          if (response.data != null) {
+            let data = response.data
+            console.log("resp data: ", data)
+            if (data.statusCode == 200) {
+                let allBoard = data.resp
+                console.log("boards: ", allBoard)
+                this.boards = allBoard
+              }
+             }
+          })
+        }
+    },
     mounted() {
-
+        this.fetchBoards()
     } 
 }
 </script>

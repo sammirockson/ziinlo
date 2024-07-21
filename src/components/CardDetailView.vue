@@ -1,13 +1,6 @@
 <template>
     <div class="card">
-        <div v-if="isCreateList" class="createListContainer">
-            <input type="text" placeholder="Give your card a name" v-model="newCardName" class="addListInputField">
-            <button v-if="isSavingCard" class="addListBtn buttonload">
-                  <i class="fa fa-circle-o-notch fa-spin"></i> Adding... 
-            </button>
-            <button v-else class="addListBtn" @click="handleCreateList(list, index)">Add Card</button>
-        </div>
-        <div v-else class="cardInfoContainer">
+        <div class="cardInfoContainer">
 
         </div>
     </div>
@@ -15,12 +8,9 @@
 <script>
 import { ref } from 'vue'
 export default {
-    props: ["list", "board", "index"],
+    props: ["board"],
     setup() {
-        var isCreateList = ref(true)
-        var isSavingCard = ref(false)
-        // var boardList = ref(Object)
-        return { isCreateList, isSavingCard}
+        return {}
     }, 
     // watch: { 
     //     list: function(newVal, oldVal) { 
@@ -63,49 +53,14 @@ export default {
     background-color: bisque;
     overflow-y: scroll;
 }
-.addListBtn {
-    width: 100px;
-    height: 40px;
-    background-color: #FC6363;
-    color: white;
-    border-radius: var(--border-radius-1);
-    margin-left: 8px;
-    font-size: 14px;
-    font-weight: 600;
-}
-.addListInputField {
-    padding-left: 10px;
-    padding-right: 10px;
-    height: 44px;
-    width: 80%;
-    margin-left: 8px;
-    border: 1px solid var(--color-light);
-    border-radius: var(--border-radius-1);
-    font-weight: 500;
-}
  .card {
     display: flex;
     flex-direction: column;
     width: 800px;
-    min-height: 80px;
-    max-height: 96vh;
+    height: 96vh;
     background-color: white;
     margin-top: 3vh;
     margin-bottom: 1vh;
     border-radius: var(--border-radius-2);
  }
- .createListContainer {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    height: 60px;
-    width: 98%;
-    z-index: 9999;
-    overflow: hidden;
-    background-color: white;
-    align-items: center;
-    margin-top: 10px;
-    margin-right: auto;
-    margin-left: auto;
-}
 </style>

@@ -28,9 +28,9 @@
                          <label class="listNameLabel">•••</label>
                      </div>
                      <div class="cardAndFooterContainer">
-                        <div class="cardContainer"  v-for="card in list.cards" :key="card.id">
-                          <div class="cardCell">
-                             <img v-if="card.imgURL.length > 0" src="@/assets/cardPhoto.png" class="cardImage">
+                        <div v-if="list.cards != null" class="cardContainer"  v-for="card in list.cards" :key="card.id">
+                          <div class="cardCell" @click="handleCardTapped">
+                             <img v-if="card.attachments.count > 0" src="@/assets/cardPhoto.png" class="cardImage">
                              <div class="dueDateContainer">
                              <img src="@/assets/clock.png" class="clockIcon">
                                  <label class="dueDateLabel">25 Feb 2024</label>
@@ -81,9 +81,9 @@
                             <button v-if="isSavingCard" class="addListBtn buttonload">
                                <i class="fa fa-circle-o-notch fa-spin"></i> Adding... 
                             </button>
-                           <button v-else class="addListBtn" @click="handleCreateList(list, index)">Add Card</button>
+                           <button v-else class="addListBtn" @click="handleCreateCard(list, index)">Add Card</button>
                         </div>
-                      <div v-else v-if="list.cards.length > 0 || list.isAddCard == true" class="listFooterView" @click="handleAddCard(list, index)">
+                      <div v-else v-if="list.cards != null && list.cards.length > 0 || list.isAddCard == true" class="listFooterView" @click="handleAddCard(list, index)">
                         <span id="addIcon" class="material-symbols-outlined">add</span>
                         <div class="footerTitleContainer">
                             <button class="addCardLabel">New Card</button>
@@ -95,15 +95,19 @@
                  </div>
            </div>
         </div>
-        <!-- <v-overlay  v-model="isCreateList" class="align-center justify-center" contained>
-            <CardDetailView @newCardCreated="handleCreateList(list, board, index)" :list="this.currentList" :board="this.board" :index="this.currentIndex"/>
-        </v-overlay> -->
+        <v-overlay  v-model="isCardTapped" class="align-center justify-center" contained>
+            <CardDetailView/>
+        </v-overlay>
     </div>
 </template>
 <script>
 import NavBar from '@/components/NavBarView.vue'
 import CardDetailView from '@/components/CardDetailView.vue'
 import { ref } from 'vue'
+
+import { BASE_URL } from '@/config'
+import axios from 'axios';
+
 export default {
     props: ["isExpanded"],
     components: {
@@ -113,19 +117,45 @@ export default {
         var isSideBarExpanded = ref(true)
         var board = ref([])
         // var isCreateCard = ref(false)
-        // var isCreateList = ref(false)
+        var isCardTapped = ref(false)
         var newCardName = ref("")
         var newListName = ref("")
-        return { isSideBarExpanded, board, newCardName, newListName }
+        var boardId = ref("")
+        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId}
     },
     methods: {
-        createANewList(list, index) {
-            this.board.lists = this.board.lists.filter(listItem => listItem.id != 'listPlaceholder');
-            this.board.lists[index] = { id: "newList", listName: this.newListName, headerType: "showListName", isAddCard: true, isCreateList: false, cards: [] }
-            this.board.lists.push(
-            { id: "listPlaceholder", listName: "New List", headerType: "addList", isAddCard: false, isCreateList: false, cards: []}
-            )
-            this.newListName = ""
+        handleCardTapped() {
+            this.isCardTapped = true 
+        },
+      async createANewList(list, index) {
+        // this.board.lists = this.board.lists.filter(listItem => listItem.id != 'listPlaceholder');
+        // this.board.lists[index] = { id: "newList", listName: this.newListName, headerType: "showListName", isAddCard: true, isCreateList: false, cards: [] }
+        // this.board.lists.push(
+        //    { id: "listPlaceholder", listName: "New List", headerType: "addList", isAddCard: false, isCreateList: false, cards: []}
+        // )
+        // Create List
+        var params = {
+          listName: this.newListName,
+          boardId: this.boardId,
+          isAddCard: true, 
+          isCreateList: false,
+          headerType: "showListName",
+          id: Date.now(), 
+          owner: "1721545684258"
+        }
+        var fullURL = BASE_URL + "board/newList"
+        console.log("full url: ", fullURL, "params: ", params)
+        await axios.post(fullURL, params).then((response) => {
+          if (response.data != null) {
+            let data = response.data
+            console.log("resp data: ", data)
+            if (data.statusCode == 200) {
+                console.log("created new list: ", data.resp)
+                this.getBoardBy(this.boardId)
+              }
+             }
+          })
+          this.newListName = ""
         },
         handleAddList(list, index) {
             list.isCreateList = true 
@@ -133,49 +163,75 @@ export default {
             this.board.lists[index] = list
         },
         dynamicTextArea(index) {
-            let element = document.getElementById("createNewListField_id") // getElementsByClassName("createNewListField")
+            let element = document.getElementById("createNewListField_id")
             element.style.height = "15px";
             element.style.height = (element.scrollHeight) + "px";
         },
         autoGrow(index) {
-            // let element = document.getElementsByClassName("addListInputField")[index]
             let element = document.getElementById(`newCardField_` + index)
             element.style.height = "15px";
             element.style.height = (element.scrollHeight) + "px";
         },
-        handleCreateList(list, index) {
-            if (list.id == "listPlaceholder") {
-                list.cards = [
-                  {id: "cardOne", cardName: this.newCardName, subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, isAddCard: false, isCreateList: false, attachments: [File]}, 
-                ]
-               this.board.lists.push(
-                { id: "listPlaceholder", listName: "Add New List", isAddCard: false, isCreateList: false, cards: []}
-               )
-            } else {
-                list.cards.push(
-                {id: "cardOne", cardName: this.newCardName, subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "",isAddCard: false, isCreateList: false, progress: 0, attachments: [File]}, 
-            )
-            }
+       async handleCreateCard(list, index) {
+            // if (list.id == "listPlaceholder") {
+            //     list.cards = [
+            //       {id: "cardOne", cardName: this.newCardName, subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, isAddCard: false, isCreateList: false, attachments: [File]}, 
+            //     ]
+            //    this.board.lists.push(
+            //     { id: "listPlaceholder", listName: "Add New List", isAddCard: false, isCreateList: false, cards: []}
+            //    )
+            // } else {
+            //     list.cards.push(
+            //     {id: "cardOne", cardName: this.newCardName, subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "",isAddCard: false, isCreateList: false, progress: 0, attachments: [File]}, 
+            // )
+            // }
            
-            list.isCreateCard = false 
-            this.board[index] = list
-            // myDiv[index].scrollTop = myDiv[index].scrollHeight + 100;
-            this.newCardName = ""
-            
-            // this.isCreateCard = false
-            // var myDiv = document.getElementsByClassName('cardAndFooterContainer')[0];
-            // myDiv.scrollIntoView(false);
+            // list.isCreateCard = false 
+            // this.board[index] = list
+        var params = {
+          cardName: this.newCardName,
+          boardId: this.boardId,
+          listId: list.id,
+          id: Date.now(), 
+          owner: "1721545684258"
+        }
+        var fullURL = BASE_URL + "board/newCard"
+        console.log("full url: ", fullURL, "params: ", params)
+        await axios.post(fullURL, params).then((response) => {
+          if (response.data != null) {
+            let data = response.data
+            console.log("card resp data: ", data)
+            if (data.statusCode == 200) {
+                console.log("created new card: ", data.resp)
+                this.getBoardBy(this.boardId)
+              }
+             }
+          })
+          this.newCardName = ""
         },
         handleAddCard(list, index) {
-            // this.currentList = list
-            // this.currentIndex = index
-            // console.log("currentList: ", this.currentList, "index: ", index)
             list.isCreateCard = true 
             this.board[index] = list
-            // this.isCreateCard = true 
-            // let element = document.getElementsByClassName("addListInputField")
-            // console.log("addListTextArea : ", element.item)
-            // element.focus = true 
+        }, 
+     async getBoardBy(boardId) {
+        var params = {
+            boardId: boardId
+        }
+        var fullURL = BASE_URL + "board/byId"
+        console.log("full url: ", fullURL, "params: ", params)
+        await axios.post(fullURL, params).then((response) => {
+          if (response.data != null) {
+            let data = response.data
+            console.log("resp data: ", data)
+            if (data.statusCode == 200) {
+                let apiBoard = data.resp
+                console.log("board info: ", apiBoard, "list length: ", "lists: ", apiBoard.lists)
+                apiBoard.lists.push({ id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []})
+                apiBoard.lists.sort((a,b)=>new Date(a.createdAt) - new Date(b.createdAt))
+                this.board = apiBoard
+              }
+             }
+          })
         }
     },
     watch: { 
@@ -185,16 +241,20 @@ export default {
         }
     },  
     mounted() {
-        this.board = { id: "board1", lists: [
-            { id: "listTwo", listName: "TASK", headerType: "showListName", footerType: "add",  cards: [
-                {id: "cardOne", cardName: "[FGE TEAM] Upcoming Tasks and Bugs (Week 28, July 8 - July 12, 2024)", subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", isAddCard: false, isCreateList: false, progress: 0, attachments: [File]}, 
-            ]
-           },  
-           { id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []}
-         ] 
-       }
+        let routeParams = this.$route.params
+        let boardId = routeParams.id
+        this.boardId = boardId
+        console.log("params id: ", boardId)
+        this.getBoardBy(boardId)
 
-       HTMLCollection.prototype.toArray = function() { return Array.from(this); }
+    //     this.board = { id: "board1", lists: [
+    //         { id: "listTwo", listName: "TASK", headerType: "showListName", cards: [
+    //             {id: "cardOne", cardName: "[FGE TEAM] Upcoming Tasks and Bugs (Week 28, July 8 - July 12, 2024)", description: "", imgURL: "google.com", isAddCard: false, isCreateList: false, progress: 0, attachments: [File]}, 
+    //         ]
+    //        },  
+    //        { id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []}
+    //      ] 
+    //    }
     }
 }
 </script>

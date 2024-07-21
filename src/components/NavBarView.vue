@@ -15,22 +15,40 @@
           ></v-autocomplete> -->
        </div>
        <div class="taskNotificationContainer">
-            <button @click="handleCreateBoard">       
+            <button @click="handleCreateBoard()">       
             <span class="material-symbols-outlined">add</span>
             New Board</button>
        </div>      
        <img src="@/assets/notification.png" class="notificationIcon">
+       <v-overlay  v-model="isCreateBoard" class="align-center justify-center" contained>
+           <CreateNewBoardView @closeOverlay="handleCloseOverlay"/>
+        </v-overlay>
     </div>
 </template>
 <script>
+import CreateNewBoardView from '@/components/CreateNewBoardView.vue'
 import { ref } from 'vue'
 export default {
+    components: {
+        CreateNewBoardView
+    },
     props: ["isExpanded"],
     setup() {
         var searchHistory = ref(["Groceries", "Fruits", "Meat", "Meatlo", "Something nice here"])
         var isSideBarExpanded = ref(false)
-        return { searchHistory, isSideBarExpanded } 
+        var isCreateBoard = ref(false)
+        return { searchHistory, isSideBarExpanded, isCreateBoard } 
     }, 
+    methods: {
+        handleCloseOverlay() {
+            console.log("is overlay closed")
+            this.isCreateBoard = false 
+        },
+        handleCreateBoard() {
+            // create a new board
+            this.isCreateBoard = true 
+        }
+    },
     watch: { 
         isExpanded: function(newVal, oldVal) {
             console.log('Prop changed isSideBarExpanwded: ', newVal)
