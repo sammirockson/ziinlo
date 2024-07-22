@@ -1,13 +1,16 @@
 <template>
     <div class="card" @click.self="handleOverlayClosed">
         <div class="cardInfoContainer">
-             <div class="contentContainer"></div>
+             <div class="contentContainer">
+                <textarea type="text"  @input="autoGrow()" class="cardNameField" id="cardNameId" v-model="card.cardName"></textarea>
+             </div>
              <div class="controlsContainer">
-             <label class="memberLabel">Members</label>
+             <label class="memberTitleLabel">Members</label>
              <div class="membersContainer">
                 <div class="memberCell" v-for="(index, member) in members" :key="member">
                    <img :src="require(index == 8 ? `@/assets/add.svg` : `@/assets/cardPhoto.png`)" class="memberPhoto">
-                   <label class="memberNameLabel" v-if="index != 8">Name{{ member }}</label>
+                   <label class="memberNameLabel" v-if="index != 8">Name</label>
+                   <label class="memberNameLabel" v-else>Join</label>
                 </div>
              </div>
 
@@ -23,7 +26,8 @@
              <ButtonCard imageIcon="invoice_icon.png" title="Poll"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Checklist"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Attachments"/>
-           
+             <label class="memberLabel">Connect</label>
+             <ButtonCard imageIcon="invoice_icon.png" title="Share"/>
              </div>
         </div>
     </div>
@@ -33,7 +37,7 @@ import { ref } from 'vue'
 import ButtonCard from '@/components/ButtonCard.vue'
 
 export default {
-    props: ["board", "card"],
+    props: ["board", "card", "list"],
     components: {
         ButtonCard
     },
@@ -45,6 +49,11 @@ export default {
         
     },
     methods: {
+        autoGrow() {
+            let element = document.getElementById("cardNameId")
+            element.style.height = "15px";
+            element.style.height = (element.scrollHeight) + "px";
+        },
         handleOverlayClosed() {
             console.log("close overlay tapped")
             this.$emit('overlayDismissed')
@@ -53,6 +62,14 @@ export default {
 }
 </script>
 <style scoped>
+.cardNameField {
+    display: flex;
+    margin-top: 30px;
+    font-size: 24px;
+    font-weight: 700;
+    resize: none;
+    color: var(--color-dark);
+}
 .memberCell {
     display: flex;
     flex-direction: column;
@@ -64,7 +81,7 @@ export default {
     overflow: hidden;
     text-align: center;
     width: 100%;
-    margin-left: -5px;
+    margin-left: 1px;
 }
 .memberPhoto {
     width: 30px;
@@ -72,6 +89,13 @@ export default {
     border-radius: var(--border-radius-1);
     object-fit: fill;
     overflow: hidden;
+}
+.memberTitleLabel {
+    display: flex;
+    margin: 10px;
+    margin-top: 34px;
+    font-weight: 500;
+    font-size: 14px;
 }
 .memberLabel {
     display: flex;
@@ -81,11 +105,15 @@ export default {
     font-size: 14px;
 }
 .contentContainer {
+    display: flex;
+    flex-direction: column;
     width: 550px;
     min-height: 94vh;
     background-color: white;
     border-top-left-radius: var(--border-radius-2);
     border-bottom-left-radius: var(--border-radius-2);
+    padding-left: 20px;
+    padding-right: 15px;
 }
 .controlsContainer {
     display: flex;
@@ -94,7 +122,7 @@ export default {
     min-height: 94vh;
     border-top-right-radius: var(--border-radius-2);
     border-bottom-right-radius: var(--border-radius-2);
-    background-color: aliceblue;
+    /* background-color: aliceblue; */
 }
 .membersContainer {
     display: grid;

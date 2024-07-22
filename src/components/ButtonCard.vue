@@ -24,16 +24,16 @@ export default {
     object-fit: contain;
 }
 .titelLabel {
-    margin-left: 8px;
-  font-weight: 500;
-  font-size: 13px;
-  color: white;
+  margin-left: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-dark);
 }
 .buttonCard {
   display: flex;
   width: 85%;
   height: 38px;
-  background-color: var(--color-dark);
+  background-color: var(--color-background);
   border-radius: var(--border-radius-1);
   margin-left: 8px;
   margin-bottom: 10px;

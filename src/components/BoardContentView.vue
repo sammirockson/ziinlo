@@ -35,7 +35,7 @@
                              ghost-class="ghost"
                              @change="onCardMoved">
                            <template #item="{element}">
-                            <CardView :card="element" @click="handleCardTapped"></CardView>
+                            <CardView :card="element" @click="handleCardTapped(element, list)"></CardView>
                            </template>
                        </DraggableView>
                         <div v-if="list.isCreateCard == true" class="createListContainer">
@@ -59,7 +59,7 @@
            </div>
         </div>
         <v-overlay  v-model="isCardTapped" class="align-center justify-center overLayContainer" contained>
-            <CardDetailView @overlayDismissed="handleOverlayDismissed"/>
+            <CardDetailView :card="selectedCard" :list="selectedList" @overlayDismissed="handleOverlayDismissed"/>
         </v-overlay>
     </div>
 </template>
@@ -87,7 +87,9 @@ export default {
         var newCardName = ref("")
         var newListName = ref("")
         var boardId = ref("")
-        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, allLists}
+        var selectedCard = ref(Object)
+        var selectedList = ref(Object)
+        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, allLists, selectedCard, selectedList}
     },
     methods: {
       onCardMoved(e) {
@@ -125,7 +127,10 @@ export default {
         handleOverlayDismissed() {
             this.isCardTapped = false 
         },
-        handleCardTapped() {
+        handleCardTapped(card, list) {
+            console.log("selectedCard: ", this.selectedCard, this.selectedList)
+            this.selectedCard = card
+            this.selectedList = list
             this.isCardTapped = true 
         },
       async createANewList(list, index) {
