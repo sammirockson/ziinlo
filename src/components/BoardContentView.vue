@@ -28,54 +28,16 @@
                          <label class="listNameLabel">•••</label>
                      </div>
                      <div class="cardAndFooterContainer">
-                        <div v-if="list.cards != null" class="cardContainer"  v-for="card in list.cards" :key="card.id">
-                          <div class="cardCell" @click="handleCardTapped">
-                             <img v-if="card.attachments.count > 0" src="@/assets/cardPhoto.png" class="cardImage">
-                             <div class="dueDateContainer">
-                             <img src="@/assets/clock.png" class="clockIcon">
-                                 <label class="dueDateLabel">25 Feb 2024</label>
-                             </div>
-                             <label class="cardNameLabel">{{ card.cardName }}</label>
-                             <div class="progressContainer">
-                                <v-progress-linear
-                                :location="false"
-                                bg-color="#92aed9"
-                                buffer-color="#92aed9"
-                                color="#05C597"
-                                height="10"
-                                max="9"
-                                min="0"
-                                model-value="2"
-                                rounded>
-                             </v-progress-linear>
-                             </div> 
-                             <div class="viewMemberContainerView">
-                                <div class="boardInfoView">
-                                    <img src="@/assets/eyeViews.png" class="boardIcon">
-                                    <label for="">4.7k</label>
-                                    <img src="@/assets/comments.png" class="boardIcon">
-                                    <label for="">20</label>
-                                    <img src="@/assets/attachment.png" class="boardIcon">
-                                    <label for="">99</label>
-                                </div>
-                              <div class="membersContainer">
-                                <span class="avatar">
-        <img  src="https://picsum.photos/70">
-    </span>
-  <span class="avatar">
-        <img src="https://picsum.photos/80">
-    </span>
-  <span class="avatar">
-        <img src="https://picsum.photos/90">
-    </span>
-  <span class="avatar">
-       <img src="https://picsum.photos/100">
-    </span>
-    <label for="">+99</label>
-                              </div>
-                             </div>
-                          </div>
-                        </div>
+                        <DraggableView v-model="list.cards" 
+                             group="list.cards" 
+                             item-key="id"
+                             drag-class="drag"
+                             ghost-class="ghost"
+                             @change="onCardMoved">
+                           <template #item="{element}">
+                            <CardView :card="element" @click="handleCardTapped"></CardView>
+                           </template>
+                       </DraggableView>
                         <div v-if="list.isCreateCard == true" class="createListContainer">
                             <textarea name="text" v-model="newCardName" @input="autoGrow(index)" placeholder="Give your card a name" class="addListInputField" :id="`newCardField_` + index"></textarea>
                             <button v-if="isSavingCard" class="addListBtn buttonload">
@@ -93,6 +55,7 @@
                     </div>
                     
                  </div>
+
            </div>
         </div>
         <v-overlay  v-model="isCardTapped" class="align-center justify-center overLayContainer" contained>
@@ -103,6 +66,8 @@
 <script>
 import NavBar from '@/components/NavBarView.vue'
 import CardDetailView from '@/components/CardDetailView.vue'
+import DraggableView from 'vuedraggable'
+import CardView from '@/components/CardView.vue'
 import { ref } from 'vue'
 
 import { BASE_URL } from '@/config'
@@ -111,19 +76,52 @@ import axios from 'axios';
 export default {
     props: ["isExpanded"],
     components: {
-        NavBar, CardDetailView
+        NavBar, CardView, CardDetailView, DraggableView
     }, 
     setup() {
         var isSideBarExpanded = ref(true)
         var board = ref([])
+        var allLists = ref([])
         // var isCreateCard = ref(false)
         var isCardTapped = ref(false)
         var newCardName = ref("")
         var newListName = ref("")
         var boardId = ref("")
-        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId}
+        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, allLists}
     },
     methods: {
+      onCardMoved(e) {
+       console.log("onCardMoved: ", e) 
+       if (e.added != null) {
+        let listId = e.added.element.listId
+        console.log("added: ", e.added.element, "listId: ", listId)
+        let listIndex = this.board.lists.findIndex(x => x.id === listId);
+        let lists = this.board.lists[listIndex]
+        let cards = // find card index
+        console.log("lists: ", lists)
+        // myArray.find(x => x.id === '45').foo;
+       }
+       let item = e.added || e.moved;
+    //    if (!item) return;
+    //    let index = item.newIndex;
+    //    let prevCard = cards[index - 1];
+    //    let nextCard = cards[index + 1];
+    //    let card = cards[index];
+
+    //    let position = card.position;
+    //    if (prevCard && nextCard) {
+    //       position = (prevCard.position + nextCard.position) / 2;
+    //    } else if (prevCard) {
+    //       position = prevCard.position + (prevCard.position / 2);
+    //    } else if (nextCard) {
+    //       position = nextCard.position / 2;
+    //    }
+    //    console.log("card position: ", position)
+// Inertia.put(route('cards.move', { card: card.id }), {
+//   position: position,
+//   cardListId: props.list.id
+// });     
+       },
         handleOverlayDismissed() {
             this.isCardTapped = false 
         },
@@ -231,6 +229,10 @@ export default {
                 console.log("board info: ", apiBoard, "list length: ", "lists: ", apiBoard.lists)
                 apiBoard.lists.push({ id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []})
                 apiBoard.lists.sort((a,b)=>new Date(a.createdAt) - new Date(b.createdAt))
+                for (var listIndex in apiBoard.lists) {
+                    let list = apiBoard.lists[listIndex]
+                    this.allLists.push(list)
+                }
                 this.board = apiBoard
               }
              }
@@ -262,34 +264,16 @@ export default {
 }
 </script>
 <style scoped>
-.avatar img {
-  border-radius: 50%;
-  position: relative;
-  margin-left: -12px;
-  z-index: 1;
-  height: 18px;
-  width: 18px;
-  padding: 1px;
-  background-color: white;
-  margin-top: 4px;
+.drag {
+  transform: rotate(5deg);
 }
-
-.membersContainer {
-    display: flex;
-    width: 90px;
-    height: 80px;
-    float: right;
-    padding-right: 10px;
-    direction: ltr;  /* This is to get the stack with left on top */
-    padding-left: 20px;
+ 
+.ghost {
+  background: lightgray;
+  border-radius: 6px;
 }
-
-.membersContainer label {
-    display: block;
-    font-weight: 500;
-    font-size: 10px;
-    margin-left: 4px;
-    margin-top: 6px;
+.ghost {
+  visibility: hidden;
 }
 
 .boardInfoView label {
@@ -309,23 +293,7 @@ export default {
     justify-content: space-evenly;
     margin-top: 5px;
 }
-.viewMemberContainerView {
-    display: flex;
-    height: 38px;
-    width: 100%;
-    background-color: white;
-    border-radius: var(--border-radius-1);
-    /* border-bottom-right-radius: var(--border-radius-1);
-    border-bottom-left-radius: var(--border-radius-1); */
-    margin-left: 8px;
-    justify-content: space-between;
-}
-.progressContainer {
-    width: 90%;
-    height: 34px;
-    margin-left: 10px;
-    margin-top: 10px;
-}
+
 .cardNameLabel {
     width: 200px;
     margin-top: 8px;
@@ -337,32 +305,6 @@ export default {
     white-space: pre-wrap;
 }
 
-.clockIcon {
-    width: 14px;
-    height: 14px;
-}
-.dueDateLabel {
-    color: white;
-    font-weight: 400;
-    font-size: 14px;
-    margin-left: 4px;
-}
-.dueDateContainer {
-    width: 124px;
-    height: 30px;
-    margin-top: 8px;
-    margin-left: 8px;
-    border-radius: var(--border-radius-1);
-    background-color: #FC6363;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.cardImage {
-    width: 100%;
-    height: 150px;
-    object-fit: fill;
-}
 .footerTitleContainer {
     width: auto;
     height: 24px;
