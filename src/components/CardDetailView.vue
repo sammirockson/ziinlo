@@ -3,6 +3,31 @@
         <div class="cardInfoContainer">
              <div class="contentContainer">
                 <textarea type="text"  @input="autoGrow()" class="cardNameField" id="cardNameId" v-model="card.cardName"></textarea>
+                <div class="profileTagInfoContainer">
+                <img src="@/assets/cardPhoto.png" class="ownerProfile">
+                <div class="profileInfoContainer">
+                    <label class="onwerNameLabel">Samuel</label>
+                    <label class="ownerRoleLabel">Admin</label>
+                </div>
+                <img src="@/assets/cardPhoto.png" class="assignedProfile">
+                <div class="assignInfoContainer">
+                    <label class="onwerNameLabel">Ricky Bob</label>
+                    <label class="ownerRoleLabel">Assignee</label>
+                </div>
+                </div>
+
+                <div class="profileTagInfoContainer">
+                    <label class="listTagContainer">{{ list.listName }}</label>
+                    <ButtonCard imageIcon="calendar.png" title="July 25 12:45PM" class="dueDateField"/>
+                    <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true">
+                    </ButtonCard>
+                    <!-- <img src="@/assets/calendar.png" class="ownerProfile"> -->
+                    <!-- <div class="profileInfoContainer">
+                    <label class="onwerNameLabel">July 25 12:45PM</label>
+                    <label class="ownerRoleLabel">Due Date</label>
+                </div> -->
+                </div>
+                <DescriptionViewFrom class="descriptionContainer"/>
              </div>
              <div class="controlsContainer">
              <label class="memberTitleLabel">Members</label>
@@ -17,8 +42,7 @@
              <label class="memberLabel">Action</label>
              <ButtonCard imageIcon="invoice_icon.png" title="Assign"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Move"/>
-             <ButtonCard imageIcon="invoice_icon.png" title="Copy"/>
-             <ButtonCard imageIcon="invoice_icon.png" title="Delete"/>
+             <ButtonCard imageIcon="invoice_icon.png" title="Track"/>
 
              <label class="memberLabel">Manage</label>
              <ButtonCard imageIcon="invoice_icon.png" title="Tags"/>
@@ -28,6 +52,9 @@
              <ButtonCard imageIcon="invoice_icon.png" title="Attachments"/>
              <label class="memberLabel">Connect</label>
              <ButtonCard imageIcon="invoice_icon.png" title="Share"/>
+             <ButtonCard imageIcon="invoice_icon.png" title="Copy URL"/>
+             <label class="memberLabel">Archive</label>
+             <ButtonCard imageIcon="invoice_icon.png" title="Delete"/>
              </div>
         </div>
     </div>
@@ -35,18 +62,20 @@
 <script>
 import { ref } from 'vue'
 import ButtonCard from '@/components/ButtonCard.vue'
+import DescriptionViewFrom from '@/components/DescriptionViewForm.vue'
 
 export default {
     props: ["board", "card", "list"],
     components: {
-        ButtonCard
+        ButtonCard, DescriptionViewFrom
     },
     setup() {
         var members = ref([1, 2, 3, 4, 5, 6, 7, 8])
-        return { members }
+        var isTracked = ref(true)
+        return { members, isTracked }
     }, 
     mounted() {
-        
+        this.autoGrow()
     },
     methods: {
         autoGrow() {
@@ -62,14 +91,80 @@ export default {
 }
 </script>
 <style scoped>
+.descriptionContainer {
+    width: 98%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.listTagContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 34px;
+    width: 140px;
+    padding-right: 10px;
+    padding-left: 10px;
+    color: white;
+    font-weight: 600;
+    background-color: #8B81F7;
+    border-radius: var(--border-radius-1);
+    text-transform: uppercase;
+    overflow: hidden;
+    white-space:nowrap;
+    text-overflow: clip;
+}
+.dueDateField {
+    width: 165px;
+    margin-left: 10px;
+}
+.ownerRoleLabel {
+    display: flex;
+    font-weight: 700;
+    font-size: 10px;
+    overflow: hidden;
+    text-align: center;
+    color: var(--color-dark);
+}
+.onwerNameLabel {
+    display: flex;
+    font-weight: 700;
+    font-size: 13px;
+    overflow: hidden;
+    text-align: center;
+}
+.ownerProfile, .assignedProfile {
+    width: 32px;
+    height: 32px;
+    object-fit: fill;
+    overflow: hidden;
+    border-radius: var(--border-radius-1);
+}
+
+.assignedProfile {
+    margin-left: 20px;
+}
+.profileInfoContainer, .assignInfoContainer {
+    display: flex;
+    flex-direction: column;
+    height: 40px;
+    margin-left: 5px;
+}
+
+.profileTagInfoContainer {
+    display: flex;
+    width: 100%;
+    height: 50px;
+    margin-top: 5px;
+}
 .cardNameField {
     display: flex;
-    margin-top: 30px;
-    font-size: 24px;
+    margin-top: 20px;
+    font-size: 20px;
     font-weight: 700;
     resize: none;
     color: var(--color-dark);
 }
+
 .memberCell {
     display: flex;
     flex-direction: column;
@@ -93,15 +188,15 @@ export default {
 .memberTitleLabel {
     display: flex;
     margin: 10px;
-    margin-top: 34px;
-    font-weight: 500;
+    margin-top: 24px;
+    font-weight: 600;
     font-size: 14px;
 }
 .memberLabel {
     display: flex;
     margin: 10px;
     margin-top: 20px;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 14px;
 }
 .contentContainer {
@@ -109,7 +204,6 @@ export default {
     flex-direction: column;
     width: 550px;
     min-height: 94vh;
-    background-color: white;
     border-top-left-radius: var(--border-radius-2);
     border-bottom-left-radius: var(--border-radius-2);
     padding-left: 20px;
@@ -152,6 +246,7 @@ export default {
     background-color: white;
     z-index: 999999999999;
     border-radius: var(--border-radius-2);
+    padding-bottom: 30px;
     /* overflow-y: scroll; */
 }
  .card {

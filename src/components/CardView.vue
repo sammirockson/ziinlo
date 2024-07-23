@@ -115,7 +115,7 @@ export default {
     margin-top: 8px;
     margin-left: 10px;
     margin-right: 10px;
-    font-weight: 700;
+    font-weight: 500;
     font-size: 13px;
     text-align: left;
     white-space: pre-wrap;
