@@ -163,6 +163,7 @@ export default {
     font-weight: 700;
     resize: none;
     color: var(--color-dark);
+    margin-bottom: 8px;
 }
 
 .memberCell {
