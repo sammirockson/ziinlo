@@ -29,7 +29,7 @@
                      </div>
                      <div class="cardAndFooterContainer">
                         <DraggableView v-model="list.cards" 
-                             group="list.cards" 
+                             group="board.lists" 
                              item-key="id"
                              drag-class="drag"
                              ghost-class="ghost"
@@ -81,7 +81,6 @@ export default {
     setup() {
         var isSideBarExpanded = ref(true)
         var board = ref([])
-        var allLists = ref([])
         // var isCreateCard = ref(false)
         var isCardTapped = ref(false)
         var newCardName = ref("")
@@ -89,41 +88,85 @@ export default {
         var boardId = ref("")
         var selectedCard = ref(Object)
         var selectedList = ref(Object)
-        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, allLists, selectedCard, selectedList}
+        var gabbageCollector = ref([])
+        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, selectedCard, selectedList, gabbageCollector}
     },
     methods: {
+        async setListEmpty(listId) {
+         var params = {
+            listId: listId
+        }
+        var fullURL = BASE_URL + "board/setEmptyList"
+        await axios.post(fullURL, params).then((response) => {
+            this.gabbageCollector.push(1)
+          if (response.data != null) {
+            let data = response.data
+            console.log("resp data: ", data)
+            if (data.statusCode == 200) {
+                console.log("list and card info updated: ", data.resp)
+              }
+             }
+          })
+        },
+       async updateBoardInfo(cards, cardIds, list_id, listId) {
+        var params = {
+            cards: cards, 
+            cardIds: cardIds, 
+            listId: listId, 
+            list_id: list_id
+        }
+        var fullURL = BASE_URL + "board/updateList"
+        await axios.post(fullURL, params).then((response) => {
+            this.gabbageCollector.push(1)
+          if (response.data != null) {
+            let data = response.data
+            if (data.statusCode == 200) {
+                console.log("list and card info updated: ", data.resp)
+              }
+             }
+          })
+      },
       onCardMoved(e) {
        console.log("onCardMoved: ", e) 
-       if (e.added != null) {
-        let listId = e.added.element.listId
-        console.log("added: ", e.added.element, "listId: ", listId)
-        let listIndex = this.board.lists.findIndex(x => x.id === listId);
-        let lists = this.board.lists[listIndex]
-        let cards = // find card index
-        console.log("lists: ", lists)
-        // myArray.find(x => x.id === '45').foo;
-       }
-       let item = e.added || e.moved;
-    //    if (!item) return;
-    //    let index = item.newIndex;
-    //    let prevCard = cards[index - 1];
-    //    let nextCard = cards[index + 1];
-    //    let card = cards[index];
-
-    //    let position = card.position;
-    //    if (prevCard && nextCard) {
-    //       position = (prevCard.position + nextCard.position) / 2;
-    //    } else if (prevCard) {
-    //       position = prevCard.position + (prevCard.position / 2);
-    //    } else if (nextCard) {
-    //       position = nextCard.position / 2;
+       let item = e.added || e.removedmoved; 
+    //    if (e.added != null) {
+    //     let listId = e.added.element.listId
+    //     console.log("added: ", e.added.element, "listId: ", listId)
+    //     let listIndex = this.board.lists.findIndex(x => x.id === listId);
+    //     let list = this.board.lists[listIndex]
+    //     let cards = list.cards // find card index
+    //     console.log("section listName: ", list.listName)
+    //     console.log("cards: ", cards)
+    //     for (var index in this.board.lists) {
+    //         var newList = this.board.lists[index]
+    //         if (newList.id == listId) {
+    //             console.log("loop listName: ", newList.listName)
+    //         }
+    //     }
     //    }
-    //    console.log("card position: ", position)
-// Inertia.put(route('cards.move', { card: card.id }), {
-//   position: position,
-//   cardListId: props.list.id
-// });     
-       },
+
+    if (e.removed != null) {
+        for (var listIndex in this.board.lists) {
+          var list = this.board.lists[listIndex]
+          let list_id = list._id
+          let listId = list.id
+          if (list.cards.length > 0) {
+            var cards = []
+            var cardIds = []
+             for (var cardPosition in list.cards) {
+                let card = list.cards[cardPosition]
+                cardIds.push(card.id)
+                cards.push({id: card.id, position: cardPosition})
+             }
+             this.updateBoardInfo(cards, cardIds, list_id, listId)
+          } else {
+            // set list empty
+            this.setListEmpty(list_id)
+          }
+        }
+        this.getBoardBy(this.boardId)
+      }
+    },
         handleOverlayDismissed() {
             this.isCardTapped = false 
         },
@@ -162,7 +205,7 @@ export default {
              }
           })
           this.newListName = ""
-        },
+    },
         handleAddList(list, index) {
             list.isCreateList = true 
             list.headerType = "creatingList"
@@ -234,10 +277,6 @@ export default {
                 console.log("board info: ", apiBoard, "list length: ", "lists: ", apiBoard.lists)
                 apiBoard.lists.push({ id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []})
                 apiBoard.lists.sort((a,b)=>new Date(a.createdAt) - new Date(b.createdAt))
-                for (var listIndex in apiBoard.lists) {
-                    let list = apiBoard.lists[listIndex]
-                    this.allLists.push(list)
-                }
                 this.board = apiBoard
               }
              }

@@ -6,37 +6,35 @@
             <label class="dueDateLabel">25 Feb 2024</label>
          </div>
             <label class="cardNameLabel">{{ card.cardName }}</label>
-                             <div class="progressContainer">
-                                <v-progress-linear
-                                :location="false"
-                                bg-color="#92aed9"
-                                buffer-color="#92aed9"
-                                color="#05C597"
-                                height="10"
-                                max="9"
-                                min="0"
-                                model-value="2"
-                                rounded>
-                             </v-progress-linear>
-                             </div> 
-                             <div class="viewMemberContainerView">
-                                <div class="boardInfoView">
-                                    <img src="@/assets/eyeViews.png" class="boardIcon">
-                                    <label for="">4.7k</label>
-                                    <img src="@/assets/comments.png" class="boardIcon">
-                                    <label for="">20</label>
-                                    <img src="@/assets/attachment.png" class="boardIcon">
-                                    <label for="">99</label>
-                                </div>
-                              <div class="membersContainer">
-                                <span class="avatar"><img  src="https://picsum.photos/70"></span>
-                             <span class="avatar"><img src="https://picsum.photos/80"></span>
-                             <span class="avatar"> <img src="https://picsum.photos/90"></span>
-                             <span class="avatar">
-                                <img src="https://picsum.photos/100">
-                              </span>
-                            <label for="">+99</label>
-                    </div>
+                <div v-if="card.progress != null" class="progressContainer">
+                    <v-progress-linear
+                    :location="false"
+                    bg-color="#92aed9"
+                    buffer-color="#92aed9"
+                    color="#05C597"
+                    height="10"
+                    max="9"
+                    min="0"
+                    model-value="2"
+                    rounded>
+                    </v-progress-linear>
+               </div> 
+            <div class="viewMemberContainerView">
+                <div class="boardInfoView">
+                    <img src="@/assets/eyeViews.png" class="boardIcon">
+                    <label for="">4.7k</label>
+                    <img src="@/assets/comments.png" class="boardIcon">
+                    <label for="">20</label>
+                    <img src="@/assets/attachment.png" class="boardIcon">
+                    <label for="">99</label>
+                </div>
+                <div class="membersContainer">
+                    <span class="avatar"><img  src="https://picsum.photos/70"></span>
+                    <span class="avatar"><img src="https://picsum.photos/80"></span>
+                    <span class="avatar"> <img src="https://picsum.photos/90"></span>
+                    <span class="avatar"> <img src="https://picsum.photos/100"></span>
+                    <label for="">+99</label>
+                </div>
             </div>
     </div>
 </template>
@@ -115,10 +113,11 @@ export default {
     margin-top: 8px;
     margin-left: 10px;
     margin-right: 10px;
-    font-weight: 700;
-    font-size: 13px;
+    font-weight: 500;
+    font-size: 14px;
     text-align: left;
     white-space: pre-wrap;
+    margin-bottom: 8px;
 }
 
 .clockIcon {
