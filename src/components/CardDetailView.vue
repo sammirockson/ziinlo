@@ -2,8 +2,10 @@
     <div class="card" @click.self="handleOverlayClosed">
         <div class="cardInfoContainer">
              <div class="contentContainer">
+                <label class="listNameContainer" id="listNameLabel">{{ list.listName }}</label>
                 <textarea type="text"  @input="autoGrow()" class="cardNameField" id="cardNameId" v-model="card.cardName"></textarea>
              </div>
+
              <div class="controlsContainer">
              <label class="memberTitleLabel">Members</label>
              <div class="membersContainer">
@@ -46,7 +48,11 @@ export default {
         return { members }
     }, 
     mounted() {
-        
+        // let listNameLabel = document.getElementById("listNameLabel")
+        // let width = (listNameLabel.clientWidth + 20)  + "px"
+        // console.log("width: ", width)
+        // listNameLabel.style.width = width
+        // element.style.width = (element.scrollHeight) + "px";
     },
     methods: {
         autoGrow() {
@@ -62,13 +68,22 @@ export default {
 }
 </script>
 <style scoped>
+.listNameContainer {
+    display: block;
+    height: 30px;
+    min-width: 100px;
+    padding-right: 10px;
+    padding-left: 10px;
+    border-radius: var(--border-radius-1);
+    background-color: red;
+}
 .cardNameField {
     display: flex;
-    margin-top: 30px;
     font-size: 24px;
     font-weight: 700;
     resize: none;
     color: var(--color-dark);
+    margin-top: 10px;
 }
 .memberCell {
     display: flex;
@@ -108,7 +123,8 @@ export default {
     display: flex;
     flex-direction: column;
     width: 550px;
-    min-height: 94vh;
+    min-height: 100vh;
+    /* min-height: 94vh; */
     background-color: white;
     border-top-left-radius: var(--border-radius-2);
     border-bottom-left-radius: var(--border-radius-2);
