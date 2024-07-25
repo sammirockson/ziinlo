@@ -29,7 +29,7 @@
                      </div>
                      <div class="cardAndFooterContainer">
                         <DraggableView v-model="list.cards" 
-                             group="board.lists" 
+                             group="allCards" 
                              item-key="id"
                              drag-class="drag"
                              ghost-class="ghost"
@@ -88,8 +88,8 @@ export default {
         var boardId = ref("")
         var selectedCard = ref(Object)
         var selectedList = ref(Object)
-        var gabbageCollector = ref([])
-        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, selectedCard, selectedList, gabbageCollector}
+        var allCards = ref([])
+        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, selectedCard, selectedList, allCards}
     },
     methods: {
         async setListEmpty(listId) {
@@ -98,7 +98,6 @@ export default {
         }
         var fullURL = BASE_URL + "board/setEmptyList"
         await axios.post(fullURL, params).then((response) => {
-            this.gabbageCollector.push(1)
           if (response.data != null) {
             let data = response.data
             console.log("resp data: ", data)
@@ -117,7 +116,6 @@ export default {
         }
         var fullURL = BASE_URL + "board/updateList"
         await axios.post(fullURL, params).then((response) => {
-            this.gabbageCollector.push(1)
           if (response.data != null) {
             let data = response.data
             if (data.statusCode == 200) {
@@ -164,7 +162,7 @@ export default {
             this.setListEmpty(list_id)
           }
         }
-        this.getBoardBy(this.boardId)
+        // this.getBoardBy(this.boardId)
       }
     },
         handleOverlayDismissed() {
@@ -277,6 +275,10 @@ export default {
                 console.log("board info: ", apiBoard, "list length: ", "lists: ", apiBoard.lists)
                 apiBoard.lists.push({ id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []})
                 apiBoard.lists.sort((a,b)=>new Date(a.createdAt) - new Date(b.createdAt))
+                for (var listIndex in apiBoard.lists) {
+                    let cards = apiBoard.lists[listIndex].cards
+                    this.allCards.push(cards)
+                }
                 this.board = apiBoard
               }
              }
