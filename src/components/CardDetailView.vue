@@ -2,6 +2,7 @@
     <div class="card" @click.self="handleOverlayClosed">
         <div class="cardInfoContainer">
              <div class="contentContainer">
+                <label class="listNameContainer" id="listNameLabel">{{ list.listName }}</label>
                 <textarea type="text"  @input="autoGrow()" class="cardNameField" id="cardNameId" v-model="card.cardName"></textarea>
                 <div class="profileTagInfoContainer">
                 <img src="@/assets/cardPhoto.png" class="ownerProfile">
@@ -29,6 +30,7 @@
                 </div>
                 <DescriptionViewFrom class="descriptionContainer"/>
              </div>
+
              <div class="controlsContainer">
              <label class="memberTitleLabel">Members</label>
              <div class="membersContainer">
