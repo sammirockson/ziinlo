@@ -87,21 +87,18 @@ export default {
         },
         async handleContentInfoTapped() {
           console.log("selectedCard: ", this.selectedCard)
-        //   var params = {
-        //     card_id: this.selectedCard._id, 
-        //     cardName: this.selectedCard.cardName, 
-        //     cardDesc: this.cardDesc
-        //  }
-        //  var fullURL = BASE_URL + "board/updateCard"
-        //  await axios.post(fullURL, params).then((response) => {
-        //   if (response.data != null) {
-        //     let data = response.data
-        //     console.log("card detail resp data: ", data)
-        //     if (data.statusCode == 200) {
-        //         console.log("list and card info updated: ", data.resp)
-        //       }
-        //      }
-        //   })
+          var params = {
+            card_id: this.selectedCard._id, 
+            cardName: this.selectedCard.cardName, 
+            cardDesc: this.cardDesc
+         }
+         var fullURL = BASE_URL + "board/updateCard"
+         await axios.post(fullURL, params).then((response) => {
+          if (response.data != null) {
+             let data = response.data
+             console.log("card detail resp data: ", data)
+            }
+          })
         },
         autoGrow() {
             let element = document.getElementById("cardNameId")
@@ -118,7 +115,7 @@ export default {
     }, 
     watch: { 
         card(newVal, oldVal) { 
-           console.log('Card detail prop changed: ', newVal, ' | was: ', oldVal)
+           console.log('Card popover prop changed: ', newVal, ' | was: ', oldVal)
            this.selectedCard = newVal
         }
     },
@@ -130,6 +127,9 @@ export default {
             this.cardo = evt
             console.log("cardo: ", evt.id)
        })
+    }, 
+    updated() {
+        this.autoGrow()
     }
 }
 </script>
@@ -279,8 +279,6 @@ export default {
 
 .cardInfoContainer {
     display: flex;
-    justify-content: center;
-    align-items: center;
     width: 740px;
     min-height: 94vh;
     margin-right: auto;

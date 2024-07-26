@@ -301,6 +301,7 @@ export default {
                    this.selectedCard = resp.card
                    this.selectedList = resp.list
                    this.isCardTapped = true 
+                   this.$emit('cardDetailInfo', resp)
                 }
                 
               }

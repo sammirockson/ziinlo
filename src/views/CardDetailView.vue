@@ -1,7 +1,7 @@
 <template>
     <div class="card">
         <SideBarView class="sideBar" @handleMenuTapped="handleChangeContainer" :cachedMenuKey="this.containerType" :isExpanded="this.isExpanded" :style="{width: isExpanded ? '250px' : '90px'}"/>
-        <BoardContentView class="posContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
+        <BoardContentView class="posContainer" @cardDetailInfo="fetchedCardInfo"  :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
     </div>
 </template>
 <script>
@@ -17,6 +17,11 @@ export default {
         var isExpanded = ref(false)
         return { isExpanded }
     }, 
+    methods: {
+        fetchedCardInfo(cardData) {
+            console.log("card final info data: ", cardData)
+        }
+    },
     mounted() {
         console.log("card loaded")
     }
