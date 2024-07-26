@@ -58,8 +58,8 @@
 
            </div>
         </div>
-        <v-overlay  v-model="isCardTapped" class="align-center justify-center overLayContainer" contained>
-            <CardDetailView :card="selectedCard" :list="selectedList" @overlayDismissed="handleOverlayDismissed"/>
+        <v-overlay v-model="isCardTapped" class="align-center justify-center overLayContainer" contained>
+            <CardDetailView :card="this.selectedCard" :list="this.selectedList" @overlayDismissed="handleOverlayDismissed"/>
         </v-overlay>
     </div>
 </template>
@@ -69,11 +69,11 @@ import CardDetailView from '@/components/CardDetailView.vue'
 import DraggableView from 'vuedraggable'
 import CardView from '@/components/CardView.vue'
 import { ref } from 'vue'
-
 import { BASE_URL } from '@/config'
 import axios from 'axios';
 
 export default {
+    inject: ["eventBus"],
     props: ["isExpanded"],
     components: {
         NavBar, CardView, CardDetailView, DraggableView
@@ -89,9 +89,13 @@ export default {
         var selectedCard = ref(Object)
         var selectedList = ref(Object)
         var allCards = ref([])
-        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, selectedCard, selectedList, allCards}
+        var isSavingCard = ref(false)
+        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, selectedCard, selectedList, allCards, isSavingCard}
     },
     methods: {
+        sortedCards(cards) {
+            return cards.sort((a,b)=> a.position - b.position)
+        },
         async setListEmpty(listId) {
          var params = {
             listId: listId
@@ -126,24 +130,8 @@ export default {
       },
       onCardMoved(e) {
        console.log("onCardMoved: ", e) 
-       let item = e.added || e.removedmoved; 
-    //    if (e.added != null) {
-    //     let listId = e.added.element.listId
-    //     console.log("added: ", e.added.element, "listId: ", listId)
-    //     let listIndex = this.board.lists.findIndex(x => x.id === listId);
-    //     let list = this.board.lists[listIndex]
-    //     let cards = list.cards // find card index
-    //     console.log("section listName: ", list.listName)
-    //     console.log("cards: ", cards)
-    //     for (var index in this.board.lists) {
-    //         var newList = this.board.lists[index]
-    //         if (newList.id == listId) {
-    //             console.log("loop listName: ", newList.listName)
-    //         }
-    //     }
-    //    }
-
-    if (e.removed != null) {
+       let item = e.added || e.removed || e.moved; 
+       if (e.removed != null) { // Removed: removed from one list to another
         for (var listIndex in this.board.lists) {
           var list = this.board.lists[listIndex]
           let list_id = list._id
@@ -153,6 +141,7 @@ export default {
             var cardIds = []
              for (var cardPosition in list.cards) {
                 let card = list.cards[cardPosition]
+                card.position = cardPosition
                 cardIds.push(card.id)
                 cards.push({id: card.id, position: cardPosition})
              }
@@ -164,22 +153,40 @@ export default {
         }
         // this.getBoardBy(this.boardId)
       }
+
+      if (e.moved != null) { // moved: moved within the same list
+        let listId = e.moved.element.listId
+        console.log("moved: ", e.moved.element, "listId: ", listId)
+        let listIndex = this.board.lists.findIndex(x => x.id === listId);
+        let list = this.board.lists[listIndex]
+        let list_id = list._id
+        var cards = []
+        var cardIds = []
+        for (var cardPosition in list.cards) {
+            let card = list.cards[cardPosition]
+            card.position = cardPosition
+            cardIds.push(card.id)
+            cards.push({id: card.id, position: cardPosition})
+        }
+        this.updateBoardInfo(cards, cardIds, list_id, listId)
+      }
+      
+
     },
         handleOverlayDismissed() {
             this.isCardTapped = false 
+            this.getBoardBy(this.boardId)
         },
         handleCardTapped(card, list) {
-            console.log("selectedCard: ", this.selectedCard, this.selectedList)
+            this.isCardTapped = true 
+            this.eventBus.emit('cardOpened', card)
             this.selectedCard = card
             this.selectedList = list
-            this.isCardTapped = true 
+            // emitter.emit('cardOpened', card);
+            // EventBus.$emit('cardOpened', card);
+
         },
       async createANewList(list, index) {
-        // this.board.lists = this.board.lists.filter(listItem => listItem.id != 'listPlaceholder');
-        // this.board.lists[index] = { id: "newList", listName: this.newListName, headerType: "showListName", isAddCard: true, isCreateList: false, cards: [] }
-        // this.board.lists.push(
-        //    { id: "listPlaceholder", listName: "New List", headerType: "addList", isAddCard: false, isCreateList: false, cards: []}
-        // )
         // Create List
         var params = {
           listName: this.newListName,
@@ -220,31 +227,16 @@ export default {
             element.style.height = (element.scrollHeight) + "px";
         },
        async handleCreateCard(list, index) {
-            // if (list.id == "listPlaceholder") {
-            //     list.cards = [
-            //       {id: "cardOne", cardName: this.newCardName, subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "google.com", progress: 0, isAddCard: false, isCreateList: false, attachments: [File]}, 
-            //     ]
-            //    this.board.lists.push(
-            //     { id: "listPlaceholder", listName: "Add New List", isAddCard: false, isCreateList: false, cards: []}
-            //    )
-            // } else {
-            //     list.cards.push(
-            //     {id: "cardOne", cardName: this.newCardName, subTitle: "Meet up to discuss early stage of the design", description: String, imgURL: "",isAddCard: false, isCreateList: false, progress: 0, attachments: [File]}, 
-            // )
-            // }
-           
-            // list.isCreateCard = false 
-            // this.board[index] = list
-        var params = {
-          cardName: this.newCardName,
-          boardId: this.boardId,
-          listId: list.id,
-          id: Date.now(), 
-          owner: "1721545684258"
-        }
-        var fullURL = BASE_URL + "board/newCard"
-        console.log("full url: ", fullURL, "params: ", params)
-        await axios.post(fullURL, params).then((response) => {
+          var params = {
+             cardName: this.newCardName,
+             boardId: this.boardId,
+             listId: list.id,
+             id: Date.now(), 
+             owner: "1721545684258"
+         }
+         var fullURL = BASE_URL + "board/newCard"
+         console.log("full url: ", fullURL, "params: ", params)
+         await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
             let data = response.data
             console.log("card resp data: ", data)
@@ -265,18 +257,16 @@ export default {
             boardId: boardId
         }
         var fullURL = BASE_URL + "board/byId"
-        console.log("full url: ", fullURL, "params: ", params)
         await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
             let data = response.data
-            console.log("resp data: ", data)
             if (data.statusCode == 200) {
                 let apiBoard = data.resp
-                console.log("board info: ", apiBoard, "list length: ", "lists: ", apiBoard.lists)
                 apiBoard.lists.push({ id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []})
-                apiBoard.lists.sort((a,b)=>new Date(a.createdAt) - new Date(b.createdAt))
+                apiBoard.lists.sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt))
                 for (var listIndex in apiBoard.lists) {
-                    let cards = apiBoard.lists[listIndex].cards
+                    let cards = this.sortedCards(apiBoard.lists[listIndex].cards)
+                    apiBoard.lists[listIndex].cards = cards
                     this.allCards.push(cards)
                 }
                 this.board = apiBoard
@@ -297,15 +287,6 @@ export default {
         this.boardId = boardId
         console.log("params id: ", boardId)
         this.getBoardBy(boardId)
-
-    //     this.board = { id: "board1", lists: [
-    //         { id: "listTwo", listName: "TASK", headerType: "showListName", cards: [
-    //             {id: "cardOne", cardName: "[FGE TEAM] Upcoming Tasks and Bugs (Week 28, July 8 - July 12, 2024)", description: "", imgURL: "google.com", isAddCard: false, isCreateList: false, progress: 0, attachments: [File]}, 
-    //         ]
-    //        },  
-    //        { id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []}
-    //      ] 
-    //    }
     }
 }
 </script>

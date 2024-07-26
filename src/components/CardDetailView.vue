@@ -2,8 +2,7 @@
     <div class="card" @click.self="handleOverlayClosed">
         <div class="cardInfoContainer">
              <div class="contentContainer">
-                <label class="listNameContainer" id="listNameLabel">{{ list.listName }}</label>
-                <textarea type="text"  @input="autoGrow()" class="cardNameField" id="cardNameId" v-model="card.cardName"></textarea>
+                <textarea type="text" v-on:blur="handleContentInfoTapped()"  @input="autoGrow()" class="cardNameField" id="cardNameId" v-model="card.cardName"></textarea>
                 <div class="profileTagInfoContainer">
                 <img src="@/assets/cardPhoto.png" class="ownerProfile">
                 <div class="profileInfoContainer">
@@ -28,7 +27,7 @@
                     <label class="ownerRoleLabel">Due Date</label>
                 </div> -->
                 </div>
-                <DescriptionViewFrom class="descriptionContainer"/>
+                <!-- <DescriptionViewFrom class="descriptionContainer"/> -->
              </div>
 
              <div class="controlsContainer">
@@ -65,30 +64,68 @@
 import { ref } from 'vue'
 import ButtonCard from '@/components/ButtonCard.vue'
 import DescriptionViewFrom from '@/components/DescriptionViewForm.vue'
+import axios from 'axios';
+import { BASE_URL } from '@/config'
 
 export default {
-    props: ["board", "card", "list"],
+    inject: ["eventBus"],
     components: {
         ButtonCard, DescriptionViewFrom
     },
+    props: { card: Object, list: Object },
     setup() {
         var members = ref([1, 2, 3, 4, 5, 6, 7, 8])
         var isTracked = ref(true)
-        return { members, isTracked }
+        var cardo = ref(null)
+        var cardDesc = ref("Test description")
+        return { members, isTracked, cardo, cardDesc }
     }, 
-    mounted() {
-        this.autoGrow()
-    },
     methods: {
+        expandAll() {
+            console.log("finally updated...")
+        },
+        async handleContentInfoTapped() {
+          console.log("selectedCard: ", this.cardo, "id: ", this.cardo)
+        //   var params = {
+        //     card_id: this.selectedCard._id, 
+        //     cardName: this.selectedCard.cardName, 
+        //     cardDesc: this.cardDesc
+        //  }
+        //  var fullURL = BASE_URL + "board/updateCard"
+        //  await axios.post(fullURL, params).then((response) => {
+        //   if (response.data != null) {
+        //     let data = response.data
+        //     console.log("card detail resp data: ", data)
+        //     if (data.statusCode == 200) {
+        //         console.log("list and card info updated: ", data.resp)
+        //       }
+        //      }
+        //   })
+        },
         autoGrow() {
             let element = document.getElementById("cardNameId")
             element.style.height = "15px";
             element.style.height = (element.scrollHeight) + "px";
         },
         handleOverlayClosed() {
-            console.log("close overlay tapped")
-            this.$emit('overlayDismissed')
+           console.log("close overlay tapped")
+           this.$emit('overlayDismissed')
         }
+    }, 
+    watch: { 
+        // card(newVal, oldVal) { 
+        //    console.log('Card detail prop changed: ', newVal, ' | was: ', oldVal)
+        //    this.selectedCard = newVal
+        // }
+    },
+    mounted() {
+        console.log("mounting cardDetail...")
+        this.autoGrow()
+        this.eventBus.on('cardOpened', (evt) => {
+            console.log("cardOpened: ", evt, "cardId: ", evt.id)
+            this.cardo = evt
+            console.log("cardo: ", evt.id)
+       })
     }
 }
 </script>

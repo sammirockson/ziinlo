@@ -57,7 +57,13 @@
       </v-sheet> -->
 </template>
 <script>
+import { ref } from 'vue'
 export default {
+    setup() {
+        var formatting = ref(null)
+        var alignment = ref(null)
+        return { formatting, alignment }
+    },
     methods: {
         autoGrow() {
             let element = document.getElementById("cardNameId")
