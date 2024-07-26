@@ -67,7 +67,7 @@
 import NavBar from '@/components/NavBarView.vue'
 import CardDetailView from '@/components/CardDetailView.vue'
 import DraggableView from 'vuedraggable'
-import CardView from '@/components/CardView.vue'
+import CardView from '@/views/CardView.vue'
 import { ref } from 'vue'
 import { BASE_URL } from '@/config'
 import axios from 'axios';
@@ -178,12 +178,22 @@ export default {
             this.getBoardBy(this.boardId)
         },
         handleCardTapped(card, list) {
-            this.isCardTapped = true 
-            this.eventBus.emit('cardOpened', card)
-            this.selectedCard = card
-            this.selectedList = list
+            // this.isCardTapped = true 
+            // this.eventBus.emit('cardOpened', card)
+            // this.selectedCard = card
+            // this.selectedList = list
             // emitter.emit('cardOpened', card);
             // EventBus.$emit('cardOpened', card);
+            // 'b/:id/c/:id'
+            let path = this.boardId + "/c/" + card._id // this.currentUser._id + "/product/" + product._id
+            this.$router.push(
+                {
+                    path: path, 
+                    params: {
+                        board: JSON.stringify(this.board), 
+                        cardId: card._id
+                    }
+                })
 
         },
       async createANewList(list, index) {
@@ -285,7 +295,7 @@ export default {
         let routeParams = this.$route.params
         let boardId = routeParams.id
         this.boardId = boardId
-        console.log("params id: ", boardId)
+        console.log("params id: ", boardId, "routeParams: ", routeParams) // JSON.parse(this.$route.params.board)
         this.getBoardBy(boardId)
     }
 }

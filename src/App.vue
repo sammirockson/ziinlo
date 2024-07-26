@@ -64,7 +64,7 @@ html, body {
 }
 
 #app {
-  background-color: green;
+  background-color: transparent;
 }
 
 nav a {

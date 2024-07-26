@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AllTaskboardsView from '@/views/AllTaskboardsView.vue'
 import BoardView from '@/views/BoardView.vue'
+import CardDetailView from '@/views/Card.vue'
 
 const routes = [
   {
@@ -18,6 +19,12 @@ const routes = [
     path: '/board/:id',
     name: 'board',
     component: BoardView // Selected board
+  },
+  {
+    path: '/:id/c/:id',
+    name: 'cardDetail',
+    component: CardDetailView,
+    props: true
   }
 ]
 
