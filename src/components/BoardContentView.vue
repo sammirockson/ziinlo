@@ -65,7 +65,7 @@
 </template>
 <script>
 import NavBar from '@/components/NavBarView.vue'
-import CardDetailView from '@/components/CardDetailView.vue'
+import CardDetailView from '@/components/PopOverCardView.vue'
 import DraggableView from 'vuedraggable'
 import CardView from '@/views/CardView.vue'
 import { ref } from 'vue'
@@ -175,7 +175,10 @@ export default {
     },
         handleOverlayDismissed() {
             this.isCardTapped = false 
-            this.getBoardBy(this.boardId)
+            // let path = "/board/" + this.boardId
+            // this.$router.push({path: path})
+            this.$router.go(-1)
+            // this.getBoardBy(this.boardId)
         },
         handleCardTapped(card, list) {
             // this.isCardTapped = true 
@@ -185,13 +188,12 @@ export default {
             // emitter.emit('cardOpened', card);
             // EventBus.$emit('cardOpened', card);
             // 'b/:id/c/:id'
-            let path = this.boardId + "/c/" + card._id // this.currentUser._id + "/product/" + product._id
+            let path = "/b/" + this.boardId
             this.$router.push(
                 {
                     path: path, 
-                    params: {
-                        board: JSON.stringify(this.board), 
-                        cardId: card._id
+                    query: {
+                        card: card._id
                     }
                 })
 
@@ -283,20 +285,60 @@ export default {
               }
              }
           })
+        }, 
+     async getCardBy(card_id) {
+        var params = {
+            card_id: card_id
+        }
+        var fullURL = BASE_URL + "board/getCardDetail"
+        await axios.post(fullURL, params).then((response) => {
+          if (response.data != null) {
+            let data = response.data
+            console.log("card data: ", data)
+            if (data.statusCode == 200) {
+                let resp = data.resp
+                if (resp != null) {
+                   this.selectedCard = resp.card
+                   this.selectedList = resp.list
+                   this.isCardTapped = true 
+                }
+                
+              }
+             }
+          })
         }
     },
     watch: { 
         isExpanded: function(newVal, oldVal) {
             console.log('Prop changed isSideBarExpanwded: ', newVal)
             this.isSideBarExpanded = newVal
+        }, 
+        '$route' () {
+          console.log("routed called")
         }
     },  
     mounted() {
+        let query = this.$route.query
         let routeParams = this.$route.params
-        let boardId = routeParams.id
-        this.boardId = boardId
-        console.log("params id: ", boardId, "routeParams: ", routeParams) // JSON.parse(this.$route.params.board)
-        this.getBoardBy(boardId)
+        console.log("routeParams: ", routeParams)
+        console.log("query: ", query)
+        this.boardId = routeParams.id
+        this.getBoardBy(this.boardId)
+        if (query.card != null) {
+            // Fetch card info
+            this.getCardBy(query.card)
+        }
+    }, 
+    created() {
+        console.log("updated")
+    },
+    updated() {
+        let query = this.$route.query
+        console.log("updated", this.$route.query)
+        if (query.card != null) {
+            // Fetch card info
+            this.getCardBy(query.card)
+        }
     }
 }
 </script>

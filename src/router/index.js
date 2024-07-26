@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AllTaskboardsView from '@/views/AllTaskboardsView.vue'
 import BoardView from '@/views/BoardView.vue'
-import CardDetailView from '@/views/Card.vue'
+import CardDetailView from '@/views/CardDetailView.vue'
 
 const routes = [
   {
@@ -18,13 +18,14 @@ const routes = [
   {
     path: '/board/:id',
     name: 'board',
-    component: BoardView // Selected board
+    component: BoardView, 
+    props: true
   },
   {
-    path: '/:id/c/:id',
+    path: '/b/:id',
     name: 'cardDetail',
     component: CardDetailView,
-    props: true
+    props: { board: true }
   }
 ]
 

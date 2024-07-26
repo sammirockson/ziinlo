@@ -30,7 +30,7 @@ export default {
     methods: {
       handleBoardTapped(board) {
         console.log("board: ", board)
-        let path = "/board/" + board.id // this.currentUser._id + "/product/" + product._id
+        let path = "/board/" + board.id
         this.$router.push({path: path})
       },
       handleBoardTypeTapped(item) {
