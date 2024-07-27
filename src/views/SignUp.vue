@@ -9,9 +9,9 @@
              @click:append-inner="viewPassword" class="passwordField"  v-model="password" label="Password" variant="outlined"></v-text-field>  
              <v-file-input label="Profile photo" class="emailField"></v-file-input>
               <button v-if="isLogActivated" class="login buttonload">
-                  <i class="fa fa-circle-o-notch fa-spin"></i> Logging in... 
+                  <i class="fa fa-circle-o-notch fa-spin"></i> Signing up... 
               </button>
-              <button v-else @click="handleLogin"  v-on:keyup.enter="handleLogin">Sign Up</button>
+              <button v-else @click="handleSignUp"  v-on:keyup.enter="handleSignUp">Sign Up</button>
               <label class="forgotTitleLabel">Have an account? <span>Log In</span></label>
               <!-- <div class="lineContainer">
                 <div class="leftLineView"></div>
@@ -47,14 +47,17 @@ export default {
       viewPassword() {
         this.showPassword = !this.showPassword
       },
-      async handleLogin() {
+      async handleSignUp() {
            this.isLogActivated = true 
            var params = {
-               phoneNumber : this.phoneNumber, 
-               password: this.password
+               email : this.email, 
+               fullName : this.fullName, 
+               password: this.password, 
+               isEmailVerified: false,
+               isViaGoogle: false,
+               id: Date.now()
             }
-  
-            var path = "auth/login"
+            var path = "auth/signUp"
             var fullURL = BASE_URL + path
             console.log("full url: ", fullURL, "params: ", params)
             await axios.post(fullURL, params).then((response) => {
@@ -62,96 +65,8 @@ export default {
               if (response.data != null) {
                 let data = response.data
                 if (data.statusCode == 200) {
-                  let businessInfo = data.resp 
-                  businessInfo.merchantPassword = "🐱‍💻"
-                  businessInfo.merchantPhone = "🐱‍💻"
-                  localStorage.setItem(PICKMORE_MERCHANT_KEY, JSON.stringify(businessInfo))
-                  localStorage.setItem(SIDE_BAR_MENU_ITEM_KEY, "pos")
-                  this.$router.push({path: "/"})
-                } else {
-                    alert(data.msg)
-                }
-               }
-            })
-      },
-      handleSignUpTapped() {
-        this.$emit('navToRegister', true)
-      }, 
-     async loginWithGoogle() {
-      googleSdkLoaded(google => {
-        google.accounts.oauth2
-          .initCodeClient({
-            client_id: config.GOOGLE_AUTH_CLIENT_ID,
-            scope: "email profile openid",
-            redirect_uri: "http://localhost:4000/auth/callback",
-            callback: response => {
-              if (response.code) {
-                this.sendCodeToBackend(response.code);
-              }
-            }
-          })
-          .requestCode();
-      });
-    },
-    async sendCodeToBackend(code) {
-      try {
-        const response = await axios.post(
-          "https://oauth2.googleapis.com/token",
-          {
-            code,
-            client_id: config.GOOGLE_AUTH_CLIENT_ID,
-            client_secret: config.GOOGLE_AUTH_CLEINT_SECRET,
-            redirect_uri: "postmessage",
-            grant_type: "authorization_code"
-          }
-        );
-
-        const accessToken = response.data.access_token;
-        console.log(accessToken);
-
-        // Fetch user details using the access token
-        const userResponse = await axios.get(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`
-            }
-          }
-        );
-
-        if (userResponse && userResponse.data) {
-          // Set the userDetails data property to the userResponse object
-          this.googleUser = userResponse.data;
-          console.log("user data: ", userResponse.data)
-          this.handleAuthGoogleUser()
-        } else {
-          // Handle the case where userResponse or userResponse.data is undefined
-          console.error("Failed to fetch user details.");
-        }
-      } catch (error) {
-        console.error("Token exchange failed:", error.response.data);
-      }
-    }, 
-   async handleAuthGoogleUser() {
-      if (this.googleUser == null) { return }
-      let gUser = this.googleUser
-      let params = {
-        email: gUser.email, 
-        fullName: gUser.name, 
-        password: gUser.sub, 
-        picture: gUser.picture, 
-        isEmailVerified: gUser.email_verified,
-        isViaGoogle: true
-      }
-
-      let fullURL = BASE_URL + "auth/googleAuth"
-      console.log("full url: ", fullURL, "params: ", params)
-      await axios.post(fullURL, params).then((response) => {
-        if (response.data != null) {
-          let data = response.data
-          if (data.statusCode == 200) {
-            let gUserInfo = data.resp 
-            console.log("gUserInfo signed up info: ", gUserInfo)
+                  let gUserInfo = data.resp 
+            console.log("signed up info: ", gUserInfo)
             gUserInfo.password = ""
             let token = gUserInfo.token
             let userDataStr = JSON.stringify(gUserInfo)
@@ -163,13 +78,17 @@ export default {
             console.log("encrypted data: ", cacheData)
             localStorage.removeItem(USER_CACHE_KEY)
             localStorage.setItem(USER_CACHE_KEY, JSON.stringify(cacheData))
-                this.$router.push({path: "/"})
-              } else {
-                  alert(data.msg)
-              }
-            }
-        })
-    }
+            this.$router.push({path: "/"})
+                
+                } else {
+                    alert(data.msg)
+                }
+               }
+            })
+      },
+      handleSignUpTapped() {
+        this.$emit('navToRegister', true)
+      }
    }
 }
 </script>

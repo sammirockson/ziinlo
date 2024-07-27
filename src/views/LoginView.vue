@@ -144,7 +144,8 @@ export default {
         password: gUser.sub, 
         picture: gUser.picture, 
         isEmailVerified: gUser.email_verified,
-        isViaGoogle: true
+        isViaGoogle: true, 
+        id: Date.now()
       }
 
       let fullURL = BASE_URL + "auth/googleAuth"
@@ -166,11 +167,11 @@ export default {
             console.log("encrypted data: ", cacheData)
             localStorage.removeItem(USER_CACHE_KEY)
             localStorage.setItem(USER_CACHE_KEY, JSON.stringify(cacheData))
-                this.$router.push({path: "/"})
-              } else {
-                  alert(data.msg)
-              }
+            this.$router.push({path: "/"})
+            } else {
+              alert(data.msg)
             }
+          }
         })
     }
    }
