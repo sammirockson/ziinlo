@@ -27,7 +27,7 @@
                     <label class="ownerRoleLabel">Due Date</label>
                 </div> -->
                 </div>
-                <!-- <DescriptionViewFrom class="descriptionContainer"/> -->
+                <DescriptionViewFrom class="descriptionContainer"/>
              </div>
 
              <div class="controlsContainer">
@@ -65,10 +65,11 @@ import { ref } from 'vue'
 import ButtonCard from '@/components/ButtonCard.vue'
 import DescriptionViewFrom from '@/components/DescriptionViewForm.vue'
 import axios from 'axios';
-import { BASE_URL } from '@/config'
+import { BASE_URL, USER_CACHE_KEY } from '@/config'
+import CryptoJS from 'crypto-js'
 
 export default {
-    inject: ["eventBus"],
+    inject: ["cryptojs"],
     components: {
         ButtonCard, DescriptionViewFrom
     },
@@ -79,7 +80,8 @@ export default {
         var cardo = ref(null)
         var cardDesc = ref("Test description")
         var selectedCard = ref(null)
-        return { members, isTracked, cardo, cardDesc, selectedCard }
+        var currentUser = ref(null)
+        return { members, isTracked, cardo, cardDesc, selectedCard, currentUser }
     }, 
     methods: {
         expandAll() {
@@ -106,27 +108,32 @@ export default {
                 element.style.height = "15px";
                 element.style.height = (element.scrollHeight) + "px";
             }
-           
         },
         handleOverlayClosed() {
            console.log("close overlay tapped")
            this.$emit('overlayDismissed')
+        }, 
+        getUserInfo() {
+            let userCacheString = localStorage.getItem(USER_CACHE_KEY)
+            let userCache = JSON.parse(userCacheString)
+            let decryptionToken = userCache.token
+            let encryptedUserData = userCache.user
+            let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
+            let cacheInfoObject = JSON.parse(decryptedData)
+            this.currentUser = cacheInfoObject.user
+            console.log("currentUser: ", this.currentUser)
         }
     }, 
     watch: { 
         card(newVal, oldVal) { 
            console.log('Card popover prop changed: ', newVal, ' | was: ', oldVal)
            this.selectedCard = newVal
+           this.getUserInfo()
         }
     },
     mounted() {
         console.log("mounting cardDetail...")
         this.autoGrow()
-        this.eventBus.on('cardOpened', (evt) => {
-            console.log("cardOpened: ", evt, "cardId: ", evt.id)
-            this.cardo = evt
-            console.log("cardo: ", evt.id)
-       })
     }, 
     updated() {
         this.autoGrow()

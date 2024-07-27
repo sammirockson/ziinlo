@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import mitt from 'mitt'
+import VueCryptojs from 'vue-cryptojs'
 
 // Vuetify
 import 'vuetify/styles'
@@ -19,4 +20,4 @@ const vuetify = createVuetify({
 // we need to provide it to the app to be used globally
 const eventBus = mitt();
 // Home page should show summary of urgent tasks, chats and calendar
-createApp(App).use(router).use(vuetify).provide('eventBus', eventBus).mount('#app')
+createApp(App).use(router).use(vuetify).use(VueCryptojs).provide('eventBus', eventBus).mount('#app')

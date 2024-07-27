@@ -9,10 +9,14 @@
   "dependencies": {
     "axios": "^1.7.2",
     "core-js": "^3.8.3",
+    "crypto": "^1.0.1",
     "mitt": "^3.0.1",
     "tiny-emitter": "^2.1.0",
     "vue": "^3.2.13",
+    "vue-cryptojs": "^2.4.7",
+    "vue-google-oauth2": "^1.5.10",
     "vue-router": "^4.0.3",
+    "vue3-google-login": "^2.0.27",
     "vuedraggable": "^4.1.0",
     "vuetify": "^3.6.13"
   },

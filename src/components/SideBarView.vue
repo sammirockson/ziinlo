@@ -52,7 +52,7 @@
 </template>
 <script>
 import { ref } from 'vue'
-import { SIDE_BAR_MENU_ITEM_KEY, PICKMORE_MERCHANT_KEY } from '@/config'
+import { SIDE_BAR_MENU_ITEM_KEY, PICKMORE_MERCHANT_KEY, USER_CACHE_KEY } from '@/config'
 
 export default {
     props: ["cachedMenuKey", "isExpanded"],
@@ -66,9 +66,11 @@ export default {
     methods: {
         handleLogOut() {
             this.isLogginOut = false 
-            localStorage.removeItem(PICKMORE_MERCHANT_KEY)
-            // call log out API
-            this.$router.push({path: "/auth"})
+            // this.$router.push({path: "/auth"})
+              // log out user and go to login page
+            localStorage.removeItem(USER_CACHE_KEY)
+            this.$router.push({path: "/login"})
+             // call log out API
         },
         handleCancelLogOut() {
             this.isLogginOut = false 

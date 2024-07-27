@@ -6,7 +6,7 @@
         </div>
         <div class="mainBoardConentView">
             <div class="boardListsContainer">
-                 <div class="listContainer" v-for="(list, index) in this.board.lists" :key="list.id">
+                 <div v-if="this.board != null" class="listContainer" v-for="(list, index) in this.board.lists" :key="list.id">
                     <div class="createNewList" :style="{display: list.headerType ==  `creatingList` ? 'flex' : 'none'}">
                             <textarea name="text" v-model="newListName" @input="dynamicTextArea(index)" placeholder="Create New List" class="createNewListField" id="createNewListField_id"></textarea>
                             <button v-if="isSavingCard" class="addListBtn buttonload">
@@ -20,12 +20,13 @@
                             <button class="addCardLabel">New List</button>
                         </div>
                      </div>
-                     <div class="listHeaderView" :style="{display: list.headerType ==  `showListName` ? 'flex' : 'none'}">
+                     <div class="listHeaderView" :id="`headerMotherContainer_` + list.id" :style="{display: list.headerType ==  `showListName` ? 'flex' : 'none'}">
                          <div class="badgeAndTitleContainer">
                             <div class="colorBadge"></div>
-                            <label class="listNameLabel">{{ list.listName }}</label>
+                            <textarea type="text" v-on:blur="didEditListName(list.listName, list._id, list.id)"  @input="listNameTextAreaGrow(list.id)" class="cardNameField" :id="list.id" v-model="list.listName"></textarea>
+                            <!-- <label class="listNameLabel">{{ list.listName }}</label> -->
                          </div>
-                         <label class="listNameLabel">•••</label>
+                         <img src="@/assets/three_dots.png" class="listNameLabel"></img>
                      </div>
                      <div class="cardAndFooterContainer">
                         <DraggableView v-model="list.cards" 
@@ -81,7 +82,6 @@ export default {
     setup() {
         var isSideBarExpanded = ref(true)
         var board = ref([])
-        // var isCreateCard = ref(false)
         var isCardTapped = ref(false)
         var newCardName = ref("")
         var newListName = ref("")
@@ -93,6 +93,40 @@ export default {
         return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, selectedCard, selectedList, allCards, isSavingCard}
     },
     methods: {
+        listNameTextAreaGrow(listId) {
+            let element = document.getElementById(listId) // cardNameId
+            if (element != null) {
+                element.style.height = "24px";
+                element.style.height = (element.scrollHeight) + "px";
+            }
+
+            let contId = "headerMotherContainer_" + listId
+            let badgeAndTitleContainer = document.getElementById(contId) 
+            console.log("lstid: ", contId, "element: ", badgeAndTitleContainer == null)
+            if (badgeAndTitleContainer != null ) {
+                badgeAndTitleContainer.style.height = (element.scrollHeight + 30) + "px";
+            }
+        },
+     async didEditListName(listName, list_id, listId) {
+        console.log("didEditListName: ", listName)
+        var params = {
+            list_id: list_id, 
+            listName: listName, 
+         }
+         var fullURL = BASE_URL + "board/updateListName"
+         await axios.post(fullURL, params).then((response) => {
+          if (response.data != null) {
+             let data = response.data
+             console.log("list update resp data: ", data)
+             let contId = "headerMotherContainer_" + listId
+            let badgeAndTitleContainer = document.getElementById(contId) 
+            console.log("lstid: ", contId, "element: ", badgeAndTitleContainer == null)
+            if (badgeAndTitleContainer != null ) {
+                badgeAndTitleContainer.style.height = "50px";
+            }
+            }
+          })
+        },
         sortedCards(cards) {
             return cards.sort((a,b)=> a.position - b.position)
         },
@@ -272,16 +306,19 @@ export default {
         await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
             let data = response.data
-            if (data.statusCode == 200) {
+            if (data != null && data.statusCode == 200) {
                 let apiBoard = data.resp
-                apiBoard.lists.push({ id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []})
-                apiBoard.lists.sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt))
-                for (var listIndex in apiBoard.lists) {
-                    let cards = this.sortedCards(apiBoard.lists[listIndex].cards)
-                    apiBoard.lists[listIndex].cards = cards
-                    this.allCards.push(cards)
+                console.log("apiBoard: ", apiBoard)
+                if (apiBoard != null) {
+                    apiBoard.lists.push({ id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []})
+                    apiBoard.lists.sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt))
+                   for (var listIndex in apiBoard.lists) {
+                      let cards = this.sortedCards(apiBoard.lists[listIndex].cards)
+                      apiBoard.lists[listIndex].cards = cards
+                      this.allCards.push(cards)
+                    }
+                   this.board = apiBoard
                 }
-                this.board = apiBoard
               }
              }
           })
@@ -335,7 +372,6 @@ export default {
     },
     updated() {
         let query = this.$route.query
-        console.log("updated", this.$route.query)
         if (query.card != null) {
             // Fetch card info
             this.getCardBy(query.card)
@@ -516,6 +552,19 @@ export default {
     margin-left: 10px;
 }
 
+.cardNameField {
+    display: flex;
+    width: 165px;
+    min-height: 30px;
+    margin-top: 13px;
+    font-size: 15px;
+    font-weight: 600;
+    resize: none;
+    color: var(--color-dark);
+    margin-bottom: 8px;
+    margin-left: 8px;
+}
+
 .listNameLabel {
     height: 24px;
     font-weight: 600;
@@ -524,8 +573,8 @@ export default {
     margin-bottom: auto;
 }
 .colorBadge {
-    width: 28px;
-    height: 28px;
+    width: 4px;
+    height: 20px;
     background-color: orange;
     border-radius: var(--border-radius-1);
     margin-top: auto;

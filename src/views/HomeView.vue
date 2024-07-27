@@ -17,9 +17,11 @@ import BoardView from '@/views/BoardView.vue'
 import HomeContentView from '@/views/HomeContentView.vue'
 import ChatView from '@/views/ChatView.vue'
 import CalendarView from '@/views/CalendarView.vue'
-import { PICKMORE_MERCHANT_KEY, SIDE_BAR_MENU_ITEM_KEY } from '@/config'
+import { PICKMORE_MERCHANT_KEY, SIDE_BAR_MENU_ITEM_KEY, USER_CACHE_KEY } from '@/config'
+import CryptoJS from 'crypto-js'
 
 export default {
+  inject: ["cryptojs"],
   name: 'home',
   components: {
     SideBarView, BoardView, HomeContentView, ChatView, CalendarView
@@ -62,7 +64,19 @@ export default {
       console.log("arrived at home: ", cachedKey)
       this.containerType = cachedKey
     }
-    this.$router.push({path: "/boards"})
+    var userCacheString = localStorage.getItem(USER_CACHE_KEY)
+    console.log("home user cache: ", userCacheString)
+    if (userCacheString == null) {
+      this.$router.push({path: "/login"})
+    } else {
+      // decrypt user info
+      // let userCache = JSON.parse(userCacheString)
+      // let decryptionToken = userCache.token
+      // let encryptedUserData = userCache.user
+      // let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
+      // console.log("decrypted user info: ", decryptedData)
+      this.$router.push({path: "/boards"})
+    }
   }
 }
 </script>
