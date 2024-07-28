@@ -15,17 +15,18 @@
                     <label class="ownerRoleLabel">Assignee</label>
                 </div>
                 </div>
-
+                <div class="tagItemsView"> 
+                    <v-chip-group selected-class="text-primary" column>
+                   <v-chip v-for="tag in cardTags" :key="tag" style="border-radius: 8px; disable">
+                    <!-- Chip{{ tag }} -->
+                     <label class="tagLabel" :style="{'background-color': tag.colorHex}">{{ tag.name }}</label>
+                  </v-chip>
+               </v-chip-group>
+                </div>
                 <div class="profileTagInfoContainer">
                     <label class="listTagContainer">{{ list.listName }}</label>
                     <ButtonCard imageIcon="calendar.png" title="July 25 12:45PM" class="dueDateField"/>
-                    <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true">
-                    </ButtonCard>
-                    <!-- <img src="@/assets/calendar.png" class="ownerProfile"> -->
-                    <!-- <div class="profileInfoContainer">
-                    <label class="onwerNameLabel">July 25 12:45PM</label>
-                    <label class="ownerRoleLabel">Due Date</label>
-                </div> -->
+                    <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/>
                 </div>
                 <DescriptionViewFrom class="descriptionContainer"/>
              </div>
@@ -46,7 +47,7 @@
              <ButtonCard imageIcon="invoice_icon.png" title="Track"/>
 
              <label class="memberLabel">Manage</label>
-             <ButtonCard imageIcon="invoice_icon.png" title="Tags"/>
+             <ButtonCard imageIcon="invoice_icon.png" title="Tags" @click="handleTagTapped"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Due Date"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Poll"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Checklist"/>
@@ -58,12 +59,16 @@
              <ButtonCard imageIcon="invoice_icon.png" title="Delete"/>
              </div>
         </div>
+        <v-overlay v-model="isTagTapped" class="align-center justify-end overLayContainer" style="padding-right: calc((100vw / 4));" activator="tagBtn" contained>
+            <TagContainerView @handleSaveTag="handleSaveTag" @handleTagChanged="handleTagChanged" :boardTags="this.boardTags" class="tagContainerView"/>
+        </v-overlay>
     </div>
 </template>
 <script>
 import { ref } from 'vue'
 import ButtonCard from '@/components/ButtonCard.vue'
 import DescriptionViewFrom from '@/components/DescriptionViewForm.vue'
+import TagContainerView from '@/components/TagContainerView.vue';
 import axios from 'axios';
 import { BASE_URL, USER_CACHE_KEY } from '@/config'
 import CryptoJS from 'crypto-js'
@@ -71,7 +76,7 @@ import CryptoJS from 'crypto-js'
 export default {
     inject: ["cryptojs"],
     components: {
-        ButtonCard, DescriptionViewFrom
+        ButtonCard, DescriptionViewFrom, TagContainerView
     },
     props: { card: Object, list: Object },
     setup() {
@@ -80,10 +85,67 @@ export default {
         var cardo = ref(null)
         var cardDesc = ref("Test description")
         var selectedCard = ref(null)
+        var selectedList = ref(null)
         var currentUser = ref(null)
-        return { members, isTracked, cardo, cardDesc, selectedCard, currentUser }
+        var isTagTapped = ref(false)
+        var boardTags = ref([])
+        var cardTags = ref([])
+        return { 
+             members, isTracked, cardo, cardDesc, selectedCard, selectedList,
+             currentUser, isTagTapped, boardTags, cardTags
+            }
     }, 
     methods: {
+        handleTagChanged(tag) {
+            if (tag.isChecked) {
+                this.cardTags.push(tag)
+            } else {
+                // remove
+                this.cardTags = this.cardTags.filter(item => item.id != tag.id);
+            }
+            // find index, update the isChecked value
+            // this.boardTags = 
+        },
+        async fetchTags() {
+        var params = {
+            boardId: this.selectedList.boardId
+         }
+         var fullURL = BASE_URL + "board/getTags"
+         await axios.post(fullURL, params).then((response) => {
+          if (response.data != null) {
+             let data = response.data
+             console.log("fetch tag resps: ", data)
+             if (data.resp != null) {
+                var tags = []
+                for (var index in data.resp) {
+                    let item = data.resp[index]
+                    tags.push({isChecked: false, name: item.name, colorHex: item.colorHex, id: item.id})
+                }
+                this.boardTags = tags
+             }
+            }
+          })
+        },
+       async handleSaveTag(tag) {
+        console.log("prepare to save tag")
+        var params = {
+            boardId: this.selectedList.boardId, 
+            name: tag.name, 
+            colorHex: tag.color, 
+            id: Date.now()
+         }
+         var fullURL = BASE_URL + "board/createTag"
+         await axios.post(fullURL, params).then((response) => {
+          if (response.data != null) {
+             let data = response.data
+             console.log("tag resp data: ", data)
+            }
+          })
+        },
+        handleTagTapped() {
+            console.log("Tags tapped")
+            this.isTagTapped = true 
+        },
         expandAll() {
             console.log("finally updated...")
         },
@@ -126,10 +188,17 @@ export default {
     }, 
     watch: { 
         card(newVal, oldVal) { 
-           console.log('Card popover prop changed: ', newVal, ' | was: ', oldVal)
            this.selectedCard = newVal
            this.getUserInfo()
+        }, 
+        list(newVal, oldVal) { 
+           console.log('list popover prop changed: ', newVal, ' | was: ', oldVal)
+           this.selectedList = newVal
+           this.fetchTags()
         }
+    },
+    destroyed() {
+        this.boardTags = []
     },
     mounted() {
         console.log("mounting cardDetail...")
@@ -141,6 +210,38 @@ export default {
 }
 </script>
 <style scoped>
+.tagCell {
+    background-color: #8B81F7;
+    height: 100%;
+    width: 100%;
+}
+.tagItemsView {
+    width: 480px;
+}
+.tagLabel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    justify-items: center;
+    padding: 0;
+    height: 40px;
+    margin-right: -12px;
+    margin-left: -12px;
+    padding-right: 12px;
+    padding-left: 12px;
+    border-radius: var(--border-radius-1);
+    color: white;
+    font-weight: 600;
+    background-color: #8B81F7;
+}
+.tagContainerView {
+    z-index: 9999999;
+    width: 300px;
+    height: 600px;
+    /* margin-right: calc((100vw / 4)); */
+    background-color: white;
+    border-radius: var(--border-radius-1);
+}
 .descriptionContainer {
     width: 98%;
     margin-left: auto;
@@ -150,13 +251,13 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 34px;
+    height: 38px;
     width: 140px;
     padding-right: 10px;
     padding-left: 10px;
-    color: white;
+    color: var(--color-dark);
     font-weight: 600;
-    background-color: #8B81F7;
+    background-color: var(--color-background);
     border-radius: var(--border-radius-1);
     text-transform: uppercase;
     overflow: hidden;

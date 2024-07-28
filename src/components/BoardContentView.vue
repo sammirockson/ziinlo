@@ -204,8 +204,6 @@ export default {
         }
         this.updateBoardInfo(cards, cardIds, list_id, listId)
       }
-      
-
     },
         handleOverlayDismissed() {
             this.isCardTapped = false 
