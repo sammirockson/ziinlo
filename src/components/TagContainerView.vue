@@ -55,6 +55,7 @@ export default {
         },
         handleGoBack() {
             this.isCreateTag = false
+            // update the tags
         },
         handleAddNewTag() {
             this.isCreateTag = true 
