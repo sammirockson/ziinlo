@@ -18,10 +18,9 @@
                 <div class="tagItemsView"> 
                     <v-chip-group selected-class="text-primary" column>
                    <v-chip v-for="tag in cardTags" :key="tag" style="border-radius: 8px; disable">
-                    <!-- Chip{{ tag }} -->
                      <label class="tagLabel" :style="{'background-color': tag.colorHex}">{{ tag.name }}</label>
-                  </v-chip>
-               </v-chip-group>
+                   </v-chip>
+                  </v-chip-group>
                 </div>
                 <div class="profileTagInfoContainer">
                     <label class="listTagContainer">{{ list.listName }}</label>
@@ -78,7 +77,7 @@ export default {
     components: {
         ButtonCard, DescriptionViewFrom, TagContainerView
     },
-    props: { card: Object, list: Object },
+    props: { card: Object, list: Object, tags: [] },
     setup() {
         var members = ref([1, 2, 3, 4, 5, 6, 7, 8])
         var isTracked = ref(true)
@@ -96,15 +95,28 @@ export default {
             }
     }, 
     methods: {
-        handleTagChanged(tag) {
+       async handleTagChanged(tag) {
             if (tag.isChecked) {
                 this.cardTags.push(tag)
             } else {
-                // remove
                 this.cardTags = this.cardTags.filter(item => item.id != tag.id);
             }
-            // find index, update the isChecked value
-            // this.boardTags = 
+          var tags = []
+          for (var index in this.cardTags) {
+             let cardTag = this.cardTags[index]
+             tags.push(cardTag.id)
+           }
+          var params = {
+            card_id: this.selectedCard._id, 
+            tags: tags
+          }
+          var fullURL = BASE_URL + "board/addTagsToCard"
+          await axios.post(fullURL, params).then((response) => {
+            if (response.data != null) {
+             let data = response.data
+             console.log("tags updated: ", data)
+            }
+          })
         },
         async fetchTags() {
         var params = {
@@ -119,7 +131,7 @@ export default {
                 var tags = []
                 for (var index in data.resp) {
                     let item = data.resp[index]
-                    tags.push({isChecked: false, name: item.name, colorHex: item.colorHex, id: item.id})
+                    tags.push({isChecked: false, name: item.name, colorHex: item.colorHex, id: item.id, _id: item._id})
                 }
                 this.boardTags = tags
              }
@@ -130,6 +142,7 @@ export default {
         console.log("prepare to save tag")
         var params = {
             boardId: this.selectedList.boardId, 
+            cardId: this.selectedCard.id,
             name: tag.name, 
             colorHex: tag.color, 
             id: Date.now()
@@ -192,10 +205,18 @@ export default {
            this.getUserInfo()
         }, 
         list(newVal, oldVal) { 
-           console.log('list popover prop changed: ', newVal, ' | was: ', oldVal)
            this.selectedList = newVal
            this.fetchTags()
-        }
+        }, 
+        tags(newVal, oldVal) { 
+           console.log('tags popover prop changed: ', newVal, ' | was: ', oldVal)
+           var tags = []
+            for (var index in newVal) {
+                let item = newVal[index]
+                tags.push({isChecked: false, name: item.name, colorHex: item.colorHex, id: item.id, _id: item._id})
+            }
+           this.cardTags = tags
+        }, 
     },
     destroyed() {
         this.boardTags = []

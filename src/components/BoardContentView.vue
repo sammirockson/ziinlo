@@ -60,7 +60,7 @@
            </div>
         </div>
         <v-overlay v-model="isCardTapped" class="align-center justify-center overLayContainer" contained>
-            <CardDetailView :card="this.selectedCard" :list="this.selectedList" @overlayDismissed="handleOverlayDismissed"/>
+            <CardDetailView :card="this.selectedCard" :list="this.selectedList" :tags="this.cardTags" @overlayDismissed="handleOverlayDismissed"/>
         </v-overlay>
     </div>
 </template>
@@ -335,6 +335,7 @@ export default {
                 if (resp != null) {
                    this.selectedCard = resp.card
                    this.selectedList = resp.list
+                   this.cardTags = resp.tags
                    this.isCardTapped = true 
                    this.$emit('cardDetailInfo', resp)
                 }

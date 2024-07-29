@@ -1,6 +1,13 @@
 <template>
     <div class="cardContainer">
         <img v-if="card.attachments.count > 0" src="@/assets/cardPhoto.png" class="cardImage">
+        <div class="tagItemsView" v-if="card.tags != null"> 
+            <v-chip-group selected-class="text-primary" column>
+              <v-chip v-for="tag in card.tags" :key="tag" style="border-radius: 8px; disable">
+                <label class="tagLabel" :style="{'background-color': tag.colorHex}">{{ tag.name }}</label>
+             </v-chip>
+            </v-chip-group>
+        </div>
         <div class="dueDateContainer">
             <img src="@/assets/clock.png" class="clockIcon">
             <label class="dueDateLabel">25 Feb 2024</label>
@@ -39,14 +46,35 @@
     </div>
 </template>
 <script>
+import { ref } from 'vue'
 export default {
     props: ["card"], 
     setup() {
-        {}
+        return { }
     }
 }
 </script>
-<style>
+<style scoped>
+.tagLabel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    justify-items: center;
+    padding: 0;
+    height: 40px;
+    margin-right: -12px;
+    margin-left: -12px;
+    padding-right: 12px;
+    padding-left: 12px;
+    border-radius: var(--border-radius-1);
+    color: white;
+    font-weight: 600;
+    background-color: #8B81F7;
+}
+.tagItemsView {
+    padding-left: 10px;
+    width: 90%;
+}
 .avatar img {
   border-radius: 50%;
   position: relative;
