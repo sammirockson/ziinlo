@@ -27,7 +27,8 @@
                     <ButtonCard imageIcon="calendar.png" title="July 25 12:45PM" class="dueDateField"/>
                     <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/>
                 </div>
-                <DescriptionViewFrom class="descriptionContainer"/>
+                <!-- <DescriptionViewFrom class="descriptionContainer"/> -->
+                <TextEditorView class="descriptionContainer"/>
              </div>
 
              <div class="controlsContainer">
@@ -58,7 +59,7 @@
              <ButtonCard imageIcon="invoice_icon.png" title="Delete"/>
              </div>
         </div>
-        <v-overlay v-model="isTagTapped" class="align-center justify-end overLayContainer" style="padding-right: calc((100vw / 4));" activator="tagBtn" contained>
+        <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" activator="tagBtn" contained>
             <TagContainerView @handleSaveTag="handleSaveTag" @handleTagChanged="handleTagChanged" :boardTags="this.boardTags" class="tagContainerView"/>
         </v-overlay>
     </div>
@@ -68,6 +69,7 @@ import { ref } from 'vue'
 import ButtonCard from '@/components/ButtonCard.vue'
 import DescriptionViewFrom from '@/components/DescriptionViewForm.vue'
 import TagContainerView from '@/components/TagContainerView.vue';
+import TextEditorView from '@/components/TextEditorView.vue'
 import axios from 'axios';
 import { BASE_URL, USER_CACHE_KEY } from '@/config'
 import CryptoJS from 'crypto-js'
@@ -75,7 +77,7 @@ import CryptoJS from 'crypto-js'
 export default {
     inject: ["cryptojs"],
     components: {
-        ButtonCard, DescriptionViewFrom, TagContainerView
+        ButtonCard, DescriptionViewFrom, TagContainerView, TextEditorView
     },
     props: { card: Object, list: Object, tags: [] },
     setup() {
@@ -119,11 +121,11 @@ export default {
           })
         },
         async fetchTags() {
-        var params = {
+          var params = {
             boardId: this.selectedList.boardId
-         }
-         var fullURL = BASE_URL + "board/getTags"
-         await axios.post(fullURL, params).then((response) => {
+          }
+          var fullURL = BASE_URL + "board/getTags"
+          await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
              let data = response.data
              console.log("fetch tag resps: ", data)
@@ -259,6 +261,8 @@ export default {
     z-index: 9999999;
     width: 300px;
     height: 600px;
+    margin-right: auto;
+    margin-left: auto;
     /* margin-right: calc((100vw / 4)); */
     background-color: white;
     border-radius: var(--border-radius-1);
