@@ -1,5 +1,5 @@
 <template>
-    <div class="mx-5 my-3">
+    <div class="mx-5 my-3 editContainer">
         <div class="commandContainer">
             <div v-for="(item, index) in commands" :key="index" class="btn-group" :class="{ 'border-right':borderRight(index)}">
             <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0" data-toggle="tooltip" data-placement="bottom" :title="item.title" @click="exec(item.command)">
@@ -7,10 +7,10 @@
             </button>           
         </div>
         </div>
-        <div class="editor border mt-2 pl-5" id="editor" contenteditable="true" @mouseup="getCurrentTagName"></div>
-        <div class="mt-3">
+        <div class="editor mt-2" id="editor" contenteditable="true" @mouseup="getCurrentTagName"></div>
+        <!-- <div class="mt-3">
             <button class="btn btn-outline-secondary rounded-0 border" @click="clear">Clear</button>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -117,6 +117,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.editContainer {
+    padding: 20px;
+}
 .commandContainer {
     display: flex;
     justify-content: space-evenly;
@@ -132,7 +135,6 @@ export default {
     min-height: 20em;
     padding: 20px;
     height: 500px;
-    border-radius: var(--border-radius-1);
  }
 
 .btn:hover {

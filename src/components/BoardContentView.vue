@@ -24,7 +24,6 @@
                          <div class="badgeAndTitleContainer">
                             <div class="colorBadge"></div>
                             <textarea type="text" v-on:blur="didEditListName(list.listName, list._id, list.id)"  @input="listNameTextAreaGrow(list.id)" class="cardNameField" :id="list.id" v-model="list.listName"></textarea>
-                            <!-- <label class="listNameLabel">{{ list.listName }}</label> -->
                          </div>
                          <img src="@/assets/three_dots.png" class="listNameLabel"></img>
                      </div>
@@ -36,7 +35,7 @@
                              ghost-class="ghost"
                              @change="onCardMoved">
                            <template #item="{element}">
-                            <CardView :card="element" @click="handleCardTapped(element, list)"></CardView>
+                            <CardView :card="element" :tags="this.getCardTags(element)" @click="handleCardTapped(element, list)"></CardView>
                            </template>
                        </DraggableView>
                         <div v-if="list.isCreateCard == true" class="createListContainer">
@@ -90,9 +89,15 @@ export default {
         var selectedList = ref(Object)
         var allCards = ref([])
         var isSavingCard = ref(false)
-        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, selectedCard, selectedList, allCards, isSavingCard}
+        var allBoardTags = ref([])
+        var isRefreshBoard = ref(true)
+        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, selectedCard, selectedList, allCards, isSavingCard, allBoardTags, isRefreshBoard}
     },
     methods: {
+        getCardTags(card) {
+            let tagIds = card.selectedTags
+            return this.allBoardTags.filter( tag => tagIds.includes(tag.id));
+        },
         listNameTextAreaGrow(listId) {
             let element = document.getElementById(listId) // cardNameId
             if (element != null) {
@@ -206,9 +211,7 @@ export default {
       }
     },
         handleOverlayDismissed() {
-            this.isCardTapped = false 
-            // let path = "/board/" + this.boardId
-            // this.$router.push({path: path})
+            this.isRefreshBoard = true
             this.$router.go(-1)
             // this.getBoardBy(this.boardId)
         },
@@ -297,6 +300,7 @@ export default {
             this.board[index] = list
         }, 
      async getBoardBy(boardId) {
+        this.isCardTapped = false
         var params = {
             boardId: boardId
         }
@@ -304,8 +308,10 @@ export default {
         await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
             let data = response.data
+            this.isRefreshBoard = false
             if (data != null && data.statusCode == 200) {
-                let apiBoard = data.resp
+                let apiBoard = data.resp.board
+                this.allBoardTags = data.resp.tags
                 console.log("apiBoard: ", apiBoard)
                 if (apiBoard != null) {
                     apiBoard.lists.push({ id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []})
@@ -346,12 +352,13 @@ export default {
         }
     },
     watch: { 
-        isExpanded: function(newVal, oldVal) {
-            console.log('Prop changed isSideBarExpanwded: ', newVal)
-            this.isSideBarExpanded = newVal
-        }, 
+        // isExpanded: function(newVal, oldVal) {
+        //     console.log('Prop changed isSideBarExpanwded: ', newVal)
+        //     this.isSideBarExpanded = newVal
+        // }, 
         '$route' () {
           console.log("routed called")
+          this.getBoardBy(this.boardId)
         }
     },  
     mounted() {
@@ -366,15 +373,16 @@ export default {
             this.getCardBy(query.card)
         }
     }, 
-    created() {
-        console.log("updated")
-    },
     updated() {
         let query = this.$route.query
         if (query.card != null) {
             // Fetch card info
             this.getCardBy(query.card)
         }
+        // console.log("board updated...", this.isRefreshBoard)
+        // if (this.isRefreshBoard) {
+            // this.getBoardBy(this.boardId)
+        // }
     }
 }
 </script>

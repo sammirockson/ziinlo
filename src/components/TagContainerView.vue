@@ -56,6 +56,8 @@ export default {
         handleGoBack() {
             this.isCreateTag = false
             // update the tags
+            // fetch and update tags
+            this.$emit('refreshTags')
         },
         handleAddNewTag() {
             this.isCreateTag = true 

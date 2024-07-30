@@ -24,11 +24,13 @@
                 </div>
                 <div class="profileTagInfoContainer">
                     <label class="listTagContainer">{{ list.listName }}</label>
-                    <ButtonCard imageIcon="calendar.png" title="July 25 12:45PM" class="dueDateField"/>
+                    <ButtonCard v-if="card.dueDate != null" imageIcon="calendar.png" :title="formatDate(card)" class="dueDateField"/>
                     <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/>
                 </div>
                 <!-- <DescriptionViewFrom class="descriptionContainer"/> -->
                 <TextEditorView class="descriptionContainer"/>
+                <!-- <Editor v-model="value" editorStyle="height: 320px" /> -->
+
              </div>
 
              <div class="controlsContainer">
@@ -40,6 +42,8 @@
                    <label class="memberNameLabel" v-else>Join</label>
                 </div>
              </div>
+             <label class="seeMoreMembersLabel">See more</label>
+
 
              <label class="memberLabel">Action</label>
              <ButtonCard imageIcon="invoice_icon.png" title="Assign"/>
@@ -48,7 +52,7 @@
 
              <label class="memberLabel">Manage</label>
              <ButtonCard imageIcon="invoice_icon.png" title="Tags" @click="handleTagTapped"/>
-             <ButtonCard imageIcon="invoice_icon.png" title="Due Date"/>
+             <ButtonCard imageIcon="invoice_icon.png" title="Due Date" @click="handleDateTapped"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Poll"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Checklist"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Attachments"/>
@@ -60,7 +64,19 @@
              </div>
         </div>
         <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" activator="tagBtn" contained>
-            <TagContainerView @handleSaveTag="handleSaveTag" @handleTagChanged="handleTagChanged" :boardTags="this.boardTags" class="tagContainerView"/>
+            <TagContainerView @handleSaveTag="handleSaveTag" @refreshTags="refreshTags" @handleTagChanged="handleTagChanged" :boardTags="this.boardTags" class="tagContainerView"/>
+        </v-overlay>
+        <v-overlay v-model="isDateTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" activator="tagBtn" contained>
+          <div class="dueDateMainView">
+           <div class="dateContainerView">
+               <v-container>
+                 <v-row justify="space-around">
+                   <v-date-picker show-adjacent-months v-model="selectedDate"></v-date-picker>
+                 </v-row>
+                </v-container>
+            </div>
+            <button :class="selectedDate == null ? `dateBtnDisabled` : `saveDateBtn`" :disabled="selectedDate == null" @click="handleSaveDate">Save Date</button>
+        </div>
         </v-overlay>
     </div>
 </template>
@@ -73,11 +89,15 @@ import TextEditorView from '@/components/TextEditorView.vue'
 import axios from 'axios';
 import { BASE_URL, USER_CACHE_KEY } from '@/config'
 import CryptoJS from 'crypto-js'
+import Editor from 'primevue/editor'
+
+// import "quill/dist/quill.core.css";
+
 
 export default {
     inject: ["cryptojs"],
     components: {
-        ButtonCard, DescriptionViewFrom, TagContainerView, TextEditorView
+        ButtonCard, DescriptionViewFrom, TagContainerView, TextEditorView, Editor
     },
     props: { card: Object, list: Object, tags: [] },
     setup() {
@@ -91,12 +111,46 @@ export default {
         var isTagTapped = ref(false)
         var boardTags = ref([])
         var cardTags = ref([])
+        var isDateTapped = ref(false)
+        var selectedDate = ref(null)
+        var value = ref(null)
         return { 
              members, isTracked, cardo, cardDesc, selectedCard, selectedList,
-             currentUser, isTagTapped, boardTags, cardTags
+             currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value
             }
     }, 
     methods: {
+        formatDate(card) {
+            let date =  new Date(card.dueDate).toLocaleDateString('en-US', {
+                month: 'short', day: 'numeric' , hour: 'numeric', minute: 'numeric'
+            })
+            return date
+        },
+        async handleSaveDate() {
+            let dueDateMilliSec = this.selectedDate.getTime()
+            var params = {
+                card_id: this.selectedCard._id, 
+                dueDate: dueDateMilliSec
+        }
+        var fullURL = BASE_URL + "board/addDueDateToCard"
+        await axios.post(fullURL, params).then((response) => {
+          if (response.data != null) {
+            let data = response.data
+            if (data.statusCode == 200) {
+                this.selectedCard.dueDate = dueDateMilliSec
+                this.selectedDate = null
+                this.isDateTapped = false 
+                console.log("list and card info updated: ", data.resp)
+              }
+             }
+          })
+        },
+        handleDateTapped() {
+            this.isDateTapped = true 
+        },
+        refreshTags() {
+            this.fetchTags()
+        },
        async handleTagChanged(tag) {
             if (tag.isChecked) {
                 this.cardTags.push(tag)
@@ -120,6 +174,10 @@ export default {
             }
           })
         },
+        isTagChecked(tag) {
+            let tagFiler = this.cardTags.filter(item => item.id == tag.id)
+            return tagFiler.length > 0
+        },
         async fetchTags() {
           var params = {
             boardId: this.selectedList.boardId
@@ -133,7 +191,7 @@ export default {
                 var tags = []
                 for (var index in data.resp) {
                     let item = data.resp[index]
-                    tags.push({isChecked: false, name: item.name, colorHex: item.colorHex, id: item.id, _id: item._id})
+                    tags.push({isChecked: this.isTagChecked(item), name: item.name, colorHex: item.colorHex, id: item.id, _id: item._id})
                 }
                 this.boardTags = tags
              }
@@ -208,7 +266,6 @@ export default {
         }, 
         list(newVal, oldVal) { 
            this.selectedList = newVal
-           this.fetchTags()
         }, 
         tags(newVal, oldVal) { 
            console.log('tags popover prop changed: ', newVal, ' | was: ', oldVal)
@@ -218,7 +275,11 @@ export default {
                 tags.push({isChecked: false, name: item.name, colorHex: item.colorHex, id: item.id, _id: item._id})
             }
            this.cardTags = tags
+           this.fetchTags()
         }, 
+        selectedDate(newVal, oldVal) {
+            console.log('date changed: ', newVal, ' | was: ', oldVal)
+        }
     },
     destroyed() {
         this.boardTags = []
@@ -233,6 +294,33 @@ export default {
 }
 </script>
 <style scoped>
+.saveDateBtn, .dateBtnDisabled { 
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 260px;
+  height: 44px;
+  margin-right: auto;
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 16px;
+  color: white;
+  background-color: var(--color-primary);
+  border: 0px solid transparent;
+  border-radius: var(--border-radius-1);
+}
+.dateBtnDisabled {
+    background-color: var(--color-light);
+    color: var(--color-dark-variant);
+}
+
+.dueDateMainView {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: white;
+    height: 550px;
+    border-radius: var(--border-radius-2);
+}
 .tagCell {
     background-color: #8B81F7;
     height: 100%;
@@ -268,9 +356,9 @@ export default {
     border-radius: var(--border-radius-1);
 }
 .descriptionContainer {
-    width: 98%;
-    margin-left: auto;
-    margin-right: auto;
+    border: 1px solid var(--color-light);
+    border-radius: var(--border-radius-1);
+    margin-right: 500px;
 }
 .listTagContainer {
     display: flex;
@@ -369,6 +457,16 @@ export default {
     font-weight: 600;
     font-size: 14px;
 }
+
+.seeMoreMembersLabel {
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+    font-weight: 400;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
 .memberLabel {
     display: flex;
     margin: 10px;
@@ -398,15 +496,14 @@ export default {
 .membersContainer {
     display: grid;
     grid-template-columns: repeat(4, 40px);
-    grid-template-rows: repeat(4, 66px);
+    grid-template-rows: repeat(4, 56px);
     width: 160px;
-    min-height: 120px;
+    height: 100px;
     justify-content: center;
     margin-right: auto;
     margin-left: auto;
     grid-column-gap: 1px;
     grid-row-gap: 1px;
-    padding-right: 20px;
     margin-top: 4px;
 }
 

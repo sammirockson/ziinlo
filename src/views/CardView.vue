@@ -1,17 +1,19 @@
 <template>
     <div class="cardContainer">
         <img v-if="card.attachments.count > 0" src="@/assets/cardPhoto.png" class="cardImage">
-        <div class="tagItemsView" v-if="card.tags != null"> 
+        <div class="dueDateContainer" v-if="card.dueDate != null">
+            <img src="@/assets/clock.png" class="clockIcon">
+            <label class="dueDateLabel">{{ new Date(card.dueDate).toLocaleDateString('en-US', {
+                month: 'short', day: 'numeric' , hour: 'numeric', minute: 'numeric'
+            }) }}</label>
+         </div>
+        <div class="tagItemsView"> 
             <v-chip-group selected-class="text-primary" column>
-              <v-chip v-for="tag in card.tags" :key="tag" style="border-radius: 8px; disable">
+              <v-chip v-for="tag in tags" :key="tag" style="border-radius: 8px; disable">
                 <label class="tagLabel" :style="{'background-color': tag.colorHex}">{{ tag.name }}</label>
              </v-chip>
             </v-chip-group>
         </div>
-        <div class="dueDateContainer">
-            <img src="@/assets/clock.png" class="clockIcon">
-            <label class="dueDateLabel">25 Feb 2024</label>
-         </div>
             <label class="cardNameLabel">{{ card.cardName }}</label>
                 <div v-if="card.progress != null" class="progressContainer">
                     <v-progress-linear
@@ -47,8 +49,10 @@
 </template>
 <script>
 import { ref } from 'vue'
+import moment from 'moment';
+
 export default {
-    props: ["card"], 
+    props: ["card", "tags"], 
     setup() {
         return { }
     }
@@ -73,7 +77,7 @@ export default {
 }
 .tagItemsView {
     padding-left: 10px;
-    width: 90%;
+    width: 100%;
 }
 .avatar img {
   border-radius: 50%;
@@ -138,7 +142,6 @@ export default {
 }
 .cardNameLabel {
     width: 200px;
-    margin-top: 8px;
     margin-left: 10px;
     margin-right: 10px;
     font-weight: 500;
@@ -154,12 +157,13 @@ export default {
 }
 .dueDateLabel {
     color: white;
-    font-weight: 400;
-    font-size: 14px;
+    font-weight: 500;
+    font-size: 13px;
     margin-left: 4px;
 }
 .dueDateContainer {
-    width: 124px;
+    /* width: 124px; */
+    width: 140px;
     height: 30px;
     margin-top: 8px;
     margin-left: 8px;
