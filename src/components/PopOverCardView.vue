@@ -55,7 +55,7 @@
              <ButtonCard imageIcon="invoice_icon.png" title="Due Date" @click="handleDateTapped"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Poll"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Checklist"/>
-             <ButtonCard imageIcon="invoice_icon.png" title="Attachments"/>
+             <ButtonCard imageIcon="invoice_icon.png" title="Attachments" @click="handleAttachmentTapped"/>
              <label class="memberLabel">Connect</label>
              <ButtonCard imageIcon="invoice_icon.png" title="Share"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Copy URL"/>
@@ -78,6 +78,9 @@
             <button :class="selectedDate == null ? `dateBtnDisabled` : `saveDateBtn`" :disabled="selectedDate == null" @click="handleSaveDate">Save Date</button>
         </div>
         </v-overlay>
+        <v-overlay v-model="isAttachmentTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" contained>
+            <AttachmentView class="attachmentContainerView"/>
+        </v-overlay>
     </div>
 </template>
 <script>
@@ -86,6 +89,8 @@ import ButtonCard from '@/components/ButtonCard.vue'
 import DescriptionViewFrom from '@/components/DescriptionViewForm.vue'
 import TagContainerView from '@/components/TagContainerView.vue';
 import TextEditorView from '@/components/TextEditorView.vue'
+import AttachmentView from '@/components/AttachmentView.vue';
+
 import axios from 'axios';
 import { BASE_URL, USER_CACHE_KEY } from '@/config'
 import CryptoJS from 'crypto-js'
@@ -97,7 +102,7 @@ import Editor from 'primevue/editor'
 export default {
     inject: ["cryptojs"],
     components: {
-        ButtonCard, DescriptionViewFrom, TagContainerView, TextEditorView, Editor
+        ButtonCard, DescriptionViewFrom, TagContainerView, TextEditorView, Editor, AttachmentView
     },
     props: { card: Object, list: Object, tags: [] },
     setup() {
@@ -112,14 +117,18 @@ export default {
         var boardTags = ref([])
         var cardTags = ref([])
         var isDateTapped = ref(false)
+        var isAttachmentTapped = ref(false)
         var selectedDate = ref(null)
         var value = ref(null)
         return { 
-             members, isTracked, cardo, cardDesc, selectedCard, selectedList,
+             members, isTracked, cardo, cardDesc, selectedCard, selectedList, isAttachmentTapped,
              currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value
             }
     }, 
     methods: {
+        handleAttachmentTapped() {
+            this.isAttachmentTapped = true 
+        },
         formatDate(card) {
             let date =  new Date(card.dueDate).toLocaleDateString('en-US', {
                 month: 'short', day: 'numeric' , hour: 'numeric', minute: 'numeric'
@@ -294,6 +303,15 @@ export default {
 }
 </script>
 <style scoped>
+.attachmentContainerView {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: white;
+    width: 300px;
+    height: 550px;
+    border-radius: var(--border-radius-2);
+}
 .saveDateBtn, .dateBtnDisabled { 
   margin-top: 10px;
   margin-bottom: 10px;
@@ -321,6 +339,9 @@ export default {
     height: 550px;
     border-radius: var(--border-radius-2);
 }
+
+
+
 .tagCell {
     background-color: #8B81F7;
     height: 100%;
