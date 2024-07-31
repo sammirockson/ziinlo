@@ -8,16 +8,15 @@ import Button from 'primevue/editor';
 // Vuetify
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
+
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import router from './router'
-
-// Components
 import App from './App.vue'
 
 const vuetify = createVuetify({
     components,
-    directives,
+    directives
 })
 
 // we need to provide it to the app to be used globally

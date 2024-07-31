@@ -75,11 +75,22 @@
                  </v-row>
                 </v-container>
             </div>
+            <div class="timePickerContainer">   
+        <v-row justify="space-around">
+      <v-time-picker
+        v-model="time"
+        :allowed-hours="allowedHours"
+        :allowed-minutes="allowedMinutes"
+        format="12hr"
+        scrollable
+      ></v-time-picker>
+    </v-row>
+            </div>
             <button :class="selectedDate == null ? `dateBtnDisabled` : `saveDateBtn`" :disabled="selectedDate == null" @click="handleSaveDate">Save Date</button>
         </div>
         </v-overlay>
         <v-overlay v-model="isAttachmentTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" contained>
-            <AttachmentView class="attachmentContainerView"/>
+            <AttachmentView :card="this.selectedCard._id" class="attachmentContainerView"/>
         </v-overlay>
     </div>
 </template>
@@ -95,14 +106,12 @@ import axios from 'axios';
 import { BASE_URL, USER_CACHE_KEY } from '@/config'
 import CryptoJS from 'crypto-js'
 import Editor from 'primevue/editor'
-
-// import "quill/dist/quill.core.css";
-
+import { VTimePicker } from 'vuetify/labs/VTimePicker'
 
 export default {
     inject: ["cryptojs"],
     components: {
-        ButtonCard, DescriptionViewFrom, TagContainerView, TextEditorView, Editor, AttachmentView
+        ButtonCard, DescriptionViewFrom, TagContainerView, TextEditorView, Editor, AttachmentView, VTimePicker
     },
     props: { card: Object, list: Object, tags: [] },
     setup() {
@@ -120,12 +129,17 @@ export default {
         var isAttachmentTapped = ref(false)
         var selectedDate = ref(null)
         var value = ref(null)
+        var time = ref("11:15")
+        var timeStep = ref("10:10")
         return { 
              members, isTracked, cardo, cardDesc, selectedCard, selectedList, isAttachmentTapped,
-             currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value
+             currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep
             }
     }, 
     methods: {
+        allowedHours: v => v % 2,
+        allowedMinutes: v => v >= 10 && v <= 50,
+        allowedStep: m => m % 10 === 0,
         handleAttachmentTapped() {
             this.isAttachmentTapped = true 
         },
@@ -136,6 +150,9 @@ export default {
             return date
         },
         async handleSaveDate() {
+            let timeArray = this.time.split(':')
+            this.selectedDate.setHours(timeArray[0])
+            this.selectedDate.setMinutes(timeArray[1])
             let dueDateMilliSec = this.selectedDate.getTime()
             var params = {
                 card_id: this.selectedCard._id, 
@@ -259,13 +276,18 @@ export default {
         }, 
         getUserInfo() {
             let userCacheString = localStorage.getItem(USER_CACHE_KEY)
-            let userCache = JSON.parse(userCacheString)
-            let decryptionToken = userCache.token
-            let encryptedUserData = userCache.user
-            let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
-            let cacheInfoObject = JSON.parse(decryptedData)
-            this.currentUser = cacheInfoObject.user
-            console.log("currentUser: ", this.currentUser)
+            if (userCacheString == null) {
+                this.$router.push({path: "/login"})
+            } else {
+                let userCache = JSON.parse(userCacheString)
+                let decryptionToken = userCache.token
+                let encryptedUserData = userCache.user
+                let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
+                let cacheInfoObject = JSON.parse(decryptedData)
+                this.currentUser = cacheInfoObject.user
+               console.log("currentUser: ", this.currentUser)
+            }
+         
         }
     }, 
     watch: { 
@@ -285,6 +307,10 @@ export default {
             }
            this.cardTags = tags
            this.fetchTags()
+           let curentDate = new Date()
+           let hour = curentDate.getHours()
+           let minute = curentDate.getMinutes()
+           this.time = hour.toString() + ":" + minute.toString()
         }, 
         selectedDate(newVal, oldVal) {
             console.log('date changed: ', newVal, ' | was: ', oldVal)
@@ -303,6 +329,20 @@ export default {
 }
 </script>
 <style scoped>
+.v-time-picker {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    margin-top: -70px;
+    margin-left: 30px;
+}
+.timePickerContainer {
+    height: 300px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+}
 .attachmentContainerView {
     display: flex;
     flex-direction: column;
@@ -336,7 +376,8 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     background-color: white;
-    height: 550px;
+    /* height: 550px; */
+    height: 1000px;
     border-radius: var(--border-radius-2);
 }
 

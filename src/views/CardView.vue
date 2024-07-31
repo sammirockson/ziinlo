@@ -1,6 +1,6 @@
 <template>
     <div class="cardContainer">
-        <img v-if="card.attachments.count > 0" src="@/assets/cardPhoto.png" class="cardImage">
+        <img v-if="card.attachments.length > 0" :src="card.attachments[0]" class="cardImage">
         <div class="dueDateContainer" v-if="card.dueDate != null">
             <img src="@/assets/clock.png" class="clockIcon">
             <label class="dueDateLabel">{{ new Date(card.dueDate).toLocaleDateString('en-US', {
@@ -38,10 +38,10 @@
                     <label for="">99</label>
                 </div>
                 <div class="membersContainer">
-                    <span class="avatar"><img  src="https://picsum.photos/70"></span>
-                    <span class="avatar"><img src="https://picsum.photos/80"></span>
-                    <span class="avatar"> <img src="https://picsum.photos/90"></span>
-                    <span class="avatar"> <img src="https://picsum.photos/100"></span>
+                    <span class="profileIcon"><img  src="https://picsum.photos/70"></span>
+                    <span class="profileIcon"><img src="https://picsum.photos/80"></span>
+                    <span class="profileIcon"> <img src="https://picsum.photos/90"></span>
+                    <span class="profileIcon"> <img src="https://picsum.photos/100"></span>
                     <label for="">+99</label>
                 </div>
             </div>
@@ -79,7 +79,7 @@ export default {
     padding-left: 10px;
     width: 100%;
 }
-.avatar img {
+.profileIcon img {
   border-radius: 50%;
   position: relative;
   margin-left: -12px;

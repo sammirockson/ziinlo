@@ -93,6 +93,7 @@ export default {
 .tagHistoryView {
     margin-top: 20px;
     height: 480px;
+    overflow-y: scroll;
 }
 .checkBox {
     margin-top: 20px;
