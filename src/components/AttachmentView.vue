@@ -17,11 +17,11 @@
         />
   
         <label for="fileInput" class="file-label">
-          <div v-if="isDragging">Release to drop files.</div>
-          <div v-else>Drop files or <br/><b>Tap</b> to upload.</div>
+          <div v-if="isDragging">Release to drop a file.</div>
+          <div v-else><b>Drop</b> a file or <br/><b>Tap</b> to upload.</div>
         </label>
       </div>
-      <img class="preview-img"  :src="localeFileURL == null ? remoteFileURL : localeFileURL"/>
+      <img v-if="localeFileURL != null || remoteFileURL != null" class="preview-img"  :src="localeFileURL == null ? remoteFileURL : localeFileURL"/>
       <label for="">Or</label>
       <v-text-field type="text" prepend-inner-icon="mdi-file-outline" class="fileLinkField" v-model="remoteFileURL" variant="outlined" label="Paste file link"></v-text-field>
       <button v-if="isUploading" class="uploadBtn buttonload">
@@ -134,7 +134,7 @@ export default {
   margin-left: auto;
   border: 0px solid var(--color-light-primary) !important;
   border-color: var(--color-light-primary);
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .uploadBtn { 
@@ -189,8 +189,9 @@ export default {
     height: 100%;
     width: 100%;
     text-align: center;
-    font-size: 20px;
+    font-size: 16px;
     cursor: pointer;
+    font-weight: 400;
 }
 
 .preview-img {

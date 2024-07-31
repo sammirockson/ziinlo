@@ -61,7 +61,6 @@
              <label class="memberLabel">Action</label>
              <ButtonCard imageIcon="invoice_icon.png" title="Assign"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Move"/>
-             <ButtonCard imageIcon="invoice_icon.png" title="Track"/>
 
              <label class="memberLabel">Manage</label>
              <ButtonCard imageIcon="invoice_icon.png" title="Tags" @click="handleTagTapped"/>
@@ -341,6 +340,10 @@ export default {
 }
 </script>
 <style scoped>
+.dateContainerView {
+    width: 300px;
+    height: 480px;
+}
 .v-time-picker {
     padding: 0;
     margin: 0;
@@ -389,8 +392,10 @@ export default {
     justify-content: space-between;
     background-color: white;
     /* height: 550px; */
-    height: 970px;
+    /* min-height: 970px; */
+    min-height: 970px;
     border-radius: var(--border-radius-2);
+    overflow-y: scroll;
 }
 
 
