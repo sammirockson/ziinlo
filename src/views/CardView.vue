@@ -34,8 +34,8 @@
                     <label for="">4.7k</label>
                     <img src="@/assets/comments.png" class="boardIcon">
                     <label for="">20</label>
-                    <img src="@/assets/attachment.png" class="boardIcon">
-                    <label for="">99</label>
+                    <img v-if="card.attachments.length > 0" src="@/assets/attachment.png" class="boardIcon">
+                    <label v-if="card.attachments.length > 0" for="">{{ card.attachments.length }}</label>
                 </div>
                 <div class="membersContainer">
                     <span class="profileIcon"><img  src="https://picsum.photos/70"></span>
@@ -121,7 +121,7 @@ export default {
 }
 .boardInfoView {
     display: flex;
-    width: 120px;
+    max-width: 120px;
     height: 50px;
     justify-content: space-evenly;
     margin-top: 5px;

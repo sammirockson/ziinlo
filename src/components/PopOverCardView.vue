@@ -79,8 +79,6 @@
         <v-row justify="space-around">
       <v-time-picker
         v-model="time"
-        :allowed-hours="allowedHours"
-        :allowed-minutes="allowedMinutes"
         format="12hr"
         scrollable
       ></v-time-picker>
@@ -338,7 +336,7 @@ export default {
     margin-left: 30px;
 }
 .timePickerContainer {
-    height: 300px;
+    height: 280px;
     width: 300px;
     display: flex;
     flex-direction: column;
@@ -377,7 +375,7 @@ export default {
     justify-content: space-between;
     background-color: white;
     /* height: 550px; */
-    height: 1000px;
+    height: 970px;
     border-radius: var(--border-radius-2);
 }
 

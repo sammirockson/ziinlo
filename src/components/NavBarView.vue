@@ -89,7 +89,7 @@ export default {
     height: 44px;
     display: flex;
     flex-direction: row;
-    background-color: var(--color-primary);
+    background-color: var(--color-bar-dark);
     border-radius: var(--border-radius-2);
     margin-right: 30px;
 }
