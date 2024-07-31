@@ -1,7 +1,7 @@
 <template>
     <div class="sideContentView">
         <div class="topNav">
-        <img src="@/assets/logo.png" class="logo">
+        <img src="@/assets/brand_logo.svg" class="logo">
         <label class="titleLabel" :style="{display: isSideBarExpanded ? 'block' : 'none'}">Dashboard</label>
         </div>
         <div class="containerView" :style="{width: isSideBarExpanded ? '210px' : '80px'}">
@@ -229,7 +229,7 @@ export default {
 }
 
 .tableRowActive {
-    background-color: var(--color-bar-dark);
+    background-color: var(--color-primary);
     border-radius: var(--border-radius-2);
     padding-top: 12px; 
 }

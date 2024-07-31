@@ -57,9 +57,9 @@ export default {
     display: block;
     width: 140px;
     height: 40px;
-    background-color: #FC6363;
+    background-color: var(--color-primary);
     color: white;
-    border-radius: var(--border-radius-1);
+    border-radius: var(--border-radius-2);
     margin-left: 8px;
     font-size: 14px;
     font-weight: 600;

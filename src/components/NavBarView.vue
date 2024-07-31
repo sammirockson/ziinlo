@@ -67,6 +67,7 @@ export default {
     padding-left: 15px;
     margin-top: auto;
     margin-bottom: auto;
+    font-weight: 500;
 }
 .notificationIcon {
     width: 40px;
@@ -88,7 +89,7 @@ export default {
     height: 44px;
     display: flex;
     flex-direction: row;
-    background-color: var(--color-bar-dark);
+    background-color: var(--color-primary);
     border-radius: var(--border-radius-2);
     margin-right: 30px;
 }
