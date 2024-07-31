@@ -44,7 +44,8 @@ export default {
         }
     }, 
     mounted() {
-
+        document.body.classList.remove('dark');
+        document.body.classList.add('light');
     } 
 }
 </script>

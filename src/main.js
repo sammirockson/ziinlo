@@ -3,7 +3,8 @@ import mitt from 'mitt'
 import VueCryptojs from 'vue-cryptojs'
 import PrimeVue from 'primevue/config';
 import PrimeVueStyled from 'primevue/config';
-import Button from 'primevue/editor';
+
+import Aura from '@primevue/themes/aura';
 
 // Vuetify
 import 'vuetify/styles'
@@ -22,4 +23,11 @@ const vuetify = createVuetify({
 // we need to provide it to the app to be used globally
 const eventBus = mitt();
 // Home page should show summary of urgent tasks, chats and calendar
-createApp(App).use(PrimeVue).use(PrimeVueStyled).use(router).use(vuetify).use(VueCryptojs).provide('eventBus', eventBus).mount('#app')
+createApp(App).use(PrimeVue, {
+    theme: {
+        preset: Aura,
+        darkModeSelector: 'system',
+    }
+}).use(PrimeVueStyled).use(router).use(vuetify).use(VueCryptojs).provide('eventBus', eventBus).mount('#app')
+
+// .my-app-dark        darkModeSelector: 'system',

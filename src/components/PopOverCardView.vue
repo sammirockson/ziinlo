@@ -28,8 +28,21 @@
                     <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/>
                 </div>
                 <!-- <DescriptionViewFrom class="descriptionContainer"/> -->
-                <TextEditorView class="descriptionContainer"/>
-                <!-- <Editor v-model="value" editorStyle="height: 320px" /> -->
+                <!-- <TextEditorView class="descriptionContainer"/> -->
+                <Editor v-model="value" editorStyle="height: 320px"/>
+             
+                
+                <!-- <Editor v-model="value" editorStyle="height: 320px">
+                    <template v-slot:toolbar>
+                      <span class="ql-formats">
+                        <button v-tooltip.bottom="'Header'" class="ql-header"></button>
+                      <button v-tooltip.bottom="'Bold'" class="ql-bold"></button>
+                      <button v-tooltip.bottom="'Italic'" class="ql-italic"></button>
+                      <button v-tooltip.bottom="'Underline'" class="ql-underline"></button>
+                      <button v-tooltip.bottom="'codeBlock'" class="ql-code-block"></button>
+                   </span>
+                   </template>
+                </Editor> -->
 
              </div>
 
@@ -105,11 +118,12 @@ import { BASE_URL, USER_CACHE_KEY } from '@/config'
 import CryptoJS from 'crypto-js'
 import Editor from 'primevue/editor'
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
+import { VueEditor } from 'vue2-editor'
 
 export default {
     inject: ["cryptojs"],
     components: {
-        ButtonCard, DescriptionViewFrom, TagContainerView, TextEditorView, Editor, AttachmentView, VTimePicker
+        ButtonCard, DescriptionViewFrom, TagContainerView, TextEditorView, Editor, AttachmentView, VTimePicker, VueEditor
     },
     props: { card: Object, list: Object, tags: [] },
     setup() {

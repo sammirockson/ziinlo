@@ -39,6 +39,17 @@
   --padding-1: 1.2rem;
   --box-shadow: 0 2rem 3rem var(--color-light);
 }
+
+.light {
+  --font-color: #111;
+  --bg-color: #fff;
+}
+
+.dark {
+  --font-color: #eee;
+  --bg-color: #111;
+}
+
 #app {
   font-family: 'Poppins', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -173,7 +173,7 @@ export default {
   font-weight: 600;
   font-size: 16px;
   color: white;
-  background-color: var(--color-primary);
+  background-color: var(--color-bar-dark);
   border: 0px solid transparent;
   border-radius: var(--border-radius-1);
 }

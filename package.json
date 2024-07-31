@@ -7,6 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@primevue/themes": "^4.0.3",
     "@tiptap/pm": "^2.5.7",
     "@tiptap/starter-kit": "^2.5.7",
     "@tiptap/vue-3": "^2.5.7",
@@ -24,11 +25,13 @@
     "vue-cryptojs": "^2.4.7",
     "vue-google-oauth2": "^1.5.10",
     "vue-router": "^4.0.3",
+    "vue2-editor": "^2.10.3",
     "vue3-google-login": "^2.0.27",
     "vuedraggable": "^4.1.0",
     "vuetify": "^3.6.13"
   },
   "devDependencies": {
+    "@types/vue2-editor": "^2.6.5",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
