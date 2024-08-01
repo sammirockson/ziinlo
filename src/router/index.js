@@ -29,7 +29,7 @@ const routes = [
     component: AllTaskboardsView // All boards
   },
   {
-    path: '/b/:id',
+    path: '/b/:boardId',
     name: 'board',
     component: BoardView, 
     props: true, 

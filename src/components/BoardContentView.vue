@@ -367,12 +367,8 @@ export default {
     mounted() {
         let routeParams = this.$route.params
         console.log("main routeParams: ", routeParams)
-        this.boardId = routeParams.id
+        this.boardId = routeParams.boardId
         this.getBoardBy(this.boardId)
-        if (routeParams.boardId != null) {
-            this.boardId = routeParams.boardId
-            this.getBoardBy(this.boardId)
-        }
     }, 
     updated() {
         // let query = this.$route.query

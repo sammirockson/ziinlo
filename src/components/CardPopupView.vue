@@ -160,8 +160,56 @@ export default {
       this.boardId = routeParams.boardId
       let card_id = routeParams.cardId
       this.getCardBy(card_id)
+      // this.fetchTags()
     },
     methods: {
+      async handleTagChanged(tag) {
+            if (tag.isChecked) {
+                this.cardTags.push(tag)
+            } else {
+                this.cardTags = this.cardTags.filter(item => item.id != tag.id);
+            }
+          var tags = []
+          for (var index in this.cardTags) {
+             let cardTag = this.cardTags[index]
+             tags.push(cardTag.id)
+           }
+          var params = {
+            card_id: this.selectedCard._id, 
+            tags: tags
+          }
+          var fullURL = BASE_URL + "board/addTagsToCard"
+          await axios.post(fullURL, params).then((response) => {
+            if (response.data != null) {
+             let data = response.data
+             console.log("tags updated: ", data)
+            }
+          })
+        },
+      isTagChecked(tag) {
+          let tagFiler = this.cardTags.filter(item => item.id == tag.id)
+          return tagFiler.length > 0
+      },
+      async fetchTags() {
+          var params = {
+            boardId: this.boardId
+          }
+          var fullURL = BASE_URL + "board/getTags"
+          await axios.post(fullURL, params).then((response) => {
+          if (response.data != null) {
+             let data = response.data
+             console.log("fetch tag resps: ", data)
+             if (data.resp != null) {
+                var tags = []
+                for (var index in data.resp) {
+                    let item = data.resp[index]
+                    tags.push({isChecked: this.isTagChecked(item), name: item.name, colorHex: item.colorHex, id: item.id, _id: item._id})
+                }
+                this.boardTags = tags
+             }
+            }
+          })
+        },
       handleGoBack() {
         let path = "/b/" + this.boardId
         this.$router.push({path: path})
@@ -199,6 +247,7 @@ export default {
                    this.card = resp.card
                    this.list = resp.list
                    this.cardTags = resp.tags
+                   this.fetchTags()
                    this.autoGrow()
                   //  this.isCardTapped = true 
                   //  this.$emit('cardDetailInfo', resp)
