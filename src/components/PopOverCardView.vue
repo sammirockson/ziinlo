@@ -1,6 +1,10 @@
 <template>
     <div class="card" @click.self="handleOverlayClosed">
-        <div class="cardInfoContainer">
+        <div class="cardInfoContainer" :style="{width: card.attachments.length > 0 ? '930px' : '740px'}">
+            <div class="controlsContainer" v-if="card.attachments.length > 0">
+                 <div class="fileAttachmentsContainer">
+                 </div>
+            </div>
              <div class="contentContainer">
                 <textarea type="text" v-on:blur="handleContentInfoTapped()"  @input="autoGrow()" class="cardNameField" id="cardNameId" v-model="card.cardName"></textarea>
                 <div class="profileTagInfoContainer">
@@ -28,22 +32,11 @@
                     <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/>
                 </div>
                 <!-- <DescriptionViewFrom class="descriptionContainer"/> -->
-                <!-- <TextEditorView class="descriptionContainer"/> -->
-                <Editor v-model="value" editorStyle="height: 320px"/>
-             
-                
-                <!-- <Editor v-model="value" editorStyle="height: 320px">
-                    <template v-slot:toolbar>
-                      <span class="ql-formats">
-                        <button v-tooltip.bottom="'Header'" class="ql-header"></button>
-                      <button v-tooltip.bottom="'Bold'" class="ql-bold"></button>
-                      <button v-tooltip.bottom="'Italic'" class="ql-italic"></button>
-                      <button v-tooltip.bottom="'Underline'" class="ql-underline"></button>
-                      <button v-tooltip.bottom="'codeBlock'" class="ql-code-block"></button>
-                   </span>
-                   </template>
-                </Editor> -->
-
+                <TextEditorView class="descriptionContainer" :cardDescription="this.cardDescription"/>
+                <div class="descriptionBtns">
+                    <button :class="cardDescription.length > 0 ? `saveDescriptionBtn` : `saveDescriptionDisabledBtn`" :disabled='cardDescription.length == 0' @click="handleSaveDescription">Save</button>
+                    <button class="canelDescripBtn">Cancel</button>
+                </div>
              </div>
 
              <div class="controlsContainer">
@@ -95,7 +88,7 @@
         scrollable
       ></v-time-picker>
     </v-row>
-            </div>
+        </div>
             <button :class="selectedDate == null ? `dateBtnDisabled` : `saveDateBtn`" :disabled="selectedDate == null" @click="handleSaveDate">Save Date</button>
         </div>
         </v-overlay>
@@ -142,12 +135,20 @@ export default {
         var value = ref(null)
         var time = ref("11:15")
         var timeStep = ref("10:10")
+        var isLoading = ref(true)
+        var cardDescription = ref("")
         return { 
-             members, isTracked, cardo, cardDesc, selectedCard, selectedList, isAttachmentTapped,
+             members, isTracked, cardo, cardDesc, selectedCard, selectedList, isAttachmentTapped, isLoading, cardDescription,
              currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep
             }
     }, 
     methods: {
+        handleSaveDescription() {
+            console.log("save description tapped")
+            let html = document.getElementById("editor").innerHTML
+            console.log("editor html: ", html)
+            // descriptionContainer
+        },
         allowedHours: v => v % 2,
         allowedMinutes: v => v >= 10 && v <= 50,
         allowedStep: m => m % 10 === 0,
@@ -336,10 +337,48 @@ export default {
     }, 
     updated() {
         this.autoGrow()
+        console.log("cardDescription: ", this.cardDescription.length)
     }
 }
 </script>
 <style scoped>
+
+
+.descriptionBtns {
+    display: flex;
+    justify-content: space-between;
+    width: 160px;
+    height: 40px;
+}
+.canelDescripBtn {
+    font-weight: 600;
+    font-size: 16px;
+    width: 80px;
+    height: 40px;
+    color: var(--color-dark);
+}
+
+.saveDescriptionBtn, .saveDescriptionDisabledBtn { 
+  width: 70px;
+  height: 40px;
+  font-weight: 600;
+  font-size: 16px;
+  color: white;
+  background-color: var(--color-primary);
+  border: 0px solid transparent;
+  border-radius: var(--border-radius-1);
+}
+
+.saveDescriptionDisabledBtn {
+    background-color: var(--color-light);
+    color: var(--color-dark-variant);
+}
+
+.attachmentScrollContainer {
+    height: 350px;
+    width: 100%;
+    background-color: orangered;
+}
 .dateContainerView {
     width: 300px;
     height: 480px;
@@ -588,7 +627,8 @@ export default {
 
 .cardInfoContainer {
     display: flex;
-    width: 740px;
+    /* width: 740px; */
+    width: 930px;
     min-height: 94vh;
     margin-right: auto;
     margin-left: auto;

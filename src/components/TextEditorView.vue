@@ -1,32 +1,24 @@
 <template>
-    <div class="mx-5 my-3 editContainer">
+    <div class="mx-1 my-3 editContainer">
         <div class="commandContainer">
-            <div v-for="(item, index) in commands" :key="index" class="btn-group" :class="{ 'border-right':borderRight(index)}">
+            <div v-for="(item, index) in commands" :key="index" class="btn-group" >
             <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0" data-toggle="tooltip" data-placement="bottom" :title="item.title" @click="exec(item.command)">
                 <i :class="'fa ' + item.icon"></i>
             </button>           
         </div>
         </div>
-        <div class="editor mt-2" id="editor" contenteditable="true" @mouseup="getCurrentTagName"></div>
-        <!-- <div class="mt-3">
-            <button class="btn btn-outline-secondary rounded-0 border" @click="clear">Clear</button>
-        </div> -->
+        <div class="editor mt-2" id="editor" contenteditable="true" @change="handleEditingChanged" @mouseup="getCurrentTagName" :keyup.enter="getCurrentTagName"></div>
     </div>
 </template>
 
 <script>
 export default {
     name: 'wysiwyg',
+    props: { cardDescription: String },
     mounted () {
-        // $(function () {
-
-        //     $('[data-toggle="tooltip"]').tooltip()
-
-        // })
 
     },
-
-    data () {
+    setup() {
         return {
             commands : [
                 { name: 'Bold', title: 'Bold', command: 'bold', icon: 'fa-bold' },
@@ -37,8 +29,6 @@ export default {
 
                 { name: 'Underline', title: 'Underline', command: 'underline', icon: 'fa-underline' },
 
-                // { name: 'HorizontalLine', title: 'Horizontal Line', command: 'insertHorizontalRule', icon: 'fa-minus' },
-
                 { name: 'AlignLeft', title: 'Align Left', command: 'justifyLeft', icon: 'fa-align-left' },
 
                 { name: 'AlignJustify', title: 'Align Justify', command: 'justifyFull', icon: 'fa-align-justify' },
@@ -46,24 +36,6 @@ export default {
                 { name: 'AlignCenter', title: 'Align Center', command: 'justifyCenter', icon: 'fa-align-center' },
 
                 { name: 'AlignRight', title: 'Align Right', command: 'justifyRight', icon: 'fa-align-right' },
-
-                // { name: 'FontSize', title: 'Font Size', command: 'fontSize', icon: 'fa-text-height' },
-
-                // { name: 'Fonts', title: 'Fonts', command: 'fontName', icon: 'fa-font' },
-
-                // { name: 'Heading', title: 'Heading', command: 'header', icon: 'fa-header' },
-
-                { name: 'Paragraph', title: 'Paragraph', command: 'insertParagraph', icon: 'fa-paragraph' },
-
-                { name: 'Undo', title: 'Undo', command: 'undo', icon: 'fa-undo' },
-
-                { name: 'Redo', title: 'Redo', command: 'redo', icon: 'fa-repeat' },
-
-                // { name: 'Copy', title: 'Copy', command: 'copy', icon: 'fa-copy' },
-
-                // { name: 'Paste', title: 'Paste', command: 'paste', icon: 'fa-paste' },
-
-                // { name: 'Cut', title: 'Cut', command: 'cut', icon: 'fa-cut' },
 
                 { name: 'Subscript', title: 'Subscript', command: 'subscript', icon: 'fa-subscript' },
 
@@ -77,22 +49,29 @@ export default {
 
                 // { name: 'Unlink', title: 'Unlink', command: 'unlink', icon: 'fa-unlink' },
 
-                { name: 'Video', title: 'Video', command: 'video', icon: 'fa-video-camera' },
+                // { name: 'Video', title: 'Video', command: 'video', icon: 'fa-video-camera' },
 
-                { name: 'Image', title: 'Image', command: 'insertImage', icon: 'fa-image' },
+                // { name: 'Image', title: 'Image', command: 'insertImage', icon: 'fa-image' },
 
-                // { name: 'RemoveFormat', title: 'Remove Format', command: 'removeFormat', icon: 'fa-times' },
+                { name: 'RemoveFormat', title: 'Remove Format', command: 'removeFormat', icon: 'fa-times' },
             ],
             currentTagName: '',
         }
 
     },
     watch : {
-        currentTagName () {
+        currentTagName() {
             this.getCurrentTagName()
+        }, 
+        cardDescription(newVal, oldVal) {
+            // cardDescription
+            document.getElementById("editor").innerHTML = newVal
         }
     },
     methods : {
+        handleEditingChanged() {
+            console.log("description editing changed")
+        },
         exec (command,arg) {
             document.execCommand(command , false , arg)
         },
@@ -123,9 +102,11 @@ export default {
 .commandContainer {
     display: flex;
     justify-content: space-evenly;
+    margin-bottom: 10px;
 }
 .btn-group {
    display: flex;
+   width: 80px;
 }
 .editor {
     display: flex;
@@ -133,8 +114,12 @@ export default {
     justify-content: start;
     align-items: start;
     min-height: 20em;
-    padding: 20px;
     height: 500px;
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'Poppins', Helvetica, Arial, sans-serif;
+    overflow: hidden;
+    overflow-y: scroll;
  }
 
 .btn:hover {
@@ -148,7 +133,7 @@ export default {
 
 [contenteditable] {
     text-align: left;
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 500;
     font-family: 'Poppins', Helvetica, Arial, sans-serif;
 }
