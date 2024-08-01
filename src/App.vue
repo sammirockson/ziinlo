@@ -1,9 +1,15 @@
 <template>
-    <router-view v-slot="{ Component }">
+   <div id="app" class="layout">
+    <main class="main container">
+      <RouterView/>
+    </main>
+    <PortalTarget name="popup"/>
+  </div>
+    <!-- <router-view v-slot="{ Component }">
     <keep-alive>
       <component :is="Component" />
     </keep-alive>
-  </router-view>
+  </router-view> -->
 </template>
 
 <style>

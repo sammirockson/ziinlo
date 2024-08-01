@@ -1,5 +1,6 @@
 <template>
     <div class="cardContainer">
+        <RouterLink :to="`/b/` + boardId + `/c/` +  card._id"  style="text-decoration: none; color: inherit;">
         <img v-if="card.attachments.length > 0" :src="card.attachments[0]" class="cardImage">
         <div class="dueDateContainer" v-if="card.dueDate != null">
             <img src="@/assets/clock.png" class="clockIcon">
@@ -45,6 +46,7 @@
                     <label for="">+99</label>
                 </div>
             </div>
+        </RouterLink>
     </div>
 </template>
 <script>
@@ -52,7 +54,7 @@ import { ref } from 'vue'
 import moment from 'moment';
 
 export default {
-    props: ["card", "tags"], 
+    props: ["card", "tags", "boardId"], 
     setup() {
         return { }
     }
@@ -83,7 +85,6 @@ export default {
   border-radius: 50%;
   position: relative;
   margin-left: -12px;
-  z-index: 1;
   height: 18px;
   width: 18px;
   padding: 1px;
@@ -141,6 +142,7 @@ export default {
     margin-top: 10px;
 }
 .cardNameLabel {
+    display: flex;
     width: 200px;
     margin-left: 10px;
     margin-right: 10px;

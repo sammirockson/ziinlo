@@ -28,6 +28,7 @@
                          <img src="@/assets/three_dots.png" class="listNameLabel"></img>
                      </div>
                      <div class="cardAndFooterContainer">
+                        <!-- <RouterLink :to="`/b` + this.board._id + `/c` +  card._id"  style="text-decoration: none; color: inherit;"> -->
                         <DraggableView v-model="list.cards" 
                              group="allCards" 
                              item-key="id"
@@ -35,9 +36,10 @@
                              ghost-class="ghost"
                              @change="onCardMoved">
                            <template #item="{element}">
-                            <CardView :card="element" :tags="this.getCardTags(element)" @click="handleCardTapped(element, list)"></CardView>
+                            <CardView :card="element" :boardId="this.board.id" :tags="this.getCardTags(element)"></CardView>
                            </template>
                        </DraggableView>
+                      <!-- </RouterLink> -->
                         <div v-if="list.isCreateCard == true" class="createListContainer">
                             <textarea name="text" v-model="newCardName" @input="autoGrow(index)" placeholder="Give your card a name" class="addListInputField" :id="`newCardField_` + index"></textarea>
                             <button v-if="isSavingCard" class="addListBtn buttonload">
@@ -61,6 +63,7 @@
         <v-overlay v-model="isCardTapped" class="align-center justify-center overLayContainer" contained>
             <CardDetailView :card="this.selectedCard" :list="this.selectedList" :tags="this.cardTags" @overlayDismissed="handleOverlayDismissed"/>
         </v-overlay>
+        <RouterView/>
     </div>
 </template>
 <script>
@@ -362,23 +365,21 @@ export default {
         }
     },  
     mounted() {
-        let query = this.$route.query
         let routeParams = this.$route.params
-        console.log("routeParams: ", routeParams)
-        console.log("query: ", query)
+        console.log("main routeParams: ", routeParams)
         this.boardId = routeParams.id
         this.getBoardBy(this.boardId)
-        if (query.card != null) {
-            // Fetch card info
-            this.getCardBy(query.card)
+        if (routeParams.boardId != null) {
+            this.boardId = routeParams.boardId
+            this.getBoardBy(this.boardId)
         }
     }, 
     updated() {
-        let query = this.$route.query
-        if (query.card != null) {
-            // Fetch card info
-            this.getCardBy(query.card)
-        }
+        // let query = this.$route.query
+        // if (query.card != null) {
+        //     // Fetch card info
+        //     this.getCardBy(query.card)
+        // }
         // console.log("board updated...", this.isRefreshBoard)
         // if (this.isRefreshBoard) {
             // this.getBoardBy(this.boardId)

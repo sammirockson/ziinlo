@@ -5,6 +5,7 @@ import BoardView from '@/views/BoardView.vue'
 import CardDetailView from '@/views/CardDetailView.vue'
 import LoginView from '@/views/LoginView.vue'
 import SignUpView from '@/views/SignUp.vue'
+import CardPopupView from '@/components/CardPopupView.vue'
 
 const routes = [
   {
@@ -28,10 +29,16 @@ const routes = [
     component: AllTaskboardsView // All boards
   },
   {
-    path: '/board/:id',
+    path: '/b/:id',
     name: 'board',
     component: BoardView, 
-    props: true
+    props: true, 
+    children: [
+      {
+        path: "/b/:boardId/c/:cardId",
+        component: CardPopupView
+      }
+    ]
   },
   {
     path: '/b/:id',

@@ -6,7 +6,7 @@
                  </div>
             </div>
              <div class="contentContainer">
-                <textarea type="text" v-on:blur="handleContentInfoTapped()"  @input="autoGrow()" class="cardNameField" id="cardNameId" v-model="card.cardName"></textarea>
+                <textarea type="text" v-on:blur="handleContentInfoTapped()"  @input="autoGrow()" class="cardNameField" id="cardNameId2" v-model="card.cardName"></textarea>
                 <div class="profileTagInfoContainer">
                 <img src="@/assets/cardPhoto.png" class="ownerProfile">
                 <div class="profileInfoContainer">
@@ -299,7 +299,7 @@ export default {
                 this.currentUser = cacheInfoObject.user
                console.log("currentUser: ", this.currentUser)
             }
-         
+
         }
     }, 
     watch: { 
@@ -341,6 +341,7 @@ export default {
     }
 }
 </script>
+
 <style scoped>
 
 
