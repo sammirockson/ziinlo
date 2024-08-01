@@ -1,6 +1,18 @@
 <template>
     <PopupRouterView>
       <PopupOverlay/>
+    <v-container v-if="card == null">
+    <v-row>
+      <v-col cols="12" md="12">
+        <v-skeleton-loader
+          class="mx-auto border"
+          width="300"
+          height="300"
+          type="image, article"
+        ></v-skeleton-loader>
+      </v-col>
+    </v-row>
+  </v-container>
       <div class="card" v-if="card != null" @click.self="handleGoBack">
         <div class="cardInfoContainer">
              <div class="contentContainer">
