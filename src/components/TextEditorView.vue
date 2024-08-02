@@ -114,7 +114,7 @@ export default {
     justify-content: start;
     align-items: start;
     min-height: 20em;
-    height: 500px;
+    height: 300px;
     font-size: 15px;
     font-weight: 500;
     font-family: 'Poppins', Helvetica, Arial, sans-serif;
