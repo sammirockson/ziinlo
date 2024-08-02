@@ -60,9 +60,6 @@
 
            </div>
         </div>
-        <!-- <v-overlay v-model="isCardTapped" class="align-center justify-center overLayContainer" contained>
-            <CardDetailView :card="this.selectedCard" :list="this.selectedList" :tags="this.cardTags" @overlayDismissed="handleOverlayDismissed"/>
-        </v-overlay> -->
         <RouterView/>
     </div>
 </template>

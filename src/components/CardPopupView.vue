@@ -48,7 +48,7 @@
                 </div>
                 <label class="attachmentsTitleLabel" v-if=" this.attachments.length > 0">Attachments</label>
                 <div class="attachmentListView">
-                    <div class="attachmentCell" v-for="(attachment, index) in this.attachments" :key="index">
+                    <div class="attachmentCell" v-for="(attachment, index) in this.attachments" :key="index" @click="handleFileBrowserTapped">
                          <img :src="attachment.fileURL" class="attchmentPreview">
                          <div class="attachmentInfoContainer">
                              <label class="attachmentFileNameLabel">{{ attachment.fileName }}</label>
@@ -71,6 +71,7 @@
 
 
              <label class="memberLabel">Action</label>
+             <ButtonCard imageIcon="invoice_icon.png" title="Priority level"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Assign"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Move"/>
 
@@ -87,6 +88,11 @@
              <ButtonCard imageIcon="invoice_icon.png" title="Delete"/>
              </div>
         </div>
+        <!-- <v-overlay v-model="isShowFileView" class="align-center justify-center overLayContainer" contained>
+             <div class="fileViewer">
+             </div>
+        </v-overlay> -->
+
         <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px;" activator="tagBtn" contained>
             <TagContainerView @handleSaveTag="handleSaveTag" @refreshTags="refreshTags" @handleTagChanged="handleTagChanged" :boardTags="this.boardTags" class="tagContainerView"/>
         </v-overlay>
@@ -111,15 +117,22 @@
             <button :class="selectedDate == null ? `dateBtnDisabled` : `saveDateBtn`" :disabled="selectedDate == null" @click="handleSaveDate">Save Date</button>
         </div>
         </v-overlay>
+
         <v-overlay v-model="isAttachmentTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" contained>
             <AttachmentView :card="this.card._id" class="attachmentContainerView" @fileUploadComplete="handleDidUploadFile"/>
         </v-overlay>
+
+        <v-overlay v-model="isShowFileView" class="align-center justify-center overLayContainer" contained>
+            <FileViewer class="fileViewer" :attachments="this.attachments" @dismissFileViewer="dismissFileViewer"/>
+        </v-overlay>
+    
     </div>
     </PopupRouterView>
   </template>
 
 <script>
 import PopupOverlay from './PopupOverlay.vue';
+import FileViewer from '@/components/FileViewer.vue'
 import PopupRouterView from './PopupRouterView.vue';
 import { BASE_URL, USER_CACHE_KEY } from '@/config'
 
@@ -140,11 +153,9 @@ import { saveDesc } from '@/APIService'
   
 export default {
   inject: ["cryptojs"],
-  name: 'ProductImagePopup',
   components: {
-    PopupOverlay,
-    PopupRouterView, 
-    ButtonCard, DescriptionViewFrom, TagContainerView, TextEditorView, Editor, AttachmentView, VTimePicker, VueEditor
+    PopupOverlay, TextEditorView, Editor, AttachmentView, VTimePicker, VueEditor,
+    PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView
   },
   setup() {
     var members = ref([1, 2, 3, 4, 5, 6, 7, 8])
@@ -166,8 +177,9 @@ export default {
     var boardId = ref("")
     var isEditingDesc = ref(false)
     var attachments = ref([])
+    var isShowFileView = ref(false) 
     return { 
-          members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments,
+          members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView,
           currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc
         }
     },
@@ -182,6 +194,13 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
+        dismissFileViewer() {
+            this.isShowFileView = false
+        },
+        handleFileBrowserTapped() {
+            console.log("file browser tapped")
+            this.isShowFileView = true 
+        },
         handleDidUploadFile(updatedCard) {
             this.card = updatedCard
             this.attachments = updatedCard.attachments
@@ -404,6 +423,10 @@ export default {
 
 
 <style scoped>
+.fileViewer {
+    height: 100vh;
+    width: 100vw;
+}
 .attachmentDateLabel {
     font-weight: 300;
     font-size: 12px;
