@@ -1,25 +1,34 @@
 <template>
     <div class="mx-1 my-3 editContainer">
-        <div class="commandContainer">
+        <div class="commandContainer" v-if="isEditing">
             <div v-for="(item, index) in commands" :key="index" class="btn-group" >
             <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0" data-toggle="tooltip" data-placement="bottom" :title="item.title" @click="exec(item.command)">
                 <i :class="'fa ' + item.icon"></i>
             </button>           
         </div>
         </div>
-        <div class="editor mt-2" id="editor" contenteditable="true" @change="handleEditingChanged" @mouseup="getCurrentTagName" :keyup.enter="getCurrentTagName"></div>
+        <div class="editor mt-2" id="editor"  contenteditable="true" v-html="cardDescription" @mouseup="getCurrentTagName" :keyup.enter="getCurrentTagName"></div>
     </div>
 </template>
 
 <script>
+import { ref } from 'vue'
 export default {
     name: 'wysiwyg',
     props: { cardDescription: String },
     mounted () {
-
+        document.getElementById('editor').addEventListener('input', function(){
+          console.clear()
+          let scrollHeight = this.scrollHeight
+          if (scrollHeight > 340) {
+             this.style.height = scrollHeight + "px";
+          }
+       })
     },
     setup() {
+        var isEditing = ref(false)
         return {
+            isEditing,
             commands : [
                 { name: 'Bold', title: 'Bold', command: 'bold', icon: 'fa-bold' },
 
@@ -47,12 +56,6 @@ export default {
 
                 { name: 'Link', title: 'Link', command: 'createLink', icon: 'fa-link' },
 
-                // { name: 'Unlink', title: 'Unlink', command: 'unlink', icon: 'fa-unlink' },
-
-                // { name: 'Video', title: 'Video', command: 'video', icon: 'fa-video-camera' },
-
-                // { name: 'Image', title: 'Image', command: 'insertImage', icon: 'fa-image' },
-
                 { name: 'RemoveFormat', title: 'Remove Format', command: 'removeFormat', icon: 'fa-times' },
             ],
             currentTagName: '',
@@ -62,24 +65,15 @@ export default {
     watch : {
         currentTagName() {
             this.getCurrentTagName()
-        }, 
-        cardDescription(newVal, oldVal) {
-            // cardDescription
-            document.getElementById("editor").innerHTML = newVal
         }
     },
     methods : {
-        handleEditingChanged() {
-            console.log("description editing changed")
-        },
         exec (command,arg) {
             document.execCommand(command , false , arg)
         },
-
         clear () {
             document.getElementById("editor").innerHTML = ''
         },
-
         borderRight (index) {
             var clubs = [
                 5,9,13,15,18,20,22,24,26
@@ -87,6 +81,8 @@ export default {
             return !!clubs.includes(index + 1)
         },
         getCurrentTagName () {
+            this.isEditing = true 
+            this.$emit("isEditing", true)
             if (window.getSelection().baseNode) {
                 this.currentTagName = window.getSelection().baseNode.parentNode.tagName                 
             }
@@ -113,8 +109,7 @@ export default {
     flex-direction: column;
     justify-content: start;
     align-items: start;
-    min-height: 20em;
-    height: 300px;
+    height: 340px;
     font-size: 15px;
     font-weight: 500;
     font-family: 'Poppins', Helvetica, Arial, sans-serif;

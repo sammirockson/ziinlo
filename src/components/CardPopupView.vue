@@ -42,9 +42,9 @@
                     <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/>
                 </div>
                 <!-- <DescriptionViewFrom class="descriptionContainer"/> -->
-                <TextEditorView class="descriptionContainer" :cardDescription="this.cardDescription"/>
-                <div class="descriptionBtns">
-                    <button :class="cardDescription.length > 0 ? `saveDescriptionBtn` : `saveDescriptionDisabledBtn`" :disabled='cardDescription.length == 0' @click="handleSaveDescription">Save</button>
+                <TextEditorView class="descriptionContainer" :cardDescription="card.description" @isEditing="handleDescEdit"/>
+                <div class="descriptionBtns" v-if="isEditingDesc">
+                    <button class="saveDescriptionBtn" @click="handleSaveDescription">Save</button>
                     <button class="canelDescripBtn">Cancel</button>
                 </div>
              </div>
@@ -78,7 +78,7 @@
              <ButtonCard imageIcon="invoice_icon.png" title="Delete"/>
              </div>
         </div>
-        <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" activator="tagBtn" contained>
+        <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px;" activator="tagBtn" contained>
             <TagContainerView @handleSaveTag="handleSaveTag" @refreshTags="refreshTags" @handleTagChanged="handleTagChanged" :boardTags="this.boardTags" class="tagContainerView"/>
         </v-overlay>
         <v-overlay v-model="isDateTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" activator="tagBtn" contained>
@@ -127,6 +127,7 @@ import CryptoJS from 'crypto-js'
 import Editor from 'primevue/editor'
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
 import { VueEditor } from 'vue2-editor'
+import { saveDesc } from '@/APIService'
   
 export default {
   inject: ["cryptojs"],
@@ -142,7 +143,6 @@ export default {
         var card = ref(null)
         var list = ref(null)
         var cardDesc = ref("Test description")
-        var selectedList = ref(null)
         var currentUser = ref(null)
         var isTagTapped = ref(false)
         var boardTags = ref([])
@@ -154,11 +154,11 @@ export default {
         var time = ref("11:15")
         var timeStep = ref("10:10")
         var isLoading = ref(true)
-        var cardDescription = ref("")
         var boardId = ref("")
+        var isEditingDesc = ref(false)
       return { 
-             members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, cardDescription, boardId,
-             currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep
+             members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId,
+             currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc
             }
     },
     mounted() {
@@ -175,6 +175,31 @@ export default {
       // this.fetchTags()
     },
     methods: {
+        handleDescEdit() {
+            this.isEditingDesc = true 
+        },
+        async handleSaveDate() {
+            let timeArray = this.time.split(':')
+            this.selectedDate.setHours(timeArray[0])
+            this.selectedDate.setMinutes(timeArray[1])
+            let dueDateMilliSec = this.selectedDate.getTime()
+            var params = {
+                card_id: this.card._id, 
+                dueDate: dueDateMilliSec
+        }
+        var fullURL = BASE_URL + "board/addDueDateToCard"
+        await axios.post(fullURL, params).then((response) => {
+          if (response.data != null) {
+            let data = response.data
+            if (data.statusCode == 200) {
+                this.card.dueDate = dueDateMilliSec
+                this.selectedDate = null
+                this.isDateTapped = false 
+                console.log("list and card info updated: ", data.resp)
+              }
+             }
+          })
+        },
       async handleTagChanged(tag) {
             if (tag.isChecked) {
                 this.cardTags.push(tag)
@@ -187,7 +212,7 @@ export default {
              tags.push(cardTag.id)
            }
           var params = {
-            card_id: this.selectedCard._id, 
+            card_id: this.card._id, 
             tags: tags
           }
           var fullURL = BASE_URL + "board/addTagsToCard"
@@ -228,9 +253,9 @@ export default {
       },
       handleSaveDescription() {
           console.log("save description tapped")
-          // let html = document.getElementById("editor").innerHTML
-          // console.log("editor html: ", html)
-            // descriptionContainer
+          let html = document.getElementById("editor").innerHTML
+          console.log("editor html: ", html)
+          saveDesc(html, this.card._id)
       },
       allowedHours: v => v % 2,
       allowedMinutes: v => v >= 10 && v <= 50,
@@ -259,6 +284,7 @@ export default {
                    this.card = resp.card
                    this.list = resp.list
                    this.cardTags = resp.tags
+                   
                    this.fetchTags()
                    this.autoGrow()
                   //  this.isCardTapped = true 
@@ -304,10 +330,10 @@ export default {
             }
         }, 
         async handleContentInfoTapped() {
-          console.log("selectedCard: ", this.selectedCard)
+          console.log("selectedCard: ", this.card)
           var params = {
-            card_id: this.selectedCard._id, 
-            cardName: this.selectedCard.cardName, 
+            card_id: this.card._id, 
+            cardName: this.card.cardName, 
             cardDesc: this.cardDesc
          }
          var fullURL = BASE_URL + "board/updateCard"
@@ -321,8 +347,7 @@ export default {
         
     }, 
     watch: { 
-        card(newVal, oldVal) { 
-           this.selectedCard = newVal
+        card() { 
            this.getUserInfo()
         }, 
         list(newVal, oldVal) { 

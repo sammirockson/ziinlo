@@ -68,7 +68,6 @@
 </template>
 <script>
 import NavBar from '@/components/NavBarView.vue'
-import CardDetailView from '@/components/PopOverCardView.vue'
 import DraggableView from 'vuedraggable'
 import CardView from '@/views/CardView.vue'
 import { ref } from 'vue'
@@ -79,7 +78,7 @@ export default {
     inject: ["eventBus"],
     props: ["isExpanded"],
     components: {
-        NavBar, CardView, CardDetailView, DraggableView
+        NavBar, CardView, DraggableView
     }, 
     setup() {
         var isSideBarExpanded = ref(true)

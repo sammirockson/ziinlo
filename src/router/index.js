@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AllTaskboardsView from '@/views/AllTaskboardsView.vue'
 import BoardView from '@/views/BoardView.vue'
-import CardDetailView from '@/views/CardDetailView.vue'
 import LoginView from '@/views/LoginView.vue'
 import SignUpView from '@/views/SignUp.vue'
 import CardPopupView from '@/components/CardPopupView.vue'
@@ -11,22 +10,22 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView // Landing page
+    component: HomeView
   },
   {
     path: '/login',
     name: 'login',
-    component: LoginView // All boards
+    component: LoginView
   },
   {
     path: '/signup',
     name: 'signup',
-    component: SignUpView // All boards
+    component: SignUpView
   },
   {
     path: '/boards',
     name: 'boards',
-    component: AllTaskboardsView // All boards
+    component: AllTaskboardsView
   },
   {
     path: '/b/:boardId',
@@ -39,12 +38,6 @@ const routes = [
         component: CardPopupView
       }
     ]
-  },
-  {
-    path: '/b/:id',
-    name: 'cardDetail',
-    component: CardDetailView,
-    props: { board: true }
   }
 ]
 
