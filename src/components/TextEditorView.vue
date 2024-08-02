@@ -1,6 +1,6 @@
 <template>
     <div class="mx-1 my-3 editContainer">
-        <div class="commandContainer" v-if="isEditing">
+        <div class="commandContainer" v-if="isEditingDesc">
             <div v-for="(item, index) in commands" :key="index" class="btn-group" >
             <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0" data-toggle="tooltip" data-placement="bottom" :title="item.title" @click="exec(item.command)">
                 <i :class="'fa ' + item.icon"></i>
@@ -15,7 +15,7 @@
 import { ref } from 'vue'
 export default {
     name: 'wysiwyg',
-    props: { cardDescription: String },
+    props: { cardDescription: String, isEditingDesc: Boolean },
     mounted () {
         document.getElementById('editor').addEventListener('input', function(){
           console.clear()
@@ -24,11 +24,13 @@ export default {
              this.style.height = scrollHeight + "px";
           }
        })
+
+       let editorElement = document.getElementById("editor")
+        let scrollHeight = editorElement.scrollHeight
+        editorElement.style.height = scrollHeight + "px";
     },
     setup() {
-        var isEditing = ref(false)
         return {
-            isEditing,
             commands : [
                 { name: 'Bold', title: 'Bold', command: 'bold', icon: 'fa-bold' },
 
@@ -81,7 +83,6 @@ export default {
             return !!clubs.includes(index + 1)
         },
         getCurrentTagName () {
-            this.isEditing = true 
             this.$emit("isEditing", true)
             if (window.getSelection().baseNode) {
                 this.currentTagName = window.getSelection().baseNode.parentNode.tagName                 

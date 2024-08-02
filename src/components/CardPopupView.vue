@@ -42,10 +42,10 @@
                     <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/>
                 </div>
                 <!-- <DescriptionViewFrom class="descriptionContainer"/> -->
-                <TextEditorView class="descriptionContainer" :cardDescription="card.description" @isEditing="handleDescEdit"/>
+                <TextEditorView class="descriptionContainer" :cardDescription="card.description" :isEditingDesc="this.isEditingDesc" @isEditing="handleDescEdit"/>
                 <div class="descriptionBtns" v-if="isEditingDesc">
                     <button class="saveDescriptionBtn" @click="handleSaveDescription">Save</button>
-                    <button class="canelDescripBtn">Cancel</button>
+                    <button class="canelDescripBtn" @click="handleCancelDescEditing">Cancel</button>
                 </div>
              </div>
 
@@ -175,6 +175,9 @@ export default {
       // this.fetchTags()
     },
     methods: {
+        handleCancelDescEditing() {
+            this.isEditingDesc = false 
+        },
         handleDescEdit() {
             this.isEditingDesc = true 
         },
@@ -255,6 +258,7 @@ export default {
           console.log("save description tapped")
           let html = document.getElementById("editor").innerHTML
           console.log("editor html: ", html)
+          this.isEditingDesc = false 
           saveDesc(html, this.card._id)
       },
       allowedHours: v => v % 2,
@@ -284,7 +288,7 @@ export default {
                    this.card = resp.card
                    this.list = resp.list
                    this.cardTags = resp.tags
-                   
+
                    this.fetchTags()
                    this.autoGrow()
                   //  this.isCardTapped = true 
