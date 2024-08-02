@@ -22,10 +22,10 @@
         </label>
       </div>
       <img v-if="localeFileURL != null || remoteFileURL != null" class="preview-img"  :src="localeFileURL == null ? remoteFileURL : localeFileURL"/>
-      <label for="">Or</label>
-      <v-text-field type="text" prepend-inner-icon="mdi-file-outline" class="fileLinkField" v-model="remoteFileURL" variant="outlined" label="Paste file link"></v-text-field>
+      <!-- <label for="">Or</label> -->
+      <!-- <v-text-field type="text" prepend-inner-icon="mdi-file-outline" class="fileLinkField" v-model="remoteFileURL" variant="outlined" label="Paste file link"></v-text-field> -->
       <button v-if="isUploading" class="uploadBtn buttonload">
-            <i class="fa fa-circle-o-notch fa-spin"></i>Uploading... 
+            <i class="fa fa-circle-o-notch fa-spin"></i> Uploading... 
         </button>
       <button v-else class="uploadBtn" @click="handleUploadFile">Upload File</button>
     </div>
@@ -37,9 +37,7 @@ import { BASE_URL } from '@/config';
 import axios from 'axios';
 
 export default {
-    props: { 
-        card: String
-     },
+    props: { card: String },
     setup() {
         var isDragging = ref(false)
         // var files = ref([])
@@ -66,22 +64,28 @@ export default {
                 this.selectedFile = null
                 this.localeFileURL = null
                  console.log("upload file response: ", response)
+                 if (response.data != null) {
+                   let data = response.data
+                  if (data.statusCode == 200) {
+                     this.$emit("fileUploadComplete", data.resp)
+                  }
+                }
               })
             }
 
-            if (this.remoteFileURL != null) {
-              var postJson = {
-                 card_id: this.card_id, 
-                 remoteFileURL: this.remoteFileURL
-              }
-              let fullURL = BASE_URL + "files/remoteURL"
-              this.isUploading = true 
-              await axios.post(fullURL, postJson).then((response) => {
-                this.isUploading = false 
-                this.remoteFileURL = null
-                 console.log("upload file response: ", response)
-              })
-            }
+            // if (this.remoteFileURL != null) {
+            //   var postJson = {
+            //      card_id: this.card_id, 
+            //      remoteFileURL: this.remoteFileURL
+            //   }
+            //   let fullURL = BASE_URL + "files/remoteURL"
+            //   this.isUploading = true 
+            //   await axios.post(fullURL, postJson).then((response) => {
+            //     this.isUploading = false 
+            //     this.remoteFileURL = null
+            //      console.log("upload file response: ", response)
+            //   })
+            // }
         },
       onChange() {
         let file = this.$refs.file.files[0]
@@ -112,11 +116,11 @@ export default {
       },
     }, 
     watch: { 
-        remoteFileURL(newVal, oldVal) { 
-            if (newVal != null) {
-                this.fileURL = null
-                this.selectedFile = null
-            }
+      remoteFileURL(newVal, oldVal) { 
+         if (newVal != null) {
+             this.fileURL = null
+             this.selectedFile = null
+          }
         }, 
     }, 
     updated() {
@@ -139,7 +143,7 @@ export default {
 
 .uploadBtn { 
   margin-top: 40px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   width: 260px;
   height: 44px;
   margin-right: auto;
@@ -147,7 +151,7 @@ export default {
   font-weight: 600;
   font-size: 16px;
   color: white;
-  background-color: var(--color-primary);
+  background-color: var(--color-bar-dark);
   border: 0px solid transparent;
   border-radius: var(--border-radius-1);
 }

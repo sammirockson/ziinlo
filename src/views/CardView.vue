@@ -1,7 +1,7 @@
 <template>
     <div class="cardContainer">
         <RouterLink :to="`/b/` + boardId + `/c/` +  card._id"  style="text-decoration: none; color: inherit;">
-        <img v-if="card.attachments.length > 0" :src="card.attachments[0]" class="cardImage">
+        <img v-if="card.attachments.length > 0" :src="card.attachments[0].fileURL" class="cardImage">
         <div class="dueDateContainer" v-if="card.dueDate != null">
             <img src="@/assets/clock.png" class="clockIcon">
             <label class="dueDateLabel">{{ new Date(card.dueDate).toLocaleDateString('en-US', {

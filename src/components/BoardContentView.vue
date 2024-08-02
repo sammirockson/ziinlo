@@ -60,9 +60,9 @@
 
            </div>
         </div>
-        <v-overlay v-model="isCardTapped" class="align-center justify-center overLayContainer" contained>
+        <!-- <v-overlay v-model="isCardTapped" class="align-center justify-center overLayContainer" contained>
             <CardDetailView :card="this.selectedCard" :list="this.selectedList" :tags="this.cardTags" @overlayDismissed="handleOverlayDismissed"/>
-        </v-overlay>
+        </v-overlay> -->
         <RouterView/>
     </div>
 </template>
@@ -218,13 +218,6 @@ export default {
             // this.getBoardBy(this.boardId)
         },
         handleCardTapped(card, list) {
-            // this.isCardTapped = true 
-            // this.eventBus.emit('cardOpened', card)
-            // this.selectedCard = card
-            // this.selectedList = list
-            // emitter.emit('cardOpened', card);
-            // EventBus.$emit('cardOpened', card);
-            // 'b/:id/c/:id'
             let path = "/b/" + this.boardId
             this.$router.push(
                 {
@@ -233,7 +226,6 @@ export default {
                         card: card._id
                     }
                 })
-
         },
       async createANewList(list, index) {
         // Create List
@@ -354,10 +346,6 @@ export default {
         }
     },
     watch: { 
-        // isExpanded: function(newVal, oldVal) {
-        //     console.log('Prop changed isSideBarExpanwded: ', newVal)
-        //     this.isSideBarExpanded = newVal
-        // }, 
         '$route' () {
           console.log("routed called")
           this.getBoardBy(this.boardId)
@@ -368,18 +356,7 @@ export default {
         console.log("main routeParams: ", routeParams)
         this.boardId = routeParams.boardId
         this.getBoardBy(this.boardId)
-    }, 
-    updated() {
-        // let query = this.$route.query
-        // if (query.card != null) {
-        //     // Fetch card info
-        //     this.getCardBy(query.card)
-        // }
-        // console.log("board updated...", this.isRefreshBoard)
-        // if (this.isRefreshBoard) {
-            // this.getBoardBy(this.boardId)
-        // }
-    }
+    },
 }
 </script>
 <style scoped>
@@ -496,6 +473,7 @@ export default {
   max-lines: 200;
   font-weight: 500;
   font-size: 14px;
+  color: var(--color-dark-blue);
 }
 
 .createListContainer {

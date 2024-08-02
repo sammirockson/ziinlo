@@ -41,15 +41,24 @@
                     <ButtonCard v-if="card.dueDate != null" imageIcon="calendar.png" :title="formatDate(card)" class="dueDateField"/>
                     <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/>
                 </div>
-                <!-- <DescriptionViewFrom class="descriptionContainer"/> -->
                 <TextEditorView class="descriptionContainer" :cardDescription="card.description" :isEditingDesc="this.isEditingDesc" @isEditing="handleDescEdit"/>
                 <div class="descriptionBtns" v-if="isEditingDesc">
                     <button class="saveDescriptionBtn" @click="handleSaveDescription">Save</button>
                     <button class="canelDescripBtn" @click="handleCancelDescEditing">Cancel</button>
                 </div>
+                <label class="attachmentsTitleLabel" v-if=" this.attachments.length > 0">Attachments</label>
+                <div class="attachmentListView">
+                    <div class="attachmentCell" v-for="(attachment, index) in this.attachments" :key="index">
+                         <img :src="attachment.fileURL" class="attchmentPreview">
+                         <div class="attachmentInfoContainer">
+                             <label class="attachmentFileNameLabel">{{ attachment.fileName }}</label>
+                             <label class="attachmentDateLabel">Attached on {{ attachment.createdAt }}</label>
+                         </div>
+                    </div>
+                </div>
              </div>
 
-             <div class="controlsContainer">
+            <div class="controlsContainer">
              <label class="memberTitleLabel">Members</label>
              <div class="membersContainer">
                 <div class="memberCell" v-for="(index, member) in members" :key="member">
@@ -103,7 +112,7 @@
         </div>
         </v-overlay>
         <v-overlay v-model="isAttachmentTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" contained>
-            <AttachmentView :card="this.card._id" class="attachmentContainerView"/>
+            <AttachmentView :card="this.card._id" class="attachmentContainerView" @fileUploadComplete="handleDidUploadFile"/>
         </v-overlay>
     </div>
     </PopupRouterView>
@@ -139,42 +148,61 @@ export default {
   },
   setup() {
     var members = ref([1, 2, 3, 4, 5, 6, 7, 8])
-        var isTracked = ref(true)
-        var card = ref(null)
-        var list = ref(null)
-        var cardDesc = ref("Test description")
-        var currentUser = ref(null)
-        var isTagTapped = ref(false)
-        var boardTags = ref([])
-        var cardTags = ref([])
-        var isDateTapped = ref(false)
-        var isAttachmentTapped = ref(false)
-        var selectedDate = ref(null)
-        var value = ref(null)
-        var time = ref("11:15")
-        var timeStep = ref("10:10")
-        var isLoading = ref(true)
-        var boardId = ref("")
-        var isEditingDesc = ref(false)
-      return { 
-             members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId,
-             currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc
-            }
+    var isTracked = ref(true)
+    var card = ref(null)
+    var list = ref(null)
+    var cardDesc = ref("Test description")
+    var currentUser = ref(null)
+    var isTagTapped = ref(false)
+    var boardTags = ref([])
+    var cardTags = ref([])
+    var isDateTapped = ref(false)
+    var isAttachmentTapped = ref(false)
+    var selectedDate = ref(null)
+    var value = ref(null)
+    var time = ref("11:15")
+    var timeStep = ref("10:10")
+    var isLoading = ref(true)
+    var boardId = ref("")
+    var isEditingDesc = ref(false)
+    var attachments = ref([])
+    return { 
+          members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments,
+          currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc
+        }
     },
-    mounted() {
-      this.autoGrow()
+    async mounted() {
     },
     created() {
       // fetch from api
       let routeParams = this.$route.params
       console.log("pop up params: ", routeParams)
-      // Call api to fetch board
       this.boardId = routeParams.boardId
       let card_id = routeParams.cardId
       this.getCardBy(card_id)
-      // this.fetchTags()
     },
     methods: {
+        handleDidUploadFile(updatedCard) {
+            this.card = updatedCard
+            this.attachments = updatedCard.attachments
+        },
+        async handleSaveTag(tag) {
+         console.log("prepare to save tag")
+         var params = {
+            boardId: this.boardId, 
+            cardId: this.card.id,
+            name: tag.name, 
+            colorHex: tag.color, 
+            id: Date.now()
+         }
+         var fullURL = BASE_URL + "board/createTag"
+         await axios.post(fullURL, params).then((response) => {
+          if (response.data != null) {
+             let data = response.data
+             console.log("tag resp data: ", data)
+            }
+          })
+        }, 
         handleCancelDescEditing() {
             this.isEditingDesc = false 
         },
@@ -239,6 +267,7 @@ export default {
           if (response.data != null) {
              let data = response.data
              console.log("fetch tag resps: ", data)
+             this.autoGrow()
              if (data.resp != null) {
                 var tags = []
                 for (var index in data.resp) {
@@ -288,13 +317,9 @@ export default {
                    this.card = resp.card
                    this.list = resp.list
                    this.cardTags = resp.tags
-
+                   this.attachments = resp.attachments
                    this.fetchTags()
-                   this.autoGrow()
-                  //  this.isCardTapped = true 
-                  //  this.$emit('cardDetailInfo', resp)
                 }
-                
               }
              }
           })
@@ -347,8 +372,7 @@ export default {
              console.log("card detail resp data: ", data)
             }
           })
-        },
-        
+        }
     }, 
     watch: { 
         card() { 
@@ -374,15 +398,61 @@ export default {
         selectedDate(newVal, oldVal) {
             console.log('date changed: ', newVal, ' | was: ', oldVal)
         }
-    },
-    updated() {
-
     }
-  }
-  </script>
+}
+</script>
 
 
 <style scoped>
+.attachmentDateLabel {
+    font-weight: 300;
+    font-size: 12px;
+    display: flex;
+    margin-top: 4px; 
+}
+.attachmentFileNameLabel {
+    font-weight: 500;
+    font-size: 16px;
+    display: flex;
+    max-height: 50px;
+    margin-top: 8px;
+}
+.attachmentInfoContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 10px;
+    width: calc(100% - 110px);
+    height: 80px;
+    padding-bottom: 8px;
+}
+.attchmentPreview {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 10px;
+    object-fit: contain;
+    overflow: hidden;
+}
+
+.attachmentsTitleLabel {
+    margin-top: 20px;
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 10px;
+    float: left;
+    display: flex;
+}
+.attachmentCell {
+    display: flex;
+    height: 90px;
+    width: 98%;
+    margin-bottom: 10px;
+    background-color: var(--color-background);
+    border-radius: 8px;
+}
 .descriptionBtns {
     display: flex;
     justify-content: space-between;
@@ -403,7 +473,7 @@ export default {
   font-weight: 600;
   font-size: 16px;
   color: white;
-  background-color: var(--color-primary);
+  background-color: var(--color-bar-dark);
   border: 0px solid transparent;
   border-radius: var(--border-radius-1);
 }
@@ -442,7 +512,7 @@ export default {
     justify-content: space-between;
     background-color: white;
     width: 300px;
-    height: 550px;
+    height: 400px;
     border-radius: var(--border-radius-2);
 }
 .saveDateBtn, .dateBtnDisabled { 
@@ -455,7 +525,7 @@ export default {
   font-weight: 600;
   font-size: 16px;
   color: white;
-  background-color: var(--color-primary);
+  background-color: var(--color-bar-dark);
   border: 0px solid transparent;
   border-radius: var(--border-radius-1);
 }

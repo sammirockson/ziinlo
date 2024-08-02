@@ -57,7 +57,7 @@ export default {
     display: block;
     width: 140px;
     height: 40px;
-    background-color: var(--color-primary);
+    background-color: var(--color-bar-dark);
     color: white;
     border-radius: var(--border-radius-2);
     margin-left: 8px;

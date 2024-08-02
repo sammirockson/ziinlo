@@ -202,7 +202,7 @@ export default {
 }
 
 .menuIconActive svg {
-    color: var(--color-primary);
+    color: var(--color-bar-dark);
 }
 
 
