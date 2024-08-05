@@ -27,7 +27,7 @@
                          </div>
                          <img src="@/assets/three_dots.png" class="listNameLabel"></img>
                      </div>
-                     <div class="listBackgroundView" :id="'listBgView' + list._id" v-if="this.isBtmViewVisible(list, false)">
+                     <div class="listBackgroundView" :id="'listBgView' + list._id" v-if="this.isBtmViewVisible(list)">
                      <div class="cardAndFooterContainer">
                         <!-- <RouterLink :to="`/b` + this.board._id + `/c` +  card._id"  style="text-decoration: none; color: inherit;"> -->
                         <DraggableView v-model="list.cards" 
@@ -59,18 +59,18 @@
                     </div>
                     
                  </div>
-                   <div class="bottomView" :id="'bottomView_' + list._id" v-if="this.isBtmViewVisible(list, true)">
-                       <!-- <div v-if="list.isCreateCard == true" class="createListContainer">
-                            <textarea name="text" v-model="newCardName" @input="autoGrow(index, list)" placeholder="Give your card a name" class="addListInputField" :id="`newCardField_` + index"></textarea>
+                   <div class="bottomView" :id="'bottomView_' + list._id" v-if="this.isBtmViewVisible(list)">
+                       <div v-if="list.isCreateCard == true" class="createListTipFooterView">
+                            <!-- <textarea name="text" v-model="newCardName" @input="autoGrow(index, list)" placeholder="Give your card a name" class="addListInputField" :id="`newCardField_` + index"></textarea>
                             <button v-if="isSavingCard" class="addListBtn buttonload">
                                <i class="fa fa-circle-o-notch fa-spin"></i> Adding... 
                             </button>
-                           <button v-else class="addListBtn" @click="handleCreateCard(list, index)">Add Card</button>
-                        </div> -->
-                      <div v-if="list.cards != null && list.cards.length > 0 || list.isAddCard == true" class="listFooterView" @click="handleAddCard(list, index)">
+                           <button v-else class="addListBtn" @click="handleCreateCard(list, index)">Add Card</button> -->
+                        </div>
+                      <div v-else v-if="list.cards != null && list.cards.length > 0 || list.isAddCard == true || list.isCreateCard == true" class="listFooterView" @click="handleAddCard(list, index)">
                         <span id="addIcon" class="material-symbols-outlined">add</span>
                         <div class="footerTitleContainer">
-                            <button class="addCardLabel">New Card</button>
+                            <button class="addCardLabel">New Card {{ list.isCreateCard }}</button>
                         </div>
                        </div>
                    </div>
@@ -112,12 +112,8 @@ export default {
         return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, selectedCard, selectedList, allCards, isSavingCard, allBoardTags, isRefreshBoard}
     },
     methods: {
-        isBtmViewVisible(list, isBottom) {
-            if (isBottom == true)  {
-                return list.headerType ==  'addList'  || list.headerType == 'creatingList' ? false : list.isCreateCard ? false : true
-            } else {
-                return list.headerType ==  'addList'  || list.headerType == 'creatingList' ? false : true
-            }
+        isBtmViewVisible(list) {
+            return list.headerType ==  'addList'  || list.headerType == 'creatingList' ? false : true
         },
         getCardTags(card) {
             let tagIds = card.selectedTags
@@ -320,9 +316,12 @@ export default {
             // let bottomViewHeight = element.scrollHeight + 100
             // bottomView.style.height = (300) + "px";
 
-            let listBgViewId = "listBgView" + list._id
-            var myDiv = document.getElementById(listBgViewId);
-            myDiv.scrollTop = myDiv.scrollHeight + "px";
+            setTimeout(()=>{
+                let listBgViewId = "listBgView" + list._id
+                var myDiv = document.getElementById(listBgViewId);
+                myDiv.scrollTop = myDiv.scrollHeight + 200;
+            }, 500)
+          
             // myDiv.scrollIntoView({behavior: 'smooth'});
 
 
@@ -529,7 +528,7 @@ export default {
   color: var(--color-dark-blue);
 }
 
-.createListContainer {
+.createListContainer  {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -545,6 +544,13 @@ export default {
     margin-left: auto;
     border-radius: var(--border-radius-2)
 }
+
+/* .createListTipFooterView {
+    width: 100%;
+    height: 20px;
+    margin-top: -5px;
+    background-color: white;
+} */
 
 .createNewList {
     display: flex;
