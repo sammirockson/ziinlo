@@ -55,6 +55,9 @@ export default {
             this.isCreateBoard = true 
         }, 
         handleThemeToggle() {
+         this.handleToggle(true)
+        }, 
+        handleToggle(isInvertable) {
             document.body.classList.toggle("dark-theme-variables")
             let lightMode = document.getElementById("lightMode")
             let darkMode = document.getElementById("darmMode")
@@ -66,8 +69,11 @@ export default {
                 lightMode.classList.remove("active")
                 darkMode.classList.add("active")
             }
-            this.isDarkMode = !this.isDarkMode
-            localStorage.setItem("isDarkMode", this.isDarkMode ? "0" : "1")
+            if (isInvertable === true) {
+                this.isDarkMode = !this.isDarkMode
+                let cacheValue = this.isDarkMode ? "1" : "0"
+                localStorage.setItem("isDarkMode", cacheValue)
+            }
         }
     },
     watch: { 
@@ -79,7 +85,8 @@ export default {
     mounted() {
     //    let isDark = localStorage.getItem("isDarkMode")
     //    if (isDark != null) {
-    //       this.isDarkMode = isDark == "1" ? true : false
+    //       this.isDarkMode = isDark == "1"
+    //       this.handleToggle(false)
     //    }
     },
 }
@@ -138,7 +145,7 @@ export default {
     margin-right: 15px;
 }
 .searchContainer {
-    width: calc(100% - 240px);
+    width: calc(100% - 340px);
     height: 50px;
     padding-right: 400px;
     padding-left: 20px;
