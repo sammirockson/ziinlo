@@ -19,7 +19,12 @@
             <span class="material-symbols-outlined">add</span>
             New Board</button>
        </div>      
+       <div class="themeToggler" @click="handleThemeToggle">
+        <span class="material-symbols-sharp active" id="lightMode">light_mode</span>
+        <span class="material-symbols-sharp" id="darmMode">dark_mode</span>
+       </div>
        <img src="@/assets/notification.png" class="notificationIcon">
+       <img src="@/assets/totalCustomers.png" class="profileImage">
        <v-overlay  v-model="isCreateBoard" class="align-center justify-center" contained>
            <CreateNewBoardView @closeOverlay="handleCloseOverlay"/>
         </v-overlay>
@@ -37,7 +42,8 @@ export default {
         var searchHistory = ref(["Groceries", "Fruits", "Meat", "Meatlo", "Something nice here"])
         var isSideBarExpanded = ref(false)
         var isCreateBoard = ref(false)
-        return { searchHistory, isSideBarExpanded, isCreateBoard } 
+        var isDarkMode = ref(false)
+        return { searchHistory, isSideBarExpanded, isCreateBoard, isDarkMode } 
     }, 
     methods: {
         handleCloseOverlay() {
@@ -47,6 +53,21 @@ export default {
         handleCreateBoard() {
             // create a new board
             this.isCreateBoard = true 
+        }, 
+        handleThemeToggle() {
+            document.body.classList.toggle("dark-theme-variables")
+            let lightMode = document.getElementById("lightMode")
+            let darkMode = document.getElementById("darmMode")
+
+            if (this.isDarkMode) {
+                lightMode.classList.add("active")
+                darkMode.classList.remove("active")
+            } else {
+                lightMode.classList.remove("active")
+                darkMode.classList.add("active")
+            }
+            this.isDarkMode = !this.isDarkMode
+            localStorage.setItem("isDarkMode", this.isDarkMode ? "0" : "1")
         }
     },
     watch: { 
@@ -55,9 +76,48 @@ export default {
             this.isSideBarExpanded = newVal
         }
     }, 
+    mounted() {
+    //    let isDark = localStorage.getItem("isDarkMode")
+    //    if (isDark != null) {
+    //       this.isDarkMode = isDark == "1" ? true : false
+    //    }
+    },
 }
 </script>
 <style scoped>
+.profileImage {    
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 15px;
+}
+.themeToggler span.active {
+    background-color: var(--color-bar-dark);
+    color: white;
+    border-radius: var(--border-radius-1);
+}
+
+.themeToggler span {
+    height: 100%;
+    width: 50%;
+    padding-top: 8px;
+}
+
+.themeToggler {
+    display: flex;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 20px;
+    width: 100px;
+    height: 38px;
+    border-radius: var(--border-radius-1);
+    background-color: var(--color-light);
+    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
+}
 .taskNotificationContainer button {
     display: flex;
     flex-direction: row;

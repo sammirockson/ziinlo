@@ -151,6 +151,7 @@ export default {
     text-align: left;
     white-space: pre-wrap;
     margin-bottom: 8px;
+    color: var(--color-card-title);
 }
 
 .clockIcon {
@@ -189,7 +190,7 @@ export default {
     min-height: 50px;
     margin-bottom: 10px;
     border: 1px solid var(--color-light);
-    background-color: white;
+    background-color: var(--color-card-background);
     display: flex;
     flex-direction: column;
     border-radius: var(--border-radius-1);

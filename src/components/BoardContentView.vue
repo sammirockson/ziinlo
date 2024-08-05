@@ -70,7 +70,7 @@
                       <div v-else v-if="list.cards != null && list.cards.length > 0 || list.isAddCard == true || list.isCreateCard == true" class="listFooterView" @click="handleAddCard(list, index)">
                         <span id="addIcon" class="material-symbols-outlined">add</span>
                         <div class="footerTitleContainer">
-                            <button class="addCardLabel">New Card {{ list.isCreateCard }}</button>
+                            <button class="addCardLabel">New Card</button>
                         </div>
                        </div>
                    </div>
@@ -464,6 +464,7 @@ export default {
     margin: 0;
     margin-top: 12px;
     font-weight: 700;
+    color: var(--color-card-title);
 }
 
 .addCardLabel {
@@ -472,6 +473,7 @@ export default {
     font-weight: 600;
     font-size: 15px;
     margin-left: 4px;
+    color: var(--color-card-title);
 }
 .cardAndFooterContainer {
     height: 100%;
@@ -493,7 +495,7 @@ export default {
     border: 1px solid var(--color-light);
     z-index: 9999;
     overflow: hidden;
-    background-color: white;
+    background-color: var(--color-card-background);
     /* margin-top: -8px; */
 }
 
@@ -537,7 +539,7 @@ export default {
     padding-top: 10px;
     z-index: 9999;
     overflow: hidden;
-    background-color: white;
+    background-color: var(--color-card-background);
     align-items: center;
     margin-top: 10px;
     margin-right: auto;
@@ -626,7 +628,7 @@ export default {
     border-top-left-radius: var(--border-radius-2); */
     border: 1px solid var(--color-light);
     padding-right: 15px;
-    background-color: white;
+    background-color: var(--color-card-background);
 }
 
 
