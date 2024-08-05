@@ -545,13 +545,6 @@ export default {
     border-radius: var(--border-radius-2)
 }
 
-/* .createListTipFooterView {
-    width: 100%;
-    height: 20px;
-    margin-top: -5px;
-    background-color: white;
-} */
-
 .createNewList {
     display: flex;
     flex-direction: column;

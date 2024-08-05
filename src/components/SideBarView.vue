@@ -270,8 +270,9 @@ export default {
 
 .logo {
   display: block;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
+  margin-left: 10px;
 }
 
 .titleLabel {
