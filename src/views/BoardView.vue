@@ -1,7 +1,7 @@
 <template>
     <div class="board">
        <SideBarView class="sideBar" @handleMenuTapped="handleChangeContainer" :cachedMenuKey="this.containerType" :isExpanded="this.isExpanded" :style="{width: isExpanded ? '250px' : '90px'}"/>
-       <BoardContentView v-if="containerType == 'board'" class="posContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
+       <BoardContentView v-if="containerType == 'board'" class="fullBoardContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
        <ChatView v-else-if="containerType == 'chat'" class="productContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
        <CalendarView v-else="containerType == 'calendar'" class="addCategoryContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
     </div>
@@ -91,11 +91,15 @@ export default {
     padding: 30px;
 }
 
-.posContainer {
+.fullBoardContainer {
     background-color: var(--color-background);
+    background: url("@/assets/card_bg_1.jpg");
+    background-position: center center;
+    /* background-repeat: no-repeat; */
+    object-fit: cover;
 }
 
-.posContainer, .overviewContainer, .productContainer, .settingsContainer, .addCategoryContainer {
+.fullBoardContainer, .overviewContainer, .productContainer, .settingsContainer, .addCategoryContainer {
   height: 100%;
   width: calc(100vw - 250px);
 }

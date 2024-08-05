@@ -183,6 +183,9 @@ export default {
 .cardContainer {
     overflow: hidden;
     width: 220px;
+    margin-right: auto;
+    margin-left: auto;
+    /* width: 220px; */
     min-height: 50px;
     margin-bottom: 10px;
     border: 1px solid var(--color-light);

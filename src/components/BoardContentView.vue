@@ -5,8 +5,8 @@
 
         </div>
         <div class="mainBoardConentView">
-            <div class="boardListsContainer">
-                 <div v-if="this.board != null" class="listContainer" v-for="(list, index) in this.board.lists" :key="list.id">
+            <div class="boardListsContainer" id="boardListsContainer">
+                 <div v-if="this.board != null" class="listContainer" id="listContainer"v-for="(list, index) in this.board.lists" :key="list.id">
                     <div class="createNewList" :style="{display: list.headerType ==  `creatingList` ? 'flex' : 'none'}">
                             <textarea name="text" v-model="newListName" @input="dynamicTextArea(index)" placeholder="Create New List" class="createNewListField" id="createNewListField_id"></textarea>
                             <button v-if="isSavingCard" class="addListBtn buttonload">
@@ -27,6 +27,7 @@
                          </div>
                          <img src="@/assets/three_dots.png" class="listNameLabel"></img>
                      </div>
+                     <div class="listBackgroundView" :id="'listBgView' + list._id" v-if="this.isBtmViewVisible(list, false)">
                      <div class="cardAndFooterContainer">
                         <!-- <RouterLink :to="`/b` + this.board._id + `/c` +  card._id"  style="text-decoration: none; color: inherit;"> -->
                         <DraggableView v-model="list.cards" 
@@ -47,17 +48,35 @@
                             </button>
                            <button v-else class="addListBtn" @click="handleCreateCard(list, index)">Add Card</button>
                         </div>
-                      <div v-else v-if="list.cards != null && list.cards.length > 0 || list.isAddCard == true" class="listFooterView" @click="handleAddCard(list, index)">
+                      <!-- <div v-else v-if="list.cards != null && list.cards.length > 0 || list.isAddCard == true" class="listFooterView" @click="handleAddCard(list, index)">
+                        <span id="addIcon" class="material-symbols-outlined">add</span>
+                        <div class="footerTitleContainer">
+                            <button class="addCardLabel">New Card</button>
+                        </div>
+                       </div> -->
+                        
+                      
+                    </div>
+                    
+                 </div>
+                   <div class="bottomView" :id="'bottomView_' + list._id" v-if="this.isBtmViewVisible(list, true)">
+                       <!-- <div v-if="list.isCreateCard == true" class="createListContainer">
+                            <textarea name="text" v-model="newCardName" @input="autoGrow(index, list)" placeholder="Give your card a name" class="addListInputField" :id="`newCardField_` + index"></textarea>
+                            <button v-if="isSavingCard" class="addListBtn buttonload">
+                               <i class="fa fa-circle-o-notch fa-spin"></i> Adding... 
+                            </button>
+                           <button v-else class="addListBtn" @click="handleCreateCard(list, index)">Add Card</button>
+                        </div> -->
+                      <div v-if="list.cards != null && list.cards.length > 0 || list.isAddCard == true" class="listFooterView" @click="handleAddCard(list, index)">
                         <span id="addIcon" class="material-symbols-outlined">add</span>
                         <div class="footerTitleContainer">
                             <button class="addCardLabel">New Card</button>
                         </div>
                        </div>
-                      
-                    </div>
-                    
-                 </div>
+                   </div>
+                </div>
 
+                
            </div>
         </div>
         <RouterView/>
@@ -93,6 +112,13 @@ export default {
         return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, selectedCard, selectedList, allCards, isSavingCard, allBoardTags, isRefreshBoard}
     },
     methods: {
+        isBtmViewVisible(list, isBottom) {
+            if (isBottom == true)  {
+                return list.headerType ==  'addList'  || list.headerType == 'creatingList' ? false : list.isCreateCard ? false : true
+            } else {
+                return list.headerType ==  'addList'  || list.headerType == 'creatingList' ? false : true
+            }
+        },
         getCardTags(card) {
             let tagIds = card.selectedTags
             return this.allBoardTags.filter( tag => tagIds.includes(tag.id));
@@ -100,7 +126,6 @@ export default {
         listNameTextAreaGrow(listId) {
             let element = document.getElementById(listId) // cardNameId
             if (element != null) {
-                element.style.height = "24px";
                 element.style.height = (element.scrollHeight) + "px";
             }
 
@@ -126,7 +151,7 @@ export default {
             let badgeAndTitleContainer = document.getElementById(contId) 
             console.log("lstid: ", contId, "element: ", badgeAndTitleContainer == null)
             if (badgeAndTitleContainer != null ) {
-                badgeAndTitleContainer.style.height = "50px";
+                badgeAndTitleContainer.style.height = "60px";
             }
             }
           })
@@ -259,7 +284,7 @@ export default {
             element.style.height = "15px";
             element.style.height = (element.scrollHeight) + "px";
         },
-        autoGrow(index) {
+        autoGrow(index, list) {
             let element = document.getElementById(`newCardField_` + index)
             element.style.height = "15px";
             element.style.height = (element.scrollHeight) + "px";
@@ -289,6 +314,37 @@ export default {
         handleAddCard(list, index) {
             list.isCreateCard = true 
             this.board[index] = list
+
+            // let bottomViewId = 'bottomView_' + list._id
+            // let bottomView = document.getElementById(bottomViewId)
+            // let bottomViewHeight = element.scrollHeight + 100
+            // bottomView.style.height = (300) + "px";
+
+            let listBgViewId = "listBgView" + list._id
+            var myDiv = document.getElementById(listBgViewId);
+            myDiv.scrollTop = myDiv.scrollHeight + "px";
+            // myDiv.scrollIntoView({behavior: 'smooth'});
+
+
+            // var newDiv = document.getElementById(listBgViewId);
+            // newDiv.scrollTop = newDiv.scrollHeight + 100;
+
+
+            // myDiv.animate({scrollTop: $(listBgViewId).prop("scrollHeight")}, 500);
+            // $(listBgViewId).animate({scrollTop: $(listBgViewId).prop("scrollHeight")}, 500);
+
+
+            // var newDiv = document.getElementById(listBgViewId);
+            // newDiv.scrollTop = newDiv.scrollHeight + 50000;
+
+
+            
+            // var boardListsContainer = document.getElementById("boardListsContainer");
+            // boardListsContainer.scrollTop = 999999999999999;
+
+            // var listContainer = document.getElementById("listContainer");
+            // listContainer.scrollTop = 0;
+            
         }, 
      async getBoardBy(boardId) {
         this.isCardTapped = false
@@ -423,7 +479,7 @@ export default {
     width: 100%;
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 50px;
+    /* padding-bottom: 50px; */
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
     scrollbar-width: none;  /* Firefox */
     padding-top: 8px;
@@ -433,7 +489,7 @@ export default {
     flex-direction: row;
     justify-content: center;
     height: 50px;
-    width: 100%;
+    width: 240px;
     border-radius: var(--border-radius-1);
     border: 1px solid var(--color-light);
     z-index: 9999;
@@ -487,7 +543,7 @@ export default {
     margin-top: 10px;
     margin-right: auto;
     margin-left: auto;
-    border-radius: var(--border-radius-1)
+    border-radius: var(--border-radius-2)
 }
 
 .createNewList {
@@ -497,7 +553,7 @@ export default {
     /* height: 140px; */
     width: 98%;
     padding-top: 10px;
-    z-index: 9999;
+    z-index: 999999;
     overflow: hidden;
     background-color: white;
     align-items: center;
@@ -534,12 +590,12 @@ export default {
     display: flex;
     width: 165px;
     min-height: 30px;
-    margin-top: 13px;
+    margin-top: 17px;
     font-size: 15px;
     font-weight: 600;
     resize: none;
     color: var(--color-dark);
-    margin-bottom: 8px;
+    margin-bottom: 20px;
     margin-left: 8px;
 }
 
@@ -564,7 +620,7 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    height: 50px;
+    height: 60px;
     width: 100%;
     border-radius:  var(--border-radius-1);;
     /* border-top-right-radius: var(--border-radius-2);
@@ -577,7 +633,7 @@ export default {
 
 .boardListsContainer {
     width: 100%;
-    height: calc(100vh - 160px);
+    height: calc(100vh - 120px);
     white-space: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
@@ -587,33 +643,49 @@ export default {
 
 .listContainer {
     width: 220px;
-    /* background-color: #eee; */
     float: none;
-    height: 100%;
+    max-height: 100%;
+    position: relative;
     margin: 0 0.50%;
     display: inline-block;
     zoom: 1;
-    /* overflow: hidden; */
-    /* overflow-y: scroll; */
     overflow: hidden;
+
+    display: table-cell;
+    vertical-align: top;
+    padding-left: 15px;
+}
+
+.listBackgroundView {
+    width: 100%;
+    background-color: var(--color-background);
+    max-height: calc(100vh - 230px);
+    overflow-y: scroll;
+    margin-top: -10px;
+    /* border-bottom-left-radius: var(--border-radius-2);
+    border-bottom-right-radius: var(--border-radius-2); */
+}
+
+.bottomView {
+    min-height: 50px;
+    width: 100%;
+    background-color: var(--color-background);
+    border-bottom-left-radius: var(--border-radius-2);
+    border-bottom-right-radius: var(--border-radius-2);
 }
 
 .mainBoardConentView {
     width: calc(100% - 10px);
-    height: calc(100% - 130px);
+    height: calc(100% - 120px);
     margin-left: auto;
     margin-right: auto;
-    padding-top: 20px;
+    padding-top: 10px;
 }
 
 .boardBNavBar {
-    width: calc(100% - 30px);
+    width: 100%;
     height: 50px;
-    background-color: white;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 15px;
-    border-radius: var(--border-radius-1);
+    background-color: rgba(0, 0, 0, 0.2);
 }
     
 </style>
