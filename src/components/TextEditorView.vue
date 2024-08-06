@@ -7,7 +7,7 @@
             </button>           
         </div>
         </div>
-        <div class="editor mt-2" id="editor"  contenteditable="true" v-html="cardDescription" @mouseup="getCurrentTagName" :keyup.enter="getCurrentTagName"></div>
+        <div class="editor mt-2" id="editor" :style="{height: editorHeight}"  contenteditable="true" v-html="cardDescription" @mouseup="getCurrentTagName" :keyup.enter="getCurrentTagName"></div>
     </div>
 </template>
 
@@ -15,7 +15,7 @@
 import { ref } from 'vue'
 export default {
     name: 'wysiwyg',
-    props: { cardDescription: String, isEditingDesc: Boolean },
+    props: { cardDescription: String, isEditingDesc: Boolean, editorHeight: Number },
     mounted () {
         document.getElementById('editor').addEventListener('input', function(){
           console.clear()
@@ -110,7 +110,6 @@ export default {
     flex-direction: column;
     justify-content: start;
     align-items: start;
-    height: 340px;
     font-size: 15px;
     font-weight: 500;
     font-family: 'Poppins', Helvetica, Arial, sans-serif;

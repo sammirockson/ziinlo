@@ -62,7 +62,7 @@
                 </div>
 
                 <Label class="attachmentsTitleLabel">Description</Label>
-                <TextEditorView class="descriptionContainer" :cardDescription="card.description" :isEditingDesc="this.isEditingDesc" @isEditing="handleDescEdit"/>
+                <TextEditorView class="descriptionContainer" :editorHeight="descEditorHeight" :cardDescription="card.description" :isEditingDesc="this.isEditingDesc" @isEditing="handleDescEdit"/>
                 <div class="descriptionBtns" v-if="isEditingDesc">
                     <button class="saveDescriptionBtn" @click="handleSaveDescription">Save</button>
                     <button class="canelDescripBtn" @click="handleCancelDescEditing">Cancel</button>
@@ -77,6 +77,20 @@
                          </div>
                     </div>
                 </div>
+
+
+                <Label class="attachmentsTitleLabel">Add Comment</Label>
+                <TextEditorView class="descriptionContainer" id="commentEditor" :editorHeight="commentEditorHeight" :isEditingDesc="isEditingComment" v-if="isEditingComment"/>
+                <div v-else class="addCommentPlaceholderView" @click="handleEnableWriteComment">
+                    <img src="@/assets/writecomment.png" alt="">
+                    <label for="">Write a comment</label>
+                </div>
+                <div class="descriptionBtns" v-if="isEditingComment">
+                    <button class="saveDescriptionBtn" @click="handleSaveComment">Save</button>
+                    <button class="canelDescripBtn" @click="handleCancelComment">Cancel</button>
+                </div>
+                <Label class="attachmentsTitleLabel">Comments</Label>
+                 <CommentsView class="commentsContainerView"/>
              </div>
 
             <div class="controlsContainer">
@@ -158,7 +172,7 @@ import FileViewer from '@/components/FileViewer.vue'
 import PopupRouterView from './PopupRouterView.vue';
 import { BASE_URL, USER_CACHE_KEY } from '@/config'
 import AssigneeView from '@/components/AssigneeView.vue'
-import VueHorizontal from "vue-horizontal";
+import CommentsView from '@/components/CommentsView.vue'
 
 import ButtonCard from '@/components/ButtonCard.vue'
 import DescriptionViewFrom from '@/components/DescriptionViewForm.vue'
@@ -179,7 +193,7 @@ export default {
   inject: ["cryptojs"],
   components: {
     PopupOverlay, TextEditorView, Editor, AttachmentView, VTimePicker, VueEditor, AssigneeView,
-    PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, VueHorizontal
+    PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView
   },
   setup() {
     var members = ref([1, 2, 3, 4, 5, 6, 7, 8])
@@ -203,9 +217,12 @@ export default {
     var attachments = ref([])
     var isShowFileView = ref(false) 
     var names = ref(["Samuel", "Samuel Rockson"])
+    var isEditingComment = ref(false)
+    var commentEditorHeight = ref(50)
+    var descEditorHeight = ref(340)
     return { 
-          members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names,
-          currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc
+          members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names, commentEditorHeight, descEditorHeight,
+          currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment
         }
     },
     async mounted() {
@@ -219,6 +236,12 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
+        handleCancelComment() {
+            this.isEditingComment = false
+        },
+        handleEnableWriteComment() {
+            this.isEditingComment = true 
+        },
         formatFileSize(attachment) {
           let size =  (attachment.size / 1024) / 1000
           return size.toFixed(2)
@@ -452,6 +475,35 @@ export default {
 
 
 <style scoped>
+.addCommentPlaceholderView label {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--color-dark);
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 8px;
+}
+
+.addCommentPlaceholderView img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 10px;
+}
+.addCommentPlaceholderView {
+    display: flex;
+    height: 44px;
+    width: 100%;
+    background-color: var(--color-background);
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-top-right-radius: 8px;
+    margin-top: 4px;
+    margin-bottom: 10px;
+    border: 1px solid var(--color-light);
+}
 .attachmentListView {
     display: grid;
     grid-template-columns: repeat(2, 320px);
