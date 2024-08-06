@@ -127,7 +127,6 @@ export default {
 
             let contId = "headerMotherContainer_" + listId
             let badgeAndTitleContainer = document.getElementById(contId) 
-            console.log("lstid: ", contId, "element: ", badgeAndTitleContainer == null)
             if (badgeAndTitleContainer != null ) {
                 badgeAndTitleContainer.style.height = (element.scrollHeight + 30) + "px";
             }

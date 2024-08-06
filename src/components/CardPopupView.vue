@@ -62,7 +62,7 @@
                 </div>
 
                 <Label class="attachmentsTitleLabel">Description</Label>
-                <TextEditorView class="descriptionContainer" :editorHeight="descEditorHeight" :cardDescription="card.description" :isEditingDesc="this.isEditingDesc" @isEditing="handleDescEdit"/>
+                <TextEditorView class="descriptionContainer" :editorHeight="descEditorHeight" :cardDescription="card.description" :isEditingDesc="this.isEditingDesc" @isEditing="handleDescEdit" @isMemberCardVisible="handleShowMemberCard"/>
                 <div class="descriptionBtns" v-if="isEditingDesc">
                     <button class="saveDescriptionBtn" @click="handleSaveDescription">Save</button>
                     <button class="canelDescripBtn" @click="handleCancelDescEditing">Cancel</button>
@@ -80,7 +80,7 @@
 
 
                 <Label class="attachmentsTitleLabel">Comments</Label>
-                <CommentEditorView class="descriptionContainer" id="commentEditor" :editorHeight="commentEditorHeight" :isEditingDesc="isEditingComment" v-if="isEditingComment"/>
+                <CommentEditorView class="descriptionContainer" id="commentEditor" :editorHeight="commentEditorHeight" :isEditingDesc="isEditingComment" v-if="isEditingComment"  @isMemberCardVisible="handleShowMemberCard"/>
                 <div v-else class="addCommentPlaceholderView" @click="handleEnableWriteComment">
                     <img src="@/assets/writecomment.png" alt="">
                     <label for="">Write a comment</label>
@@ -158,8 +158,13 @@
         </v-overlay>
 
         <v-overlay v-model="isShowFileView" class="align-center justify-center overLayContainer" contained>
-            <FileViewer class="fileViewer" :attachments="this.attachments" @dismissFileViewer="dismissFileViewer"/>
+            <FileViewer class="fileViewer" :attachments="this.attachments" @dismissFileViewer="dismissFileViewer" />
         </v-overlay>
+
+        <v-overlay v-model="isMemberCardVisible" class="align-center justify-center" activator="#commentEditor" contained opacity="0">
+           <div class="memberCarView">
+           </div>
+       </v-overlay>
     
     </div>
     </PopupRouterView>
@@ -222,9 +227,10 @@ export default {
     var isEditingComment = ref(false)
     var commentEditorHeight = ref(50)
     var descEditorHeight = ref(340)
+    var isMemberCardVisible = ref(false)
     return { 
           members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names, commentEditorHeight, descEditorHeight,
-          currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment
+          currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment, isMemberCardVisible,
         }
     },
     async mounted() {
@@ -238,6 +244,10 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
+        handleShowMemberCard() {
+            console.log("visible")
+            this.isMemberCardVisible = true 
+        },
         handleCancelComment() {
             this.isEditingComment = false
         },
@@ -477,6 +487,12 @@ export default {
 
 
 <style scoped>
+.memberCarView {
+    height: 500px;
+    width: 300px;
+    background-color: wheat;
+    border-radius: var(--border-radius-1);
+}
 .addCommentPlaceholderView label {
     font-weight: 500;
     font-size: 14px;
@@ -508,7 +524,7 @@ export default {
 }
 .attachmentListView {
     display: grid;
-    grid-template-columns: repeat(2, 320px);
+    grid-template-columns: repeat(2, 260px);
     grid-template-rows: repeat(auto, 100px);
     width: 600px;
 }
@@ -575,6 +591,7 @@ export default {
     max-height: 50px;
     margin-top: 8px;
     text-align: left;
+    overflow: hidden;
 }
 .attachmentInfoContainer {
     display: flex;
@@ -608,7 +625,7 @@ export default {
     display: flex;
     height: 90px;
     width: 98%;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     background-color: var(--color-background);
     border-radius: 8px;
 }

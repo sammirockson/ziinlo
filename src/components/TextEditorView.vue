@@ -7,7 +7,7 @@
             </button>           
         </div>
         </div>
-        <div class="editor mt-2" id="editor" :style="{height: editorHeight + 'px'}"  contenteditable="true" v-html="cardDescription" @mouseup="getCurrentTagName" :keyup.enter="getCurrentTagName"></div>
+        <div class="editor mt-2" id="editor" :style="{height: editorHeight + 'px'}" @input="this.onInput"  contenteditable="true" v-html="cardDescription" @mouseup="getCurrentTagName" :keyup.enter="getCurrentTagName"></div>
     </div>
 </template>
 
@@ -22,17 +22,9 @@ export default {
           if (scrollHeight > 340) {
              this.style.height = scrollHeight + "px";
           }
-          let isContainAt = this.innerHTML.includes("@")
-          console.log("isContainAt: ", isContainAt)
-          if (isContainAt) {
-            // Show members to select
-
-          }
        })
 
-       let editorElement = document.getElementById("editor")
-        let scrollHeight = editorElement.scrollHeight
-        editorElement.style.height = scrollHeight + "px";
+       this.adjustHeight()
     },
     setup() {
         return {
@@ -75,6 +67,20 @@ export default {
         }
     },
     methods : {
+        adjustHeight() {
+            setTimeout(()=>{
+             let editorElement = document.getElementById("editor")
+             let scrollHeight = editorElement.scrollHeight
+             editorElement.style.height = scrollHeight + "px";
+            }, 0)
+        
+        },
+        onInput(el) {
+          let isContainAt = el.target.innerHTML.includes("@")
+          if (isContainAt == true) {
+            this.$emit("isMemberCardVisible", true)
+          }
+        },
         exec (command,arg) {
             document.execCommand(command , false , arg)
         },
@@ -89,6 +95,7 @@ export default {
         },
         getCurrentTagName () {
             this.$emit("isEditing", true)
+            this.adjustHeight()
             if (window.getSelection().baseNode) {
                 this.currentTagName = window.getSelection().baseNode.parentNode.tagName                 
             }
