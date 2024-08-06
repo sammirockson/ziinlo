@@ -17,30 +17,51 @@
         <div class="cardInfoContainer">
              <div class="contentContainer">
                 <textarea type="text" v-on:blur="handleContentInfoTapped()"  @input="autoGrow()" class="cardNameField" id="cardNameId" v-model="card.cardName"></textarea>
-                <div class="profileTagInfoContainer">
-                <img src="@/assets/cardPhoto.png" class="ownerProfile">
-                <div class="profileInfoContainer">
-                    <label class="onwerNameLabel">Samuel</label>
-                    <label class="ownerRoleLabel">Admin</label>
-                </div>
-                <img src="@/assets/cardPhoto.png" class="assignedProfile">
-                <div class="assignInfoContainer">
-                    <label class="onwerNameLabel">Ricky Bob</label>
-                    <label class="ownerRoleLabel">Assignee</label>
-                </div>
-                </div>
-                <div class="tagItemsView"> 
-                    <v-chip-group selected-class="text-primary" column>
-                   <v-chip v-for="tag in cardTags" :key="tag" style="border-radius: 8px; disable">
-                     <label class="tagLabel" :style="{'background-color': tag.colorHex}">{{ tag.name }}</label>
-                   </v-chip>
-                  </v-chip-group>
-                </div>
-                <div class="profileTagInfoContainer">
+                <div class="statusContainer">
+                    <div class="statusIconTitleView">
+                    <img src="@/assets/statusInfo.png" alt="">
+                        <label for="">Status</label>
+                    </div>
                     <label class="listTagContainer">{{ list.listName }}</label>
-                    <ButtonCard v-if="card.dueDate != null" imageIcon="calendar.png" :title="formatDate(card)" class="dueDateField"/>
-                    <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/>
                 </div>
+
+                <div class="statusContainer">
+                    <div class="statusIconTitleView">
+                        <img src="@/assets/duedate.png" alt="">
+                        <label for="">Due Date</label>
+                    </div>
+                    <label class="dueDateTitelLabel">{{ formatDate(card) }}</label>
+                </div>
+
+                <div class="statusContainer">
+                    <div class="statusIconTitleView">
+                        <img src="@/assets/assignee.png" alt="">
+                        <label for="">Assignee</label>
+                    </div>
+                    <div class="assigneeContainerView">
+                        <v-chip-group selected-class="text-primary" column>
+                        <v-chip  v-for="(item, index) in names" :key="index" style="border-radius: 19px;">
+                            <AssigneeView :title="item" imageIcon="https://cdn-prd.content.metamorphosis.com/wp-content/uploads/sites/6/2022/12/shutterstock_781327003-1.jpg" class="asigneeCellView"></AssigneeView>
+                       </v-chip>
+                      </v-chip-group>
+                    </div>
+                </div>
+
+                <div class="statusContainer">
+                    <div class="statusIconTitleView">
+                        <img src="@/assets/tags.png" alt="">
+                        <label for="">Tags</label>
+                    </div>
+                    <div class="tagItemsView"> 
+                      <v-chip-group selected-class="text-primary" column>
+                      <v-chip v-for="tag in cardTags" :key="tag" style="border-radius: 8px; disable">
+                        <label class="tagLabel" :style="{'background-color': tag.colorHex}">{{ tag.name }}</label>
+                       </v-chip>
+                      </v-chip-group>
+                    </div>
+                </div>
+
+                <Label class="attachmentsTitleLabel">Description</Label>
                 <TextEditorView class="descriptionContainer" :cardDescription="card.description" :isEditingDesc="this.isEditingDesc" @isEditing="handleDescEdit"/>
                 <div class="descriptionBtns" v-if="isEditingDesc">
                     <button class="saveDescriptionBtn" @click="handleSaveDescription">Save</button>
@@ -52,7 +73,7 @@
                          <img :src="attachment.fileURL" class="attchmentPreview">
                          <div class="attachmentInfoContainer">
                              <label class="attachmentFileNameLabel">{{ attachment.fileName }}</label>
-                             <label class="attachmentDateLabel">Attached on {{ attachment.createdAt }}</label>
+                             <label class="attachmentDateLabel">{{ this.formatFileSize(attachment) }}MB</label>
                          </div>
                     </div>
                 </div>
@@ -71,6 +92,7 @@
 
 
              <label class="memberLabel">Action</label>
+             <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Priority level"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Assign"/>
              <ButtonCard imageIcon="invoice_icon.png" title="Move"/>
@@ -135,6 +157,8 @@ import PopupOverlay from './PopupOverlay.vue';
 import FileViewer from '@/components/FileViewer.vue'
 import PopupRouterView from './PopupRouterView.vue';
 import { BASE_URL, USER_CACHE_KEY } from '@/config'
+import AssigneeView from '@/components/AssigneeView.vue'
+import VueHorizontal from "vue-horizontal";
 
 import ButtonCard from '@/components/ButtonCard.vue'
 import DescriptionViewFrom from '@/components/DescriptionViewForm.vue'
@@ -154,8 +178,8 @@ import { saveDesc } from '@/APIService'
 export default {
   inject: ["cryptojs"],
   components: {
-    PopupOverlay, TextEditorView, Editor, AttachmentView, VTimePicker, VueEditor,
-    PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView
+    PopupOverlay, TextEditorView, Editor, AttachmentView, VTimePicker, VueEditor, AssigneeView,
+    PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, VueHorizontal
   },
   setup() {
     var members = ref([1, 2, 3, 4, 5, 6, 7, 8])
@@ -178,8 +202,9 @@ export default {
     var isEditingDesc = ref(false)
     var attachments = ref([])
     var isShowFileView = ref(false) 
+    var names = ref(["Samuel", "Samuel Rockson"])
     return { 
-          members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView,
+          members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names,
           currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc
         }
     },
@@ -194,6 +219,10 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
+        formatFileSize(attachment) {
+          let size =  (attachment.size / 1024) / 1000
+          return size.toFixed(2)
+        },
         dismissFileViewer() {
             this.isShowFileView = false
         },
@@ -423,6 +452,53 @@ export default {
 
 
 <style scoped>
+.attachmentListView {
+    display: grid;
+    grid-template-columns: repeat(2, 320px);
+    grid-template-rows: repeat(auto, 100px);
+    width: 600px;
+}
+
+.assigneeContainerView {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    grid-template-rows: repeat(100, auto);
+    width: 600px;
+    margin-left: 50px;
+}
+
+
+.statusIconTitleView label, .dueDateTitelLabel {
+  margin-left: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-dark);
+}
+
+.statusContainer img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+.statusIconTitleView span {
+    width: 15px;
+    height: 15px;
+    margin-right: 14px;
+    margin-top: -8px;
+}
+.statusIconTitleView label {
+    font-weight: 600;
+}
+.statusIconTitleView {
+    display: flex;
+    align-items: center;
+    width: 140px;
+}
+.statusContainer {
+    display: flex;
+    max-width: 90%;
+    margin-top: 20px;
+}
 .fileViewer {
     height: 100vh;
     width: 100vw;
@@ -432,13 +508,19 @@ export default {
     font-size: 12px;
     display: flex;
     margin-top: 4px; 
+    align-items: left;
+    justify-content: left;
+    text-align: left;
 }
 .attachmentFileNameLabel {
     font-weight: 500;
-    font-size: 16px;
+    font-size: 15px;
     display: flex;
+    align-items: left;
+    justify-content: left;
     max-height: 50px;
     margin-top: 8px;
+    text-align: left;
 }
 .attachmentInfoContainer {
     display: flex;
@@ -463,7 +545,7 @@ export default {
 .attachmentsTitleLabel {
     margin-top: 20px;
     font-weight: 600;
-    font-size: 18px;
+    font-size: 16px;
     margin-bottom: 10px;
     float: left;
     display: flex;
@@ -578,6 +660,7 @@ export default {
 }
 .tagItemsView {
     width: 480px;
+    margin-left: 50px;
 }
 .tagLabel {
     display: flex;
@@ -615,7 +698,6 @@ export default {
     justify-content: center;
     align-items: center;
     height: 38px;
-    width: 140px;
     padding-right: 10px;
     padding-left: 10px;
     color: var(--color-dark);
@@ -742,7 +824,6 @@ export default {
     min-height: 94vh;
     border-top-right-radius: var(--border-radius-2);
     border-bottom-right-radius: var(--border-radius-2);
-    /* background-color: aliceblue; */
 }
 .membersContainer {
     display: grid;
@@ -761,7 +842,6 @@ export default {
 .cardInfoContainer {
     display: flex;
     width: 740px;
-    /* width: 930px; */
     min-height: 94vh;
     margin-right: auto;
     margin-left: auto;
@@ -771,7 +851,6 @@ export default {
     z-index: 999999999999;
     border-radius: var(--border-radius-2);
     padding-bottom: 30px;
-    /* overflow-y: scroll; */
 }
  .card {
     width: 100vw;
