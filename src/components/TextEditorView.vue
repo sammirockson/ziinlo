@@ -7,7 +7,7 @@
             </button>           
         </div>
         </div>
-        <div class="editor mt-2" id="editor" :style="{height: editorHeight}"  contenteditable="true" v-html="cardDescription" @mouseup="getCurrentTagName" :keyup.enter="getCurrentTagName"></div>
+        <div class="editor mt-2" id="editor" :style="{height: editorHeight + 'px'}"  contenteditable="true" v-html="cardDescription" @mouseup="getCurrentTagName" :keyup.enter="getCurrentTagName"></div>
     </div>
 </template>
 
@@ -18,10 +18,15 @@ export default {
     props: { cardDescription: String, isEditingDesc: Boolean, editorHeight: Number },
     mounted () {
         document.getElementById('editor').addEventListener('input', function(){
-          console.clear()
           let scrollHeight = this.scrollHeight
           if (scrollHeight > 340) {
              this.style.height = scrollHeight + "px";
+          }
+          let isContainAt = this.innerHTML.includes("@")
+          console.log("isContainAt: ", isContainAt)
+          if (isContainAt) {
+            // Show members to select
+
           }
        })
 

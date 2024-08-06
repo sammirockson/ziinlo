@@ -79,8 +79,8 @@
                 </div>
 
 
-                <Label class="attachmentsTitleLabel">Add Comment</Label>
-                <TextEditorView class="descriptionContainer" id="commentEditor" :editorHeight="commentEditorHeight" :isEditingDesc="isEditingComment" v-if="isEditingComment"/>
+                <Label class="attachmentsTitleLabel">Comments</Label>
+                <CommentEditorView class="descriptionContainer" id="commentEditor" :editorHeight="commentEditorHeight" :isEditingDesc="isEditingComment" v-if="isEditingComment"/>
                 <div v-else class="addCommentPlaceholderView" @click="handleEnableWriteComment">
                     <img src="@/assets/writecomment.png" alt="">
                     <label for="">Write a comment</label>
@@ -89,7 +89,6 @@
                     <button class="saveDescriptionBtn" @click="handleSaveComment">Save</button>
                     <button class="canelDescripBtn" @click="handleCancelComment">Cancel</button>
                 </div>
-                <Label class="attachmentsTitleLabel">Comments</Label>
                  <CommentsView class="commentsContainerView"/>
              </div>
 
@@ -107,21 +106,21 @@
 
              <label class="memberLabel">Action</label>
              <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/>
-             <ButtonCard imageIcon="invoice_icon.png" title="Priority level"/>
-             <ButtonCard imageIcon="invoice_icon.png" title="Assign"/>
-             <ButtonCard imageIcon="invoice_icon.png" title="Move"/>
+             <ButtonCard imageIcon="priority.png" title="Priority level"/>
+             <ButtonCard imageIcon="assignee.png" title="Assign"/>
+             <ButtonCard imageIcon="move.png" title="Move"/>
 
              <label class="memberLabel">Manage</label>
-             <ButtonCard imageIcon="invoice_icon.png" title="Tags" @click="handleTagTapped"/>
-             <ButtonCard imageIcon="invoice_icon.png" title="Due Date" @click="handleDateTapped"/>
-             <ButtonCard imageIcon="invoice_icon.png" title="Poll"/>
-             <ButtonCard imageIcon="invoice_icon.png" title="Checklist"/>
-             <ButtonCard imageIcon="invoice_icon.png" title="Attachments" @click="handleAttachmentTapped"/>
+             <ButtonCard imageIcon="tags.png" title="Tags" @click="handleTagTapped"/>
+             <ButtonCard imageIcon="duedate.png" title="Due Date" @click="handleDateTapped"/>
+             <ButtonCard imageIcon="poll.png" title="Poll"/>
+             <ButtonCard imageIcon="checklist.png" title="Checklist"/>
+             <ButtonCard imageIcon="fileAttachment.png" title="Attachments" @click="handleAttachmentTapped"/>
              <label class="memberLabel">Connect</label>
-             <ButtonCard imageIcon="invoice_icon.png" title="Share"/>
-             <ButtonCard imageIcon="invoice_icon.png" title="Copy URL"/>
+             <ButtonCard imageIcon="share.png" title="Share"/>
+             <ButtonCard imageIcon="copyTemplate.png" title="Copy URL"/>
              <label class="memberLabel">Archive</label>
-             <ButtonCard imageIcon="invoice_icon.png" title="Delete"/>
+             <ButtonCard imageIcon="archive.png" title="Delete"/>
              </div>
         </div>
         <!-- <v-overlay v-model="isShowFileView" class="align-center justify-center overLayContainer" contained>
@@ -176,8 +175,11 @@ import CommentsView from '@/components/CommentsView.vue'
 
 import ButtonCard from '@/components/ButtonCard.vue'
 import DescriptionViewFrom from '@/components/DescriptionViewForm.vue'
+
 import TagContainerView from '@/components/TagContainerView.vue';
 import TextEditorView from '@/components/TextEditorView.vue'
+import CommentEditorView from '@/components/TextEditorView.vue'
+
 import AttachmentView from '@/components/AttachmentView.vue';
 
 import axios from 'axios';
@@ -192,7 +194,7 @@ import { saveDesc } from '@/APIService'
 export default {
   inject: ["cryptojs"],
   components: {
-    PopupOverlay, TextEditorView, Editor, AttachmentView, VTimePicker, VueEditor, AssigneeView,
+    PopupOverlay, TextEditorView, Editor, AttachmentView, VTimePicker, VueEditor, AssigneeView, CommentEditorView,
     PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView
   },
   setup() {
@@ -615,6 +617,7 @@ export default {
     justify-content: space-between;
     width: 160px;
     height: 40px;
+    margin-bottom: 10px;
 }
 .canelDescripBtn {
     font-weight: 600;
