@@ -1,8 +1,8 @@
 <template>
     <div class="fileViewContainer" @click="dismissFileViewer">
-    <label for="">attachment.fileURL</label>
         <PDF v-if="attachment != null && attachment.fileType.toLowerCase() == 'pdf'" class="previewer" :src="attachment.fileURL" />
         <img v-if="attachment != null && (attachment.fileType.toLowerCase() == 'png' || attachment.fileType.toLowerCase() == 'jpg' || attachment.fileType.toLowerCase() == 'jpeg')" :src="attachment.fileURL" class="previewer">
+        <videoplayer v-if="attachment != null && (attachment.fileType.toLowerCase() == 'mp4' ||  attachment.fileType.toLowerCase() == 'mov')" :src="attachment.fileURL" controls="true" height="800" width="1200"></videoplayer>
 
         <!-- <vue-horizontal snap="center" responsive ref="horizontal">
             <section v-for="attachment in attachments" :key="attachment._id">
@@ -13,6 +13,7 @@
 </template>
 <script>
 import VueHorizontal from "vue-horizontal";
+import Videoplayer from "@/components/Videoplayer.vue"
 import { ref } from 'vue'
 import PDF from "pdf-vue3";
 import axios from "axios";
@@ -20,7 +21,7 @@ import axios from "axios";
 export default {
     props: { attachment: null }, 
     components: {
-        VueHorizontal, PDF
+        VueHorizontal, PDF, Videoplayer
     }, 
     methods: {
         async downloadFile() {

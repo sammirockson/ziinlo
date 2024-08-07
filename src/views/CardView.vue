@@ -1,7 +1,7 @@
 <template>
     <div class="cardContainer">
         <RouterLink :to="`/b/` + boardId + `/c/` +  card._id"  style="text-decoration: none; color: inherit;">
-        <img v-if="card.attachments.length > 0" :src="this.getResourceURL(card.attachments[0])" class="cardImage">
+        <img v-if="card.attachments.length > 0 && (this.getImageFile(card.attachments) != null)" :src="this.getImageFile(card.attachments) == null ? '' : this.getImageFile(card.attachments).fileURL" class="cardImage">
         <div class="dueDateContainer" v-if="card.dueDate != null">
             <img src="@/assets/clock.png" class="clockIcon">
             <label class="dueDateLabel">{{ new Date(card.dueDate).toLocaleDateString('en-US', {
@@ -59,28 +59,12 @@ export default {
         return { }
     }, 
     methods: {
-        getResourceURL(attachment) {
-            if (attachment.fileType == null || attachment.fileType.count == 0) {
-                return attachment.fileURL
-            } else {
-                let fileType = attachment.fileType.toLowerCase()
-                if (fileType  == "png" || fileType == "jpg" || fileType == "jpeg") {
-                    return attachment.fileURL
-                } else {
-                    if (fileType == "pdf") {
-                        return require("@/assets/pdfIcon.png")
-                    } else if (fileType == "docx") {
-                        return require("@/assets/docxIcon.png")
-                    } else if (fileType == "xlsx") {
-                        return require("@/assets/xlsxICon.png")
-                    } else if (fileType == "pptx") {
-                        return require("@/assets/pptxIcon.png")
-                    } else {
-                        return attachment.fileURL
-                    }
-                }
-            }
-        },
+        getImageFile(attachments) {
+            let fileTypes = ["jpeg", "jpg", "png"]
+            let imageAttachments = attachments.filter(x => fileTypes.includes(x.fileType));
+            console.log("imageAttachments: ", imageAttachments.length)
+            return imageAttachments.length > 0 ? imageAttachments[0] : null
+        }
     },
 }
 </script>

@@ -13,7 +13,7 @@
           class="hidden-input"
           @change="onChange"
           ref="file"
-          accept=".docx, .pptx, .xlsx, .pdf, .jpg,.jpeg,.png"
+          accept=".docx ,.pptx ,.xlsx ,.pdf ,.jpg ,.jpeg ,.png, .mp4, .mov"
         />
   
         <label for="fileInput" class="file-label">

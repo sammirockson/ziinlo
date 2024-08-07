@@ -267,6 +267,10 @@ export default {
                         return require("@/assets/xlsxICon.png")
                     } else if (fileType == "pptx") {
                         return require("@/assets/pptxIcon.png")
+                    } else if (fileType == "mp4") {
+                        return require("@/assets/mp4Icon.png")
+                    } else if (fileType == "mov") {
+                        return require("@/assets/movIcon.png")
                     } else {
                         return attachment.fileURL
                     }
