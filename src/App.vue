@@ -44,9 +44,10 @@
   --box-shadow: 0 2rem 3rem var(--color-light);
 }
 
+/* #201c1c */
 .dark-theme-variables {
   --color-background: #181414;
-  --color-card-background: #201c1c;
+  --color-card-background: #111018;
   --color-dark-primary: white;
   --color-card-title: white;
   --color-dark: white;

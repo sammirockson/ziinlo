@@ -73,6 +73,8 @@ export default {
                         return require("@/assets/docxIcon.png")
                     } else if (fileType == "xlsx") {
                         return require("@/assets/xlsxICon.png")
+                    } else if (fileType == "pptx") {
+                        return require("@/assets/pptxIcon.png")
                     } else {
                         return attachment.fileURL
                     }

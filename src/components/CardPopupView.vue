@@ -69,7 +69,7 @@
                 </div>
                 <label class="attachmentsTitleLabel" v-if=" this.attachments.length > 0">Attachments</label>
                 <div class="attachmentListView">
-                    <div class="attachmentCell" v-for="(attachment, index) in this.attachments" :key="index" @click="handleFileBrowserTapped">
+                    <div class="attachmentCell" v-for="(attachment, index) in this.attachments" :key="index" @click="handleFileBrowserTapped(attachment)">
                          <img :src="this.getResourceURL(attachment)" class="attchmentPreview">
                          <div class="attachmentInfoContainer">
                              <label class="attachmentFileNameLabel">{{ attachment.fileName }}</label>
@@ -162,7 +162,7 @@
         </v-overlay>
 
         <v-overlay v-model="isShowFileView" class="align-center justify-center overLayContainer" contained>
-            <FileViewer class="fileViewer" :attachments="this.attachments" @dismissFileViewer="dismissFileViewer" />
+            <FileViewer class="fileViewer" :attachment="this.selectedAttachment" @dismissFileViewer="dismissFileViewer" />
         </v-overlay>
 
         <v-overlay v-model="isMemberCardVisible" class="align-center justify-center" activator="#commentEditor" contained opacity="0">
@@ -228,6 +228,7 @@ export default {
     var isEditingDesc = ref(false)
     var attachments = ref([])
     var isShowFileView = ref(false) 
+    var selectedAttachment = ref(null)
     var names = ref(["Samuel", "Samuel Rockson"])
     var isEditingComment = ref(false)
     var commentEditorHeight = ref(50)
@@ -235,7 +236,7 @@ export default {
     var isMemberCardVisible = ref(false)
     var isCheckListTapped = ref(false)
     return { 
-          members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names, commentEditorHeight, descEditorHeight,
+          members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names, commentEditorHeight, descEditorHeight, selectedAttachment,
           currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment, isMemberCardVisible, isCheckListTapped
         }
     },
@@ -264,6 +265,8 @@ export default {
                         return require("@/assets/docxIcon.png")
                     } else if (fileType == "xlsx") {
                         return require("@/assets/xlsxICon.png")
+                    } else if (fileType == "pptx") {
+                        return require("@/assets/pptxIcon.png")
                     } else {
                         return attachment.fileURL
                     }
@@ -290,8 +293,9 @@ export default {
         dismissFileViewer() {
             this.isShowFileView = false
         },
-        handleFileBrowserTapped() {
+        handleFileBrowserTapped(attachment) {
             console.log("file browser tapped")
+            this.selectedAttachment = attachment
             this.isShowFileView = true 
         },
         handleDidUploadFile(updatedCard) {
@@ -953,7 +957,7 @@ export default {
     margin-left: auto;
     margin-top: 3vh;
     margin-bottom: 3vh;
-    background-color: white;
+    background-color: var(--color-card-background);
     z-index: 999999999999;
     border-radius: var(--border-radius-2);
     padding-bottom: 30px;

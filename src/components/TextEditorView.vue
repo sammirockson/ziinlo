@@ -116,6 +116,7 @@ export default {
 .btn-group {
    display: flex;
    width: 80px;
+   color: var(--color-card-title);
 }
 .editor {
     display: flex;
@@ -127,6 +128,7 @@ export default {
     font-family: 'Poppins', Helvetica, Arial, sans-serif;
     overflow: hidden;
     overflow-y: scroll;
+    color: var(--color-card-title);
  }
 
 .btn:hover {
@@ -142,6 +144,7 @@ export default {
     text-align: left;
     font-size: 15px;
     font-weight: 500;
+    color: var(--color-card-title);
     font-family: 'Poppins', Helvetica, Arial, sans-serif;
 }
 

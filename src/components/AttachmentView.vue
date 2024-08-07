@@ -20,7 +20,7 @@
           <img src="@/assets/uploadCloudDark.png" class="cloud">
           <div v-if="isDragging">Release to drop a file.</div>
           <div class="uploader" v-else> 
-          <b>Drop</b> a file or <b>Tap</b> to upload.<br>PNG, JPG, JPEG, PDF, DOCX, XLSX
+          <b>Drop</b> a file or <b>Tap</b> to upload.<br>PNG, JPG, JPEG, PPTX, PDF, DOCX, XLSX
           </div>
         </label>
       </div>

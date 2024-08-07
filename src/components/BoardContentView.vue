@@ -490,7 +490,7 @@ export default {
     justify-content: center;
     height: 50px;
     width: 240px;
-    border-radius: var(--border-radius-1);
+    border-radius: var(--border-radius-2);
     border: 1px solid var(--color-light);
     z-index: 9999;
     overflow: hidden;
@@ -559,7 +559,7 @@ export default {
     align-items: center;
     margin-right: auto;
     margin-left: auto;
-    border-radius: var(--border-radius-1)
+    border-radius: var(--border-radius-2)
 }
 
 
@@ -622,7 +622,7 @@ export default {
     justify-content: space-between;
     height: 60px;
     width: 100%;
-    border-radius:  var(--border-radius-1);;
+    border-radius:  var(--border-radius-2);;
     /* border-top-right-radius: var(--border-radius-2);
     border-top-left-radius: var(--border-radius-2); */
     border: 1px solid var(--color-light);

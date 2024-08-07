@@ -1,26 +1,31 @@
 <template>
     <div class="fileViewContainer" @click="dismissFileViewer">
-        <vue-horizontal snap="center" responsive ref="horizontal">
+    <label for="">attachment.fileURL</label>
+        <PDF v-if="attachment != null && attachment.fileType.toLowerCase() == 'pdf'" class="previewer" :src="attachment.fileURL" />
+        <img v-if="attachment != null && (attachment.fileType.toLowerCase() == 'png' || attachment.fileType.toLowerCase() == 'jpg' || attachment.fileType.toLowerCase() == 'jpeg')" :src="attachment.fileURL" class="previewer">
+
+        <!-- <vue-horizontal snap="center" responsive ref="horizontal">
             <section v-for="attachment in attachments" :key="attachment._id">
                <img :src="attachment.fileURL" class="previewer">
-               <!-- <VueDocPreview :value="attachment.fileURL" type="xlsx" class="previewer"/> -->
             </section>
-        </vue-horizontal>
+        </vue-horizontal> -->
     </div>
 </template>
 <script>
 import VueHorizontal from "vue-horizontal";
 import { ref } from 'vue'
-import { VuePDF, usePDF } from '@tato30/vue-pdf'
-const page = ref(1)
-const { pdf, pages } = usePDF('https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf')
+import PDF from "pdf-vue3";
+import axios from "axios";
 
 export default {
-    props: { attachments: [] }, 
+    props: { attachment: null }, 
     components: {
-        VueHorizontal
+        VueHorizontal, PDF
     }, 
     methods: {
+        async downloadFile() {
+            await axios.get("")
+        },
         dismissFileViewer() {
             // this.$refs.horizontal.scrollToIndex(1)
             // .ppt, .pptx, .doc, .docx, .xls and .xlsx
@@ -35,15 +40,18 @@ export default {
 .previewer {
     object-fit: contain;
 }
-.fileViewCell, .previewer {
-    height: 100vh;
-    width: 100vw;
+.fileViewCell, .previewer, .fileViewContainer {
+    height: 92vh;
+    width: 90vw;
+    margin-top: 3vh;
+    margin-right: auto;
+    margin-left: auto;
 }
-.fileViewContainer {
+/* .fileViewContainer {
     display: flex;
     height: 100%;
     width: 100vw;
     overflow-x: scroll;
-}
+} */
     
 </style>
