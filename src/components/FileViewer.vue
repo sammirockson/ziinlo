@@ -10,6 +10,10 @@
 </template>
 <script>
 import VueHorizontal from "vue-horizontal";
+import { ref } from 'vue'
+import { VuePDF, usePDF } from '@tato30/vue-pdf'
+const page = ref(1)
+const { pdf, pages } = usePDF('https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf')
 
 export default {
     props: { attachments: [] }, 
@@ -19,6 +23,7 @@ export default {
     methods: {
         dismissFileViewer() {
             // this.$refs.horizontal.scrollToIndex(1)
+            // .ppt, .pptx, .doc, .docx, .xls and .xlsx
             console.log("Attempting to scroll to index: ", this.$refs.horizontal == null)
             this.$emit("dismissFileViewer")
         }

@@ -17,8 +17,11 @@
         />
   
         <label for="fileInput" class="file-label">
+          <img src="@/assets/uploadCloudDark.png" class="cloud">
           <div v-if="isDragging">Release to drop a file.</div>
-          <div v-else><b>Drop</b> a file or <br/><b>Tap</b> to upload.</div>
+          <div class="uploader" v-else> 
+          <b>Drop</b> a file or <b>Tap</b> to upload.<br>PNG, JPG, JPEG, PDF, DOCX, XLSX
+          </div>
         </label>
       </div>
       <img v-if="localeFileURL != null || remoteFileURL != null" class="preview-img"  :src="localeFileURL == null ? remoteFileURL : localeFileURL"/>
@@ -50,9 +53,13 @@ export default {
     }, 
     methods: {
         async handleUploadFile() {
-           if (this.selectedFile != null && this.localeFileURL != null) {
+          let fileTypes = this.selectedFile.name.split(".")
+           if (this.selectedFile != null && this.localeFileURL != null && fileTypes.length > 0) {
+            let fileType = fileTypes.pop()
+            console.log("fileTypes: ", fileTypes, "fileType: ", fileType.toLowerCase())
                var postJson = {
-                 card_id: this.card_id
+                 card_id: this.card_id,
+                 fileType: fileType.toLowerCase()
                }
               var formsData = new FormData()
               formsData.append('attachment', this.selectedFile, this.selectedFile.name)
@@ -129,6 +136,11 @@ export default {
 }
 </script>
 <style scoped>
+.cloud {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
+}
 .fileLinkField {
   width: 280px;
   max-height: 44px;

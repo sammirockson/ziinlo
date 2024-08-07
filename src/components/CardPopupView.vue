@@ -70,7 +70,7 @@
                 <label class="attachmentsTitleLabel" v-if=" this.attachments.length > 0">Attachments</label>
                 <div class="attachmentListView">
                     <div class="attachmentCell" v-for="(attachment, index) in this.attachments" :key="index" @click="handleFileBrowserTapped">
-                         <img :src="attachment.fileURL" class="attchmentPreview">
+                         <img :src="this.getResourceURL(attachment)" class="attchmentPreview">
                          <div class="attachmentInfoContainer">
                              <label class="attachmentFileNameLabel">{{ attachment.fileName }}</label>
                              <label class="attachmentDateLabel">{{ this.formatFileSize(attachment) }}MB</label>
@@ -114,7 +114,7 @@
              <ButtonCard imageIcon="tags.png" title="Tags" @click="handleTagTapped"/>
              <ButtonCard imageIcon="duedate.png" title="Due Date" @click="handleDateTapped"/>
              <ButtonCard imageIcon="poll.png" title="Poll"/>
-             <ButtonCard imageIcon="checklist.png" title="Checklist"/>
+             <ButtonCard imageIcon="checklist.png" title="Checklist" @click="handleCheckListTapped"/>
              <ButtonCard imageIcon="fileAttachment.png" title="Attachments" @click="handleAttachmentTapped"/>
              <label class="memberLabel">Connect</label>
              <ButtonCard imageIcon="share.png" title="Share"/>
@@ -157,6 +157,10 @@
             <AttachmentView :card="this.card._id" class="attachmentContainerView" @fileUploadComplete="handleDidUploadFile"/>
         </v-overlay>
 
+        <v-overlay v-model="isCheckListTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" contained>
+            <AddCheckListView :card="this.card._id" class="attachmentContainerView" @fileUploadComplete="handleDidUploadFile"/>
+        </v-overlay>
+
         <v-overlay v-model="isShowFileView" class="align-center justify-center overLayContainer" contained>
             <FileViewer class="fileViewer" :attachments="this.attachments" @dismissFileViewer="dismissFileViewer" />
         </v-overlay>
@@ -186,6 +190,7 @@ import TextEditorView from '@/components/TextEditorView.vue'
 import CommentEditorView from '@/components/TextEditorView.vue'
 
 import AttachmentView from '@/components/AttachmentView.vue';
+import AddCheckListView from '@/components/AddCheckListView.vue'
 
 import axios from 'axios';
 import { ref } from 'vue'
@@ -200,7 +205,7 @@ export default {
   inject: ["cryptojs"],
   components: {
     PopupOverlay, TextEditorView, Editor, AttachmentView, VTimePicker, VueEditor, AssigneeView, CommentEditorView,
-    PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView
+    PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView, AddCheckListView
   },
   setup() {
     var members = ref([1, 2, 3, 4, 5, 6, 7, 8])
@@ -228,9 +233,10 @@ export default {
     var commentEditorHeight = ref(50)
     var descEditorHeight = ref(340)
     var isMemberCardVisible = ref(false)
+    var isCheckListTapped = ref(false)
     return { 
           members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names, commentEditorHeight, descEditorHeight,
-          currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment, isMemberCardVisible,
+          currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment, isMemberCardVisible, isCheckListTapped
         }
     },
     async mounted() {
@@ -244,6 +250,29 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
+        getResourceURL(attachment) {
+            if (attachment.fileType == null || attachment.fileType.count == 0) {
+                return attachment.fileURL
+            } else {
+                let fileType = attachment.fileType.toLowerCase()
+                if (fileType  == "png" || fileType == "jpg" || fileType == "jpeg") {
+                    return attachment.fileURL
+                } else {
+                    if (fileType == "pdf") {
+                        return require("@/assets/pdfIcon.png")
+                    } else if (fileType == "docx") {
+                        return require("@/assets/docxIcon.png")
+                    } else if (fileType == "xlsx") {
+                        return require("@/assets/xlsxICon.png")
+                    } else {
+                        return attachment.fileURL
+                    }
+                }
+            }
+        },
+        handleCheckListTapped() {
+            this.isCheckListTapped = true
+        },
         handleShowMemberCard() {
             console.log("visible")
             this.isMemberCardVisible = true 
@@ -288,6 +317,11 @@ export default {
         }, 
         handleCancelDescEditing() {
             this.isEditingDesc = false 
+            setTimeout(()=>{
+             let editorElement = document.getElementById("editor")
+             let scrollHeight = editorElement.scrollHeight
+             editorElement.style.height = scrollHeight + "px";
+            }, 0)
         },
         handleDescEdit() {
             this.isEditingDesc = true 
@@ -603,8 +637,8 @@ export default {
     padding-bottom: 8px;
 }
 .attchmentPreview {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     border-radius: 8px;
     margin-top: auto;
     margin-bottom: auto;

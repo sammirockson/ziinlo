@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.0.3",
+    "@tato30/vue-pdf": "^1.10.0",
     "@tiptap/pm": "^2.5.7",
     "@tiptap/starter-kit": "^2.5.7",
     "@tiptap/vue-3": "^2.5.7",
@@ -27,6 +28,7 @@
     "vue-doc-preview": "^0.3.2",
     "vue-google-oauth2": "^1.5.10",
     "vue-horizontal": "^1.0.2",
+    "vue-pdf": "^4.3.0",
     "vue-router": "^4.0.3",
     "vue2-editor": "^2.10.3",
     "vue3-google-login": "^2.0.27",

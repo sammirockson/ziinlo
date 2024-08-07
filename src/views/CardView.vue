@@ -1,7 +1,7 @@
 <template>
     <div class="cardContainer">
         <RouterLink :to="`/b/` + boardId + `/c/` +  card._id"  style="text-decoration: none; color: inherit;">
-        <img v-if="card.attachments.length > 0" :src="card.attachments[0].fileURL" class="cardImage">
+        <img v-if="card.attachments.length > 0" :src="this.getResourceURL(card.attachments[0])" class="cardImage">
         <div class="dueDateContainer" v-if="card.dueDate != null">
             <img src="@/assets/clock.png" class="clockIcon">
             <label class="dueDateLabel">{{ new Date(card.dueDate).toLocaleDateString('en-US', {
@@ -57,7 +57,29 @@ export default {
     props: ["card", "tags", "boardId"], 
     setup() {
         return { }
-    }
+    }, 
+    methods: {
+        getResourceURL(attachment) {
+            if (attachment.fileType == null || attachment.fileType.count == 0) {
+                return attachment.fileURL
+            } else {
+                let fileType = attachment.fileType.toLowerCase()
+                if (fileType  == "png" || fileType == "jpg" || fileType == "jpeg") {
+                    return attachment.fileURL
+                } else {
+                    if (fileType == "pdf") {
+                        return require("@/assets/pdfIcon.png")
+                    } else if (fileType == "docx") {
+                        return require("@/assets/docxIcon.png")
+                    } else if (fileType == "xlsx") {
+                        return require("@/assets/xlsxICon.png")
+                    } else {
+                        return attachment.fileURL
+                    }
+                }
+            }
+        },
+    },
 }
 </script>
 <style scoped>
@@ -179,7 +201,8 @@ export default {
 .cardImage {
     width: 100%;
     height: 150px;
-    object-fit: fill;
+    object-fit: contain;
+    overflow: hidden;
 }
 .cardContainer {
     overflow: hidden;
