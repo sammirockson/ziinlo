@@ -5,6 +5,7 @@ import BoardView from '@/views/BoardView.vue'
 import LoginView from '@/views/LoginView.vue'
 import SignUpView from '@/views/SignUp.vue'
 import CardPopupView from '@/components/CardPopupView.vue'
+import InvoiceView from '@/components/InvoiceCreator.vue'
 
 const routes = [
   {

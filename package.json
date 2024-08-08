@@ -7,12 +7,15 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@onlyoffice/document-editor-vue": "^1.4.0",
     "@primevue/themes": "^4.0.3",
     "@tato30/vue-pdf": "^1.10.0",
     "@tiptap/pm": "^2.5.7",
     "@tiptap/starter-kit": "^2.5.7",
     "@tiptap/vue-3": "^2.5.7",
     "@types/gapi.client.drive": "^3.0.15",
+    "@vue-office/docx": "^1.6.2",
+    "@vue-office/excel": "^1.7.11",
     "autoprefixer": "^10",
     "axios": "^1.7.2",
     "core-js": "^3.8.3",
@@ -26,6 +29,7 @@
     "tiny-emitter": "^2.1.0",
     "vue": "^3.2.13",
     "vue-cryptojs": "^2.4.7",
+    "vue-demi": "^0.14.6",
     "vue-doc-preview": "^0.3.2",
     "vue-google-oauth2": "^1.5.10",
     "vue-horizontal": "^1.0.2",
