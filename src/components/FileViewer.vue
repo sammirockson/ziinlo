@@ -1,5 +1,5 @@
 <template>
-    <div class="fileViewContainer" @click="dismissFileViewer">
+    <div class="fileViewContainer" @click.self="dismissFileViewer">
         <PDF v-if="attachment != null && attachment.fileType.toLowerCase() == 'pdf'" class="previewer" :src="attachment.fileURL" />
         <img v-if="attachment != null && (attachment.fileType.toLowerCase() == 'png' || attachment.fileType.toLowerCase() == 'jpg' || attachment.fileType.toLowerCase() == 'jpeg')" :src="attachment.fileURL" class="previewer">
         <videoplayer v-if="attachment != null && (attachment.fileType.toLowerCase() == 'mp4' ||  attachment.fileType.toLowerCase() == 'mov')" :src="attachment.fileURL" controls="true" height="800" width="1200"></videoplayer>
