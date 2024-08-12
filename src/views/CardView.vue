@@ -62,7 +62,6 @@ export default {
         getImageFile(attachments) {
             let fileTypes = ["jpeg", "jpg", "png"]
             let imageAttachments = attachments.filter(x => fileTypes.includes(x.fileType));
-            console.log("imageAttachments: ", imageAttachments.length)
             return imageAttachments.length > 0 ? imageAttachments[0] : null
         }
     },

@@ -13,6 +13,7 @@ export async function saveDesc(cardDesc, card_id) {
             if (data.statusCode == 200) {
                 let resp = data.resp
                 console.log("card description update: ", resp)
+                return resp
             }
         }
     })

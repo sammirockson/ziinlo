@@ -191,6 +191,7 @@ import CommentEditorView from '@/components/TextEditorView.vue'
 
 import AttachmentView from '@/components/AttachmentView.vue';
 import AddCheckListView from '@/components/AddCheckListView.vue'
+import MemberOverlayView from './MemberOverlayView.vue';
 
 import axios from 'axios';
 import { ref } from 'vue'
@@ -204,7 +205,7 @@ import { saveDesc } from '@/APIService'
 export default {
   inject: ["cryptojs"],
   components: {
-    PopupOverlay, TextEditorView, Editor, AttachmentView, VTimePicker, VueEditor, AssigneeView, CommentEditorView,
+    PopupOverlay, TextEditorView, Editor, AttachmentView, VTimePicker, VueEditor, AssigneeView, CommentEditorView, MemberOverlayView,
     PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView, AddCheckListView
   },
   setup() {
@@ -280,9 +281,9 @@ export default {
         handleCheckListTapped() {
             this.isCheckListTapped = true
         },
-        handleShowMemberCard() {
+        handleShowMemberCard(isVisible) {
             console.log("visible")
-            this.isMemberCardVisible = true 
+            this.isMemberCardVisible = isVisible 
         },
         handleCancelComment() {
             this.isEditingComment = false

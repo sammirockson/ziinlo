@@ -7,8 +7,7 @@
             </button>           
         </div>
         </div>
-        <div v-if="isEditingDesc" class="editor mt-2" id="editor" :style="{height: editorHeight + 'px'}" @input="this.onInput" @keyup.space="onSpaceBar"  contenteditable="true" v-html="cardDescription" @mouseup="getCurrentTagName" @keyup.enter="getCurrentTagName"></div>
-        <div v-else class="editor mt-2" id="editor" :style="{height: editorHeight + 'px'}" @input="this.onInput" @keyup.space="onSpaceBar"  contenteditable="false" v-html="cardDescription" @mouseup="getCurrentTagName" @keyup.enter="getCurrentTagName"></div>
+        <div class="editor mt-2" id="editor" :style="{height: editorHeight + 'px'}" @input="this.onInput" @keyup.space="onSpaceBar"  contenteditable="true" v-html="cardDescription" @mouseup="getCurrentTagName" @keyup.enter="getCurrentTagName"></div>
     </div>
 </template>
 
@@ -17,21 +16,21 @@ import { ref } from 'vue'
 export default {
     name: 'wysiwyg',
     props: { cardDescription: String, isEditingDesc: Boolean, editorHeight: Number, isComment: Boolean },
-    mounted () {
+    mounted() {
         document.getElementById('editor').addEventListener('input', function(){
           let scrollHeight = this.scrollHeight
+          console.log("auto grow not working: ", scrollHeight)
           if (scrollHeight > 340) {
              this.style.height = scrollHeight + "px";
           }
-       })
-       document.getElementById('editor').addEventListener('keyup', function(){
-           console.log("event keyup: ", this)
-       })       
+       })     
        this.adjustHeight()
     },
     setup() {
         var currentContent = ref(null)
+        var isMemberOverlayVisible = ref(false)
         return {
+            isMemberOverlayVisible,
             commands : [
                 { name: 'Bold', title: 'Bold', command: 'bold', icon: 'fa-bold' },
 
@@ -59,13 +58,11 @@ export default {
 
                 { name: 'Link', title: 'Link', command: 'createLink', icon: 'fa-link' },
 
-                { name: 'RemoveFormat', title: 'Remove Format', command: 'removeFormat', icon: 'fa-times' },
+                // { name: 'RemoveFormat', title: 'Remove Format', command: 'removeFormat', icon: 'fa-times' },
             ],
             currentTagName: '', currentContent
         }
 
-    },
-    mounted() {
     },
     watch : {
         currentTagName() {
@@ -80,26 +77,22 @@ export default {
           let elem = document.getElementById('editor')
           var range, selection;
           if (document.createRange){ // Firefox, Chrome, Opera, Safari, IE 9+
-             range = document.createRange();//Create a range (a range is a like the selection but invisible)
-             range.selectNodeContents(elem);//Select the entire contents of the element with the range
-             range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
-             selection = window.getSelection();//get the selection object (allows you to change selection)
-             selection.removeAllRanges();//remove any selections already made
-             selection.addRange(range);//make the range you have just created the visible selection
+             range = document.createRange(); // Create a range (a range is a like the selection but invisible)
+             range.selectNodeContents(elem); // Select the entire contents of the element with the range
+             range.collapse(false); // collapse the range to the end point. false means collapse to end rather than the start
+             selection = window.getSelection(); // get the selection object (allows you to change selection)
+             selection.removeAllRanges(); // remove any selections already made
+             selection.addRange(range); // make the range you have just created the visible selection
          } else if(document.selection) { // IE 8 and lower  
-           range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
-           range.moveToElementText(elem);//Select the entire contents of the element with the range
-           range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
-           range.select();//Select the range (make it the visible selection
+           range = document.body.createTextRange(); // Create a range (a range is a like the selection but invisible)
+           range.moveToElementText(elem); // Select the entire contents of the element with the range
+           range.collapse(false); // collapse the range to the end point. false means collapse to end rather than the start
+           range.select(); // Select the range (make it the visible selection
          }
-        //   if (el.target.innerHTML.length > 0) {
-        //     let sel = window.getSelection();
-        //     sel.selectAllChildren(el);
-        //     sel.collapseToEnd();
-        //   }
         },
         adjustHeight() {
             setTimeout(()=>{
+            console.log("adjusting editor height")
              let editorElement = document.getElementById("editor")
              let scrollHeight = editorElement.scrollHeight
              editorElement.style.height = scrollHeight + "px";
@@ -111,9 +104,8 @@ export default {
           console.log("firstAt: ", firstAt)
            if(firstAt > -1) {
             var textToReplace = text.substring(firstAt, text.length);
-            // onClick="window.open('http://www.google.com','_newtab')
             var newText = "<a href='#' contenteditable='false'>" + textToReplace.substring(0, textToReplace.length) + "</a>";
-            newText += "<br>"
+            // newText += "br"
             var complete = text.replace(textToReplace, newText);
              el.target.innerHTML = complete
            }
@@ -124,9 +116,23 @@ export default {
           this.formatURL(el)
         },
         onInput(el) {
+            let scrollHeight = el.scrollHeight
+            console.log("auto grow not working: ", scrollHeight)
+
           let isContainAt = el.target.innerHTML.includes("@")
+          this.$emit("isMemberCardVisible", isContainAt == true)
           if (isContainAt == true) {
-            this.$emit("isMemberCardVisible", true)
+        //   var text = el.target.innerHTML;
+        //   var firstAt = text.indexOf('@');
+        //   console.log("firstAt: ", firstAt)
+        //    if(firstAt > -1) {
+        //     var textToReplace = text.substring(firstAt, text.length);
+        //     var newText = "<a href='#' contenteditable='false'>" + textToReplace.substring(0, textToReplace.length) + "</a>";
+        //     // newText += "br"
+        //     var complete = text.replace(textToReplace, newText);
+        //      el.target.innerHTML = complete
+        //      this.setEndOfContenteditable(el)
+        //    }
           }
         },
         exec (command,arg) {
@@ -142,14 +148,8 @@ export default {
             return !!clubs.includes(index + 1)
         },
         getCurrentTagName(el) {
-            // this.formatURL(el)
-            console.log("target: ", el.target.text)
-            var text = el.target.innerHTML;
-            var firstAt = text.indexOf('https');
-            var url = text.substring(firstAt, text.length);
             let targetText =  el.target.text
             let isURL =  targetText != undefined && targetText.length > 5
-            // url.indexOf("https://")
             console.log("url: ", targetText, "isURL: ", isURL)
             if (isURL) {
                 // open
@@ -172,7 +172,6 @@ export default {
 </script>
 
 <style scoped>
-
 .editContainer {
     padding: 20px;
 }
@@ -187,7 +186,7 @@ export default {
    color: var(--color-card-title);
 }
 .editor {
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
     justify-content: start;
     align-items: start;
@@ -197,6 +196,8 @@ export default {
     overflow: hidden;
     overflow-y: scroll;
     color: var(--color-card-title);
+    width: 100%;
+    max-height: 100%;
  }
 
 .btn:hover {
