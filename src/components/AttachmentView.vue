@@ -25,8 +25,6 @@
         </label>
       </div>
       <img v-if="localeFileURL != null || remoteFileURL != null" class="preview-img"  :src="localeFileURL == null ? remoteFileURL : localeFileURL"/>
-      <!-- <label for="">Or</label> -->
-      <!-- <v-text-field type="text" prepend-inner-icon="mdi-file-outline" class="fileLinkField" v-model="remoteFileURL" variant="outlined" label="Paste file link"></v-text-field> -->
       <button v-if="isUploading" class="uploadBtn buttonload">
             <i class="fa fa-circle-o-notch fa-spin"></i> Uploading... 
         </button>

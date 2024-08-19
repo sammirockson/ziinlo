@@ -11,21 +11,38 @@
 </template>
 <script>
 import { ref } from 'vue'
-import { BASE_URL } from '@/config'
+import { BASE_URL, USER_CACHE_KEY } from '@/config'
+import CryptoJS from 'crypto-js'
 import axios from 'axios';
 
 export default {
+    inject: ["cryptojs"],
     setup() {
         var boardName = ref("")
         var isCreatingBoard = ref(false)
-        return { boardName, isCreatingBoard }
+        var currentUser = ref({})
+        return { boardName, isCreatingBoard, currentUser }
     }, 
+    mounted() {
+        let userCacheString = localStorage.getItem(USER_CACHE_KEY)
+            if (userCacheString == null) {
+                this.$router.push({path: "/login"})
+            } else {
+            let userCache = JSON.parse(userCacheString)
+            let decryptionToken = userCache.token
+            let encryptedUserData = userCache.user
+            let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
+            let cacheInfoObject = JSON.parse(decryptedData)
+            this.currentUser = cacheInfoObject.user
+            console.log("currentUser: ", this.currentUser)
+        }
+    },
     methods: {
         async createNewBoard() {
             this.isCreatingBoard = true 
             var params = {
                 name : this.boardName, 
-                owner: "1721545684258",
+                owner: this.currentUser.id,
                 list: [],
                 id: Date.now()
             }

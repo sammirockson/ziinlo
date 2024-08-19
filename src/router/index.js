@@ -5,6 +5,7 @@ import BoardView from '@/views/BoardView.vue'
 import LoginView from '@/views/LoginView.vue'
 import SignUpView from '@/views/SignUp.vue'
 import CardPopupView from '@/components/CardPopupView.vue'
+import InvitationView from '@/views/InvitationView.vue'
 import InvoiceView from '@/components/InvoiceCreator.vue'
 
 const routes = [
@@ -39,7 +40,13 @@ const routes = [
         component: CardPopupView
       }
     ]
-  }
+  }, 
+  {
+    path: '/invitation/b/:boardId/i/:inviter',
+    name: 'invitation',
+    component: InvitationView
+  },
+  
 ]
 
 const router = createRouter({

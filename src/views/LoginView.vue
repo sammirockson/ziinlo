@@ -1,7 +1,7 @@
 <template>
     <div class="authContentView">
       <div class="inputFieldContainer">
-        <img src="@/assets/brand_logo.svg" class="brandLogo">
+        <img src="@/assets/logo.png" class="brandLogo">
             <v-text-field type="email" prepend-inner-icon="mdi-email-outline" class="emailField" v-model="email" variant="outlined" label="Email Address"></v-text-field>
             <v-text-field
             :type="showPassword ? 'text' : 'password'"  prepend-inner-icon="mdi-lock-outline" :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-outline'"
@@ -11,7 +11,7 @@
                   <i class="fa fa-circle-o-notch fa-spin"></i> Logging in... 
               </button>
               <button v-else @click="handleLogin"  v-on:keyup.enter="handleLogin">Log In</button>
-              <label class="forgotTitleLabel">Don't have an account? <span>Sign Up</span></label>
+              <label class="forgotTitleLabel" @click="handleNavToSignUp">Don't have an account? <span>Sign Up</span></label>
               <div class="lineContainer">
                 <div class="leftLineView"></div>
                 <label class="orLabel">OR</label>
@@ -34,48 +34,55 @@ import { googleSdkLoaded } from "vue3-google-login";
 import config from '@/config';
 import CryptoJS from 'crypto-js'
 import { USER_CACHE_KEY } from '@/config'
+import APIService from '@/APIService';
 
 export default {
-    inject: ["cryptojs"],
-    setup() {
-      var email = ref("")
-      var password = ref("")
-      var isLogActivated = ref(false)
-      var showPassword = ref(false)
-      var googleUser = ref(null)
-      var viewPassword = ref(false)
-      return { email, password, isLogActivated, showPassword, googleUser, viewPassword }
-    }, 
-    methods: {
+  props: {
+    isInvite: false
+  },
+  inject: ["cryptojs"],
+  setup() {
+    var email = ref("")
+    var password = ref("")
+    var isLogActivated = ref(false)
+    var showPassword = ref(false)
+    var googleUser = ref(null)
+    var viewPassword = ref(false)
+    return { email, password, isLogActivated, showPassword, googleUser, viewPassword }
+  },
+  mounted() {
+    APIService.init()
+  },
+  computed: {
+    isInvite() {
+      get
+    }
+  },
+  methods: {
+      handleNavToSignUp() {
+        if (this.isInvite) {
+          this.$emit("didTapNavToSignUp")
+        } else {
+          this.$router.push({path: "/signup"})
+        }
+      },
       viewPassword() {
         this.showPassword = !this.showPassword
       },
       async handleLogin() {
-           this.isLogActivated = true 
-           var params = {
-               phoneNumber : this.phoneNumber, 
-               password: this.password
-            }
-  
-            var path = "auth/login"
-            var fullURL = BASE_URL + path
-            console.log("full url: ", fullURL, "params: ", params)
-            await axios.post(fullURL, params).then((response) => {
-              this.isLogActivated = false
-              if (response.data != null) {
-                let data = response.data
-                if (data.statusCode == 200) {
-                  let businessInfo = data.resp 
-                  businessInfo.merchantPassword = "🐱‍💻"
-                  businessInfo.merchantPhone = "🐱‍💻"
-                  localStorage.setItem(PICKMORE_MERCHANT_KEY, JSON.stringify(businessInfo))
-                  localStorage.setItem(SIDE_BAR_MENU_ITEM_KEY, "pos")
-                  this.$router.push({path: "/"})
-                } else {
-                    alert(data.msg)
-                }
-               }
-            })
+         this.isLogActivated = true 
+         var params = {
+            phoneNumber : this.phoneNumber, 
+            password: this.password
+          }
+
+        let userInfo = await APIService.login(params)
+        console.log("userInfo login info: ", userInfo)
+        if (userInfo.token.length > 0) {
+          userInfo.password = ""
+          let token = userInfo.token
+          this.encryptAndNavigate(userInfo, token)
+        }
       },
       handleSignUpTapped() {
         this.$emit('navToRegister', true)
@@ -108,10 +115,7 @@ export default {
             grant_type: "authorization_code"
           }
         );
-
         const accessToken = response.data.access_token;
-        console.log(accessToken);
-
         // Fetch user details using the access token
         const userResponse = await axios.get(
           "https://www.googleapis.com/oauth2/v3/userinfo",
@@ -158,22 +162,29 @@ export default {
             console.log("gUserInfo signed up info: ", gUserInfo)
             gUserInfo.password = ""
             let token = gUserInfo.token
-            let userDataStr = JSON.stringify(gUserInfo)
-            let encyrptedUserData = CryptoJS.AES.encrypt(userDataStr, token).toString()
-            let cacheData = {
-              token: token, 
-              user: encyrptedUserData
-            }
-            console.log("encrypted data: ", cacheData)
-            localStorage.removeItem(USER_CACHE_KEY)
-            localStorage.setItem(USER_CACHE_KEY, JSON.stringify(cacheData))
-            this.$router.push({path: "/"})
+            this.encryptAndNavigate(gUserInfo, token)
             } else {
               alert(data.msg)
             }
           }
         })
-    }
+    }, 
+     encryptAndNavigate(gUserInfo, token) {
+        let userDataStr = JSON.stringify(gUserInfo)
+        let encyrptedUserData = CryptoJS.AES.encrypt(userDataStr, token).toString()
+        let cacheData = {
+            token: token, 
+            user: encyrptedUserData
+        }
+        console.log("encrypted data: ", cacheData)
+        localStorage.removeItem(USER_CACHE_KEY)
+        localStorage.setItem(USER_CACHE_KEY, JSON.stringify(cacheData))
+        if (this.isInvite) {
+          this.$emit("didLogIn", gUserInfo)
+        } else {
+          this.$router.push({path: "/"})
+        }
+     }
    }
 }
 </script>

@@ -123,10 +123,6 @@
              <ButtonCard imageIcon="archive.png" title="Delete"/>
              </div>
         </div>
-        <!-- <v-overlay v-model="isShowFileView" class="align-center justify-center overLayContainer" contained>
-             <div class="fileViewer">
-             </div>
-        </v-overlay> -->
 
         <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px;" activator="tagBtn" contained>
             <TagContainerView @handleSaveTag="handleSaveTag" @refreshTags="refreshTags" @handleTagChanged="handleTagChanged" :boardTags="this.boardTags" class="tagContainerView"/>
@@ -200,7 +196,7 @@ import CryptoJS from 'crypto-js'
 import Editor from 'primevue/editor'
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
 import { VueEditor } from 'vue2-editor'
-import { saveDesc } from '@/APIService'
+import APIService from '@/APIService'
   
 export default {
   inject: ["cryptojs"],
@@ -242,6 +238,7 @@ export default {
         }
     },
     async mounted() {
+        APIService.init()
     },
     created() {
       // fetch from api
@@ -409,12 +406,12 @@ export default {
         let path = "/b/" + this.boardId
         this.$router.push({path: path})
       },
-      handleSaveDescription() {
+      async handleSaveDescription() {
           console.log("save description tapped")
           let html = document.getElementById("editor").innerHTML
           console.log("editor html: ", html)
           this.isEditingDesc = false 
-          saveDesc(html, this.card._id)
+          await APIService.saveDesc(html, this.card._id)
       },
       allowedHours: v => v % 2,
       allowedMinutes: v => v >= 10 && v <= 50,

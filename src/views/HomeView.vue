@@ -69,12 +69,6 @@ export default {
     if (userCacheString == null) {
       this.$router.push({path: "/login"})
     } else {
-      // decrypt user info
-      // let userCache = JSON.parse(userCacheString)
-      // let decryptionToken = userCache.token
-      // let encryptedUserData = userCache.user
-      // let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
-      // console.log("decrypted user info: ", decryptedData)
       this.$router.push({path: "/boards"})
     }
   }

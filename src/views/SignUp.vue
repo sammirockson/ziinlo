@@ -1,7 +1,7 @@
 <template>
-    <div class="authContentView">
+    <form class="authContentView">
       <div class="inputFieldContainer">
-        <img src="@/assets/brand_logo.svg" class="brandLogo">
+        <img src="@/assets/logo.png" class="brandLogo">
         <v-text-field type="name" prepend-inner-icon="mdi-account-circle-outline" class="fullNameField" v-model="fullName" variant="outlined" label="Full Name"></v-text-field>
             <v-text-field type="email" prepend-inner-icon="mdi-email-outline" class="emailField" v-model="email" variant="outlined" label="Email Address"></v-text-field>
             <v-text-field
@@ -12,15 +12,9 @@
                   <i class="fa fa-circle-o-notch fa-spin"></i> Signing up... 
               </button>
               <button v-else @click="handleSignUp"  v-on:keyup.enter="handleSignUp">Sign Up</button>
-              <label class="forgotTitleLabel">Have an account? <span>Log In</span></label>
-              <!-- <div class="lineContainer">
-                <div class="leftLineView"></div>
-                <label class="orLabel">OR</label>
-                <div class="rightLineView"></div>
-              </div> -->
+              <label class="forgotTitleLabel" @click="handleLogin">Have an account? <span>Log In</span></label>
       </div>
-      <!-- <label class="signUpLabel" @click="handleSignUpTapped">Don't have an account? <span class="signUpSpan"> Register here</span></label> -->
-    </div>
+    </form>
 </template>
 <script>
 import { BASE_URL, PICKMORE_MERCHANT_KEY, SIDE_BAR_MENU_ITEM_KEY } from '@/config';
@@ -30,46 +24,52 @@ import { googleSdkLoaded } from "vue3-google-login";
 import config from '@/config';
 import CryptoJS from 'crypto-js'
 import { USER_CACHE_KEY } from '@/config'
+import APIService from '@/APIService';
 
 export default {
-    inject: ["cryptojs"],
-    setup() {
-      var email = ref("")
-      var password = ref("")
-      var isLogActivated = ref(false)
-      var showPassword = ref(false)
-      var googleUser = ref(null)
-      var viewPassword = ref(false)
-      var fullName = ref("")
-      return { email, password, isLogActivated, showPassword, googleUser, viewPassword, fullName }
-    }, 
-    methods: {
-      viewPassword() {
-        this.showPassword = !this.showPassword
-      },
-      async handleSignUp() {
-           this.isLogActivated = true 
-           var params = {
-               email : this.email, 
-               fullName : this.fullName, 
-               password: this.password, 
-               isEmailVerified: false,
-               isViaGoogle: false,
-               id: Date.now()
-            }
-            var path = "auth/signUp"
-            var fullURL = BASE_URL + path
-            console.log("full url: ", fullURL, "params: ", params)
-            await axios.post(fullURL, params).then((response) => {
-              this.isLogActivated = false
-              if (response.data != null) {
-                let data = response.data
-                if (data.statusCode == 200) {
-                  let gUserInfo = data.resp 
-            console.log("signed up info: ", gUserInfo)
-            gUserInfo.password = ""
-            let token = gUserInfo.token
-            let userDataStr = JSON.stringify(gUserInfo)
+  props: {
+    isInvite: false
+  },
+  inject: ["cryptojs"],
+  setup() {
+    var email = ref("")
+    var password = ref("")
+    var isLogActivated = ref(false)
+    var showPassword = ref(false)
+    var googleUser = ref(null)
+    var viewPassword = ref(false)
+    var fullName = ref("")
+    return { email, password, isLogActivated, showPassword, googleUser, viewPassword, fullName }
+  }, 
+  mounted() {
+    APIService.init()
+  },
+  methods: {
+    handleLogin() {
+      if (this.isInvite) {
+          this.$emit("didTapNavToLogin")
+      } else {
+          this.$router.push({path: "/login"})
+      }
+    },
+    viewPassword() {
+      this.showPassword = !this.showPassword
+    },
+    async handleSignUp() {
+      this.isLogActivated = true 
+      var params = {
+        email : this.email, 
+        fullName : this.fullName, 
+        password: this.password, 
+        isEmailVerified: false,
+        isViaGoogle: false,
+        id: Date.now()
+      }
+      let userInfo = await APIService.signUp(params)
+      console.log("userInfo singup info: ", userInfo)
+      if (userInfo.token.length > 0) {
+          let token = userInfo.token
+            let userDataStr = JSON.stringify(userInfo)
             let encyrptedUserData = CryptoJS.AES.encrypt(userDataStr, token).toString()
             let cacheData = {
               token: token, 
@@ -78,13 +78,12 @@ export default {
             console.log("encrypted data: ", cacheData)
             localStorage.removeItem(USER_CACHE_KEY)
             localStorage.setItem(USER_CACHE_KEY, JSON.stringify(cacheData))
-            this.$router.push({path: "/"})
-                
-                } else {
-                    alert(data.msg)
-                }
-               }
-            })
+            if (this.isInvite) {
+              this.$emit("didSignUp", userInfo.user)
+            } else {
+              this.$router.push({path: "/"})
+            }
+         }
       },
       handleSignUpTapped() {
         this.$emit('navToRegister', true)

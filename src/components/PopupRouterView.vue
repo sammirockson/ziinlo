@@ -1,9 +1,6 @@
 <template>
     <Portal to="popup">
-      <PopupBase
-        :label="label"
-        @close="$router.back()"
-      >
+      <PopupBase  @close="$router.back()">
         <slot name="backdrop" slot="backdrop"/>
         <slot/>
       </PopupBase>
@@ -15,12 +12,6 @@
   
   export default {
     name: 'PopupRouterView',
-    props: {
-      label: {
-        required: true,
-        type: String
-      }
-    },
     components: {
       PopupBase,
     }

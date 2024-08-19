@@ -17,14 +17,6 @@
       centered: {
         default: true,
         type: Boolean
-      },
-      focusElement: {
-        default: null,
-        type: Object
-      },
-      label: {
-        required: true,
-        type: String
       }
     },
     mounted() {

@@ -1,9 +1,7 @@
 <template>
     <div>
         <NavBar :isExpanded="this.isSideBarExpanded"/>
-        <div class="boardBNavBar">
-
-        </div>
+        <BoardNavItemsView class="boardBNavBar"></BoardNavItemsView>
         <div class="mainBoardConentView">
             <div class="boardListsContainer" id="boardListsContainer">
                  <div v-if="this.board != null" class="listContainer" id="listContainer"v-for="(list, index) in this.board.lists" :key="list.id">
@@ -86,6 +84,8 @@
 import NavBar from '@/components/NavBarView.vue'
 import DraggableView from 'vuedraggable'
 import CardView from '@/views/CardView.vue'
+import BoardNavItemsView from './BoardNavItemsView.vue'
+
 import { ref } from 'vue'
 import { BASE_URL } from '@/config'
 import axios from 'axios';
@@ -94,7 +94,7 @@ export default {
     inject: ["eventBus"],
     props: ["isExpanded"],
     components: {
-        NavBar, CardView, DraggableView
+        NavBar, CardView, DraggableView, BoardNavItemsView
     }, 
     setup() {
         var isSideBarExpanded = ref(true)
@@ -320,29 +320,6 @@ export default {
                 var myDiv = document.getElementById(listBgViewId);
                 myDiv.scrollTop = myDiv.scrollHeight + 200;
             }, 500)
-          
-            // myDiv.scrollIntoView({behavior: 'smooth'});
-
-
-            // var newDiv = document.getElementById(listBgViewId);
-            // newDiv.scrollTop = newDiv.scrollHeight + 100;
-
-
-            // myDiv.animate({scrollTop: $(listBgViewId).prop("scrollHeight")}, 500);
-            // $(listBgViewId).animate({scrollTop: $(listBgViewId).prop("scrollHeight")}, 500);
-
-
-            // var newDiv = document.getElementById(listBgViewId);
-            // newDiv.scrollTop = newDiv.scrollHeight + 50000;
-
-
-            
-            // var boardListsContainer = document.getElementById("boardListsContainer");
-            // boardListsContainer.scrollTop = 999999999999999;
-
-            // var listContainer = document.getElementById("listContainer");
-            // listContainer.scrollTop = 0;
-            
         }, 
      async getBoardBy(boardId) {
         this.isCardTapped = false

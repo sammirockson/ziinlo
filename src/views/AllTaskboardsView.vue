@@ -14,18 +14,21 @@
 </template>
 <script>
 import { ref } from 'vue'
-import { BASE_URL } from '@/config'
+import CryptoJS from 'crypto-js'
+import { BASE_URL, USER_CACHE_KEY } from '@/config'
 import axios from 'axios';
 
 export default {
+  inject: ["cryptojs"],
     components: {
         
     }, 
     setup() {
         var isSideBarExpanded = ref(false)
         var selectedTaskBoardType = ref("All Team")
-        var boards = ref([Object])
-        return { isSideBarExpanded, boards, selectedTaskBoardType}
+        var boards = ref([])
+        var currentUser = ref({})
+        return { isSideBarExpanded, boards, selectedTaskBoardType, currentUser}
     },
     methods: {
       handleBoardTapped(board) {
@@ -44,7 +47,7 @@ export default {
     }, 
     async fetchBoards() {
         var params = {
-            owner: "1721545684258"
+            owner: this.currentUser.id
         }
         var fullURL = BASE_URL + "board/my"
         console.log("full url: ", fullURL, "params: ", params)
@@ -63,7 +66,18 @@ export default {
         }
     },
     mounted() {
-        this.fetchBoards()
+      let userCacheString = localStorage.getItem(USER_CACHE_KEY)
+        if (userCacheString == null) {
+              this.$router.push({path: "/login"})
+            } else {
+             let userCache = JSON.parse(userCacheString)
+             let decryptionToken = userCache.token
+             let encryptedUserData = userCache.user
+             let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
+             let cacheInfoObject = JSON.parse(decryptedData)
+             this.currentUser = cacheInfoObject.user
+             this.fetchBoards()
+       }
     } 
 }
 </script>
