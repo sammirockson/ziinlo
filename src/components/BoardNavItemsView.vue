@@ -6,16 +6,18 @@
         <label for="">Members</label>
     </div>
     <v-overlay v-model="isMemberVisible" class="align-top justify-end overLayContainer"  contained>
-        <div class="membersOverlayContainer">
-        <div class="separatorLineView">
-        </div>
-        </div>
+        <MemberOverlayView class="membersOverlayContainer">
+        </MemberOverlayView>
     </v-overlay>
    </div>
 </template>
 <script>
 import { ref } from 'vue'
+import MemberOverlayView from './MemberOverlayView.vue';
 export default {
+    components: {
+        MemberOverlayView
+    },
     setup() {
         var isMemberVisible = ref(false)
         return { isMemberVisible }
@@ -32,12 +34,6 @@ export default {
 }
 </script>
 <style scoped>
-.separatorLineView {
-    height: 1px;
-    width: 100%;
-    margin-top: 150px;
-    background-color: var(--color-light);
-}
 .membersOverlayContainer {
     display: flex;
     flex-direction: column;
