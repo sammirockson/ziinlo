@@ -6,8 +6,7 @@
         <label for="">Members</label>
     </div>
     <v-overlay v-model="isMemberVisible" class="align-top justify-end overLayContainer"  contained>
-        <MemberOverlayView class="membersOverlayContainer">
-        </MemberOverlayView>
+        <MemberOverlayView class="membersOverlayContainer" :boardId="boardId"></MemberOverlayView>
     </v-overlay>
    </div>
 </template>
@@ -15,6 +14,11 @@
 import { ref } from 'vue'
 import MemberOverlayView from './MemberOverlayView.vue';
 export default {
+    props: {
+        boardId: {
+            type: String
+        }
+    },
     components: {
         MemberOverlayView
     },

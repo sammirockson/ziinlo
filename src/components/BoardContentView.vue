@@ -1,7 +1,7 @@
 <template>
     <div>
         <NavBar :isExpanded="this.isSideBarExpanded"/>
-        <BoardNavItemsView class="boardBNavBar"></BoardNavItemsView>
+        <BoardNavItemsView class="boardBNavBar" :boardId="this.boardId"></BoardNavItemsView>
         <div class="mainBoardConentView">
             <div class="boardListsContainer" id="boardListsContainer">
                  <div v-if="this.board != null" class="listContainer" id="listContainer"v-for="(list, index) in this.board.lists" :key="list.id">
@@ -85,13 +85,15 @@ import NavBar from '@/components/NavBarView.vue'
 import DraggableView from 'vuedraggable'
 import CardView from '@/views/CardView.vue'
 import BoardNavItemsView from './BoardNavItemsView.vue'
+import APIService from '@/APIService';
 
 import { ref } from 'vue'
-import { BASE_URL } from '@/config'
+import CryptoJS from 'crypto-js'
+import { BASE_URL, USER_CACHE_KEY } from '@/config'
 import axios from 'axios';
 
 export default {
-    inject: ["eventBus"],
+    inject: ["eventBus", "cryptojs"],
     props: ["isExpanded"],
     components: {
         NavBar, CardView, DraggableView, BoardNavItemsView
@@ -109,7 +111,11 @@ export default {
         var isSavingCard = ref(false)
         var allBoardTags = ref([])
         var isRefreshBoard = ref(true)
-        return { isSideBarExpanded, board, newCardName, newListName, isCardTapped , boardId, selectedCard, selectedList, allCards, isSavingCard, allBoardTags, isRefreshBoard}
+        var currentUser = ref(null)
+        return { 
+            isSideBarExpanded, board, newCardName, newListName, isCardTapped, currentUser,
+            boardId, selectedCard, selectedList, allCards, isSavingCard, allBoardTags, isRefreshBoard
+        }
     },
     methods: {
         isBtmViewVisible(list) {
@@ -322,33 +328,39 @@ export default {
             }, 500)
         }, 
      async getBoardBy(boardId) {
+        console.log("current user: ", this.currentUser)
+        if (this.currentUser == null) {
+            this.$router.push({path: '/login'}) 
+        } else {
+        let userId = this.currentUser.id
         this.isCardTapped = false
         var params = {
             boardId: boardId
         }
-        var fullURL = BASE_URL + "board/byId"
-        await axios.post(fullURL, params).then((response) => {
-          if (response.data != null) {
-            let data = response.data
-            this.isRefreshBoard = false
-            if (data != null && data.statusCode == 200) {
-                let apiBoard = data.resp.board
-                this.allBoardTags = data.resp.tags
-                console.log("apiBoard: ", apiBoard)
-                if (apiBoard != null) {
-                    apiBoard.lists.push({ id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []})
-                    apiBoard.lists.sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt))
-                   for (var listIndex in apiBoard.lists) {
-                      let cards = this.sortedCards(apiBoard.lists[listIndex].cards)
-                      apiBoard.lists[listIndex].cards = cards
-                      this.allCards.push(cards)
-                    }
-                   this.board = apiBoard
+        let boardResp = await APIService.getBoardById(params)
+        let apiBoard = boardResp.board
+        this.allBoardTags = boardResp.tags
+        if (apiBoard != null) {
+            let members = apiBoard.members.filter(member => member == userId)
+            console.log("members: ", members, "userId: ", userId)
+            if (members.length > 0 ) {
+                apiBoard.lists.push({ id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []})
+                apiBoard.lists.sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt))
+               for (var listIndex in apiBoard.lists) {
+                 let cards = this.sortedCards(apiBoard.lists[listIndex].cards)
+                 apiBoard.lists[listIndex].cards = cards
+                 this.allCards.push(cards)
                 }
-              }
-             }
-          })
-        }, 
+               this.board = apiBoard
+            } else {
+                console.log("You're not part of this board, request invitation from the owner")
+                this.$router.push({path: '/login'}) 
+            }
+        } else {
+            this.$router.push({path: '/login'}) 
+        }
+      }
+    }, 
      async getCardBy(card_id) {
         var params = {
             card_id: card_id
@@ -380,8 +392,19 @@ export default {
         }
     },  
     mounted() {
+        APIService.init()
         let routeParams = this.$route.params
         console.log("main routeParams: ", routeParams)
+       let userCacheString = localStorage.getItem(USER_CACHE_KEY)
+       if (userCacheString != null && userCacheString.length > 0) {
+        let userCache = JSON.parse(userCacheString)
+        let decryptionToken = userCache.token
+        let encryptedUserData = userCache.user
+        let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
+        let cacheInfoObject = JSON.parse(decryptedData)
+        this.currentUser = cacheInfoObject.user
+       }
+       
         this.boardId = routeParams.boardId
         this.getBoardBy(this.boardId)
     },

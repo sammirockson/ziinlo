@@ -17,6 +17,12 @@ class APIService {
         await this.baseRequest("board/addDueDescriptionToCard", params)
     }
 
+
+    async getBoardMembers(params) {
+        let path = "board/getBoardMembers"
+        return await this.baseRequest(path, params)
+    }
+
     async login(params) {
         let path = "auth/login"
         return await this.baseRequest(path, params)
@@ -24,6 +30,11 @@ class APIService {
 
     async signUp(params) {
         let path = "auth/signUp"
+        return await this.baseRequest(path, params)
+    }
+
+    async getBoardById(params) {
+        let path = "board/byId"
         return await this.baseRequest(path, params)
     }
 
