@@ -1,7 +1,7 @@
 <template>
     <div>
         <NavBar :isExpanded="this.isSideBarExpanded"/>
-        <BoardNavItemsView class="boardBNavBar" :boardId="this.boardId"></BoardNavItemsView>
+        <BoardNavItemsView class="boardBNavBar" :boardId="this.boardId" :boardName="this.board.name"></BoardNavItemsView>
         <div class="mainBoardConentView">
             <div class="boardListsContainer" id="boardListsContainer">
                  <div v-if="this.board != null" class="listContainer" id="listContainer"v-for="(list, index) in this.board.lists" :key="list.id">
@@ -340,6 +340,7 @@ export default {
         let boardResp = await APIService.getBoardById(params)
         let apiBoard = boardResp.board
         this.allBoardTags = boardResp.tags
+        console.log("board: ", boardResp)
         if (apiBoard != null) {
             let members = apiBoard.members.filter(member => member == userId)
             console.log("members: ", members, "userId: ", userId)

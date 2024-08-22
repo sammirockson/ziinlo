@@ -1,18 +1,24 @@
 <template>
     <div class="memberOverlay">
         <input type="text">
-        <label for="">Members</label>
+        <v-text-field type="email" prepend-inner-icon="mdi-magnify" class="searchField" rounded="lg" v-model="searchText" variant="outlined" label="Search members"></v-text-field>
+        <label class="memberTitleLabel">Members</label>
         <div class="separatorLineView"/>
         <div class="membersList">
-           <div class="memberCell" v-for="(member, index) in members" :key="index">
+           <div class="memberCell" v-for="(member, index) in searchResults" :key="index">
                 <div class="member-row">
                 <img v-if="member.picture.length > 0" :src="member.picture" class="defaultImage">
                 <div v-else class="defaultImage">
                     <label for="">{{ member.fullName.substring(0,1) }}</label>
                 </div>
-                <label class="fullNameLabel">{{ member.fullName }}</label>
+                <div class="nameAndRoleView">
+                    <label class="fullNameLabel">{{ member.fullName }}</label>
+                </div>
               </div> 
-             <button class="adminBtn">Admin</button>
+             <button class="adminBtn">
+                 Member 
+                <img src="@/assets/arrow-down.png">
+             </button>
            </div>
         </div>
     </div>
@@ -28,10 +34,17 @@ export default {
     },
     setup() {
         var members = ref([])
+        var searchResults = ref([])
+        var searchText = ref("")
         return {
-            members
+            members, searchText, searchResults
         }
     }, 
+    watch: {
+        searchText() {
+            this.searchResults = this.members.filter(object => object.fullName.includes(this.searchText))
+        }
+    },
     methods: {
         async fetchMembers() {
             let params = {
@@ -40,6 +53,7 @@ export default {
           let allMembers = await APIService.getBoardMembers(params)
           console.log("allMembers: ", allMembers, "params: ", params)
           this.members = allMembers
+          this.searchResults = allMembers
         }
     }, 
     mounted() {
@@ -49,18 +63,57 @@ export default {
 }
 </script>
 <style scoped>
-.fullNameLabel {
+.memberTitleLabel {
+    margin-top: 40px;
+    display: flex;
+    margin-left: 30px;
     font-weight: 500;
+    font-size: 14px;
 }
-.adminBtn {
-    background-color: rgb(181, 87, 56);
-    border-radius: 8px;
-    color: white;
-    height: 30px;
-    width: 60px;
-    font-weight: 600px;
+.searchField {
+  width: 340px;
+  max-height: 44px;
+  font-weight: 500;
+  font-size: 20px;
+  margin-right: auto;
+  margin-left: auto;
+  border: 0px solid var(--color-light-primary) !important;
+  border-color: var(--color-light-primary);
+}
+.role {
+    font-weight: 400;
     font-size: 12px;
 }
+.nameAndRoleView {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+}
+.fullNameLabel {
+    font-weight: 500;
+    font-size: 14px;
+}
+.adminBtn {
+    display: flex;
+    background-color: var(--color-dark-theme);
+    border-radius: var(--border-radius-1);
+    color: white;
+    height: 30px;
+    width: 90px;
+    font-weight: 600px;
+    font-size: 12px;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-weight: 500;
+}
+
+.adminBtn img {
+    width: 16px;
+    height: 16px;
+}
+
 .defaultImage label {
     color: white;
     font-weight: 500;
@@ -97,7 +150,7 @@ export default {
 .separatorLineView {
     height: 1px;
     width: 100%;
-    margin-top: 50px;
+    margin-top: 10px;
     background-color: var(--color-light);
 }
 .memberOverlay {
