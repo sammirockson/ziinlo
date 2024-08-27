@@ -31,6 +31,23 @@ export default {
         return { isSideBarExpanded, boards, selectedTaskBoardType, currentUser}
     },
     methods: {
+      handleMount() {
+        let userCacheString = localStorage.getItem(USER_CACHE_KEY)
+        console.log("userCacheString: ", userCacheString)
+        if (userCacheString.length == 0) {
+          console.log("login...")
+              this.$router.push({path: "/login"})
+            } else {
+             let userCache = JSON.parse(userCacheString)
+             let decryptionToken = userCache.token
+             let encryptedUserData = userCache.user
+             let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
+             let cacheInfoObject = JSON.parse(decryptedData)
+             this.currentUser = cacheInfoObject.user
+             console.log("parsed credentials: ", userCache)
+             this.fetchBoards()
+       }
+      },
       handleBoardTapped(board) {
         console.log("board: ", board)
         let path = "/b/" + board.id
@@ -66,18 +83,7 @@ export default {
         }
     },
     mounted() {
-      let userCacheString = localStorage.getItem(USER_CACHE_KEY)
-        if (userCacheString == null) {
-              this.$router.push({path: "/login"})
-            } else {
-             let userCache = JSON.parse(userCacheString)
-             let decryptionToken = userCache.token
-             let encryptedUserData = userCache.user
-             let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
-             let cacheInfoObject = JSON.parse(decryptedData)
-             this.currentUser = cacheInfoObject.user
-             this.fetchBoards()
-       }
+      this.handleMount()
     } 
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <NavBar :isExpanded="this.isSideBarExpanded"/>
+        <!-- <NavBar :isExpanded="this.isSideBarExpanded"/> -->
         <BoardNavItemsView class="boardBNavBar" :boardId="this.boardId" :boardName="this.board.name"></BoardNavItemsView>
         <div class="mainBoardConentView">
             <div class="boardListsContainer" id="boardListsContainer">
@@ -634,7 +634,7 @@ export default {
 
 .boardListsContainer {
     width: 100%;
-    height: calc(100vh - 120px);
+    height: calc(100vh - 70px);
     white-space: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
@@ -677,7 +677,7 @@ export default {
 
 .mainBoardConentView {
     width: calc(100% - 10px);
-    height: calc(100% - 120px);
+    height: calc(100% - 50px);
     margin-left: auto;
     margin-right: auto;
     padding-top: 10px;

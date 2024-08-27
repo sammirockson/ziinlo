@@ -1,7 +1,10 @@
 <template>
     <div class="memberOverlay">
-        <input type="text">
-        <v-text-field type="email" prepend-inner-icon="mdi-magnify" class="searchField" rounded="lg" v-model="searchText" variant="outlined" label="Search members"></v-text-field>
+        <div class="search-input-container">
+            <!-- <v-text-field type="email" prepend-inner-icon="mdi-magnify" class="searchField" height="20px" rounded="lg" v-model="searchText" variant="outlined" label="Enter email to send invite"></v-text-field> -->
+             <input type="email" class="invite-email-field" placeholder="Email address">
+            <button>Send Invite</button>
+        </div>
         <label class="memberTitleLabel">Members</label>
         <div class="separatorLineView"/>
         <div class="membersList">
@@ -63,6 +66,25 @@ export default {
 }
 </script>
 <style scoped>
+.invite-email-field {
+    height: 44px;
+    width: 270px;
+    border: 1px solid var(--color-light);
+    border-radius: var(--border-radius-1);
+    padding: 10px;
+    font-weight: 500;
+    font-size: 14px;
+}
+.search-input-container {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
 .memberTitleLabel {
     margin-top: 40px;
     display: flex;
@@ -71,8 +93,8 @@ export default {
     font-size: 14px;
 }
 .searchField {
-  width: 340px;
-  max-height: 44px;
+  width: 240px;
+  max-height: 34px !important;
   font-weight: 500;
   font-size: 20px;
   margin-right: auto;
@@ -94,7 +116,7 @@ export default {
     font-weight: 500;
     font-size: 14px;
 }
-.adminBtn {
+.adminBtn, .search-input-container button {
     display: flex;
     background-color: var(--color-dark-theme);
     border-radius: var(--border-radius-1);
@@ -107,6 +129,11 @@ export default {
     justify-content: center;
     gap: 5px;
     font-weight: 500;
+}
+
+.search-input-container button  {
+    height: 40px;
+    width: 100px;
 }
 
 .adminBtn img {

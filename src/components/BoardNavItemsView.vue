@@ -2,6 +2,23 @@
     <div class="boardNavItems">
     <div class="leftContentView">
        <label class="boardNameLabel">{{ boardName }}</label>
+       <div class="taskNotificationContainer">
+            <button @click="handleCreateBoard()">       
+            <span class="material-symbols-outlined">add</span>
+            New Board</button>
+       </div>      
+       <v-overlay  v-model="isCreateBoard" class="align-center justify-center" contained>
+           <CreateNewBoardView @closeOverlay="handleCloseOverlay"/>
+        </v-overlay>
+    </div>
+    <div class="search-container">
+        <img src="../assets/search.png" alt="">
+        <input type="text" placeholder="Search board">
+    </div>
+    <div class="filter-container">
+        <img src="../assets/filter.svg" alt="">
+        <label for="">Filter</label>
+        <img src="../assets/arrow-down.png" alt="">
     </div>
     <div class="membersContainer">
          <div class="profile-cell" v-for="(member, index) in members" :key="index">
@@ -13,6 +30,11 @@
         <img src="@/assets/membersDark.png" class="memberIcon">
         <label for="">Members</label>
     </div>
+    <div class="themeToggler" @click="handleThemeToggle">
+        <span class="material-symbols-sharp active" id="lightMode">light_mode</span>
+        <span class="material-symbols-sharp" id="darmMode">dark_mode</span>
+    </div>
+    <img src="@/assets/notification.png" class="notificationIcon">
     <v-overlay v-model="isMemberVisible" class="align-top justify-end overLayContainer"  contained>
         <MemberOverlayView class="membersOverlayContainer" :boardId="boardId"></MemberOverlayView>
     </v-overlay>
@@ -22,6 +44,7 @@
 import { ref } from 'vue'
 import APIService from '@/APIService';
 import MemberOverlayView from './MemberOverlayView.vue';
+import CreateNewBoardView from './CreateNewBoardView.vue'
 export default {
     props: {
         boardId: {
@@ -33,21 +56,55 @@ export default {
         }
     },
     components: {
-        MemberOverlayView
+        MemberOverlayView, CreateNewBoardView
     },
     setup() {
         var isMemberVisible = ref(false)
         var members = ref([])
-        return { isMemberVisible, members }
+        var isCreateBoard = ref(false)
+        return { isMemberVisible, members, isCreateBoard }
     }, 
     async mounted() {
-        let params = {
-            boardId: this.boardId
-        }
-        let allMembers = await APIService.getBoardMembers(params)
-        this.members = allMembers
+        this.fetchMembers()
     },
     methods: {
+        handleCloseOverlay() {
+            console.log("is overlay closed")
+            this.isCreateBoard = false 
+        },
+        handleCreateBoard() {
+            // create a new board
+            this.isCreateBoard = true 
+        }, 
+        handleThemeToggle() {
+         this.handleToggle(true)
+        }, 
+        handleToggle(isInvertable) {
+            document.body.classList.toggle("dark-theme-variables")
+            let lightMode = document.getElementById("lightMode")
+            let darkMode = document.getElementById("darmMode")
+
+            if (this.isDarkMode) {
+                lightMode.classList.add("active")
+                darkMode.classList.remove("active")
+            } else {
+                lightMode.classList.remove("active")
+                darkMode.classList.add("active")
+            }
+            if (isInvertable === true) {
+                this.isDarkMode = !this.isDarkMode
+                let cacheValue = this.isDarkMode ? "1" : "0"
+                localStorage.setItem("isDarkMode", cacheValue)
+            }
+        },
+        async fetchMembers() {
+        let params = {
+            boardId: this.boardId
+         }
+         let allMembers = await APIService.getBoardMembers(params)
+         this.members = allMembers
+         console.log("allMembers: ", allMembers)
+        },
         handleShowMembers() {
             this.isMemberVisible = true    
         }
@@ -59,7 +116,110 @@ export default {
 }
 </script>
 <style scoped>
+.profileImage {    
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 15px;
+}
+.themeToggler span.active {
+    background-color: var(--color-bar-dark);
+    color: white;
+    border-radius: var(--border-radius-1);
+}
 
+.themeToggler span {
+    height: 100%;
+    width: 50%;
+    padding-top: 8px;
+}
+
+.themeToggler {
+    display: flex;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 100px;
+    height: 38px;
+    border-radius: var(--border-radius-1);
+    background-color: var(--color-light);
+    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
+}
+.taskNotificationContainer button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    padding-left: 10px;
+    margin-top: auto;
+    margin-bottom: auto;
+    font-weight: 500;
+}
+.notificationIcon {
+    width: 34px;
+    height: 34px;
+    border-radius: 4px;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 8px;
+}
+.searchContainer {
+    width: calc(100% - 340px);
+    height: 50px;
+    padding-right: 400px;
+    padding-left: 20px;
+
+}
+.taskNotificationContainer {
+    width: 140px;
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    background-color: var(--color-bar-dark);
+    border-radius: var(--border-radius-2);
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.search-container input {
+    font-weight: 400;
+    font-size: 14px;
+    width: 90%;
+    color: var(--color-dark-blue);
+}
+.search-container:focus, input:focus{
+    outline: none;
+}
+.filter-container, .search-container {
+    display: flex;
+    align-items: center;
+    height: 34px;
+    border-radius: var(--border-radius-1);
+    background-color: white;
+    gap: 8px;
+    padding-right: 8px;
+    padding-left: 8px;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 20px;
+}
+.search-container {
+    width: 280px;
+    background-color: white;
+}
+.filter-container img, .search-container img {
+    object-fit: contain;
+    height: 20px;
+    width: 20px;
+}
+.filter-container {
+    justify-content: center;
+    width: 110px;
+}
 .defaultImage label {
     color: white;
     font-weight: 500;
@@ -114,6 +274,7 @@ export default {
     font-weight: 600;
     font-size: 20px;
     text-align: left;
+    margin-left: 10px;
 }
 .membersOverlayContainer {
     display: flex;
@@ -132,7 +293,7 @@ export default {
 .inviteContentView label {
     font-weight: 500;
     font-size: 14px;
-    color: var(--color-dark-blue)
+    color: var(--color-dark-blue);
 }
 .inviteContentView {
     display: flex;
@@ -146,11 +307,12 @@ export default {
     row-gap: 8px;
     margin-top: auto;
     margin-bottom: auto;
+    margin-right: 20px;
 }
 .leftContentView {
     display: flex;
     align-items: center;
-    width: 80%;
+    width: 50%;
 }
 .boardNavItems {
     display: flex;

@@ -11,8 +11,8 @@
               <button v-if="isLogActivated" class="login buttonload">
                   <i class="fa fa-circle-o-notch fa-spin"></i> Signing up... 
               </button>
-              <button v-else @click="handleSignUp"  v-on:keyup.enter="handleSignUp">Sign Up</button>
-              <label class="forgotTitleLabel" @click="handleLogin">Have an account? <span>Log In</span></label>
+              <button v-else @click.prevent="handleSignUp"  v-on:keyup.enter="handleSignUp">Sign Up</button>
+              <label class="forgotTitleLabel" @click.prevent="handleLogin">Have an account? <span>Log In</span></label>
       </div>
     </form>
 </template>

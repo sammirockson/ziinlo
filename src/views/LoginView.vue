@@ -10,15 +10,15 @@
               <button v-if="isLogActivated" class="login buttonload">
                   <i class="fa fa-circle-o-notch fa-spin"></i> Logging in... 
               </button>
-              <button v-else @click="handleLogin"  v-on:keyup.enter="handleLogin">Log In</button>
-              <label class="forgotTitleLabel" @click="handleNavToSignUp">Don't have an account? <span>Sign Up</span></label>
+              <button v-else @click.prevent="handleLogin"  v-on:keyup.enter="handleLogin">Log In</button>
+              <label class="forgotTitleLabel" @click.prevent="handleNavToSignUp">Don't have an account? <span>Sign Up</span></label>
               <div class="lineContainer">
                 <div class="leftLineView"></div>
                 <label class="orLabel">OR</label>
                 <div class="rightLineView"></div>
               </div>
 
-              <div class="googleButtonContainer" @click="loginWithGoogle()">
+              <div class="googleButtonContainer" @click.prevent="loginWithGoogle()">
                 <img src="@/assets/google.png" class="googleIcon">
                 <label class="googleTitleLabel">Continue with Google</label>
               </div>
@@ -182,7 +182,7 @@ export default {
         if (this.isInvite) {
           this.$emit("didLogIn", gUserInfo)
         } else {
-          this.$router.push({path: "/"})
+          this.$router.push({path: "/boards"})
         }
      }
    }
