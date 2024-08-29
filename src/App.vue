@@ -22,6 +22,7 @@
   --color-info-light: #dce1eb;
   --color-dark: #363949;
   --color-light: rgba(132, 139, 200, 0.18);
+  --color-light-variant: rgba(255, 255, 255, 0.38);
   --color-primary-variant: #07db71;
   --color-dark-variant: #677483;
   --color-background: #f6f6f9;

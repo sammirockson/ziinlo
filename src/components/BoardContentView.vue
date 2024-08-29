@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- <NavBar :isExpanded="this.isSideBarExpanded"/> -->
-        <BoardNavItemsView class="boardBNavBar" :boardId="this.boardId" :boardName="this.board.name"></BoardNavItemsView>
+        <BoardNavItemsView class="boardBNavBar" :boardId="this.boardId" :boardName="this.board.name" @handleSearchBoard="handleSearchBoard"></BoardNavItemsView>
         <div class="mainBoardConentView">
             <div class="boardListsContainer" id="boardListsContainer">
                  <div v-if="this.board != null" class="listContainer" id="listContainer"v-for="(list, index) in this.board.lists" :key="list.id">
@@ -112,12 +112,38 @@ export default {
         var allBoardTags = ref([])
         var isRefreshBoard = ref(true)
         var currentUser = ref(null)
+        var dblists = ref([])
+        var allLists = ref([])
         return { 
-            isSideBarExpanded, board, newCardName, newListName, isCardTapped, currentUser,
+            isSideBarExpanded, board, dblists, allLists, newCardName, newListName, isCardTapped, currentUser,
             boardId, selectedCard, selectedList, allCards, isSavingCard, allBoardTags, isRefreshBoard
         }
     },
     methods: {
+        handleSearchBoard(searchText) {
+            if (searchText.length > 0) {
+               var searchLists = []
+               let searchKey = searchText.toLowerCase()
+               searchLists = this.allLists
+               for (var index in searchLists) {
+                  let list = searchLists[index]
+                  if (list != undefined) {
+                    console.log('list: ', list)
+                  let cards = list.cards
+                  let cardFilter = cards.filter(card => card.cardName.toLowerCase().includes(searchKey))
+                  if (cardFilter.length > 0) {
+                    searchLists[index].cards = cardFilter
+                  } else {
+                    searchLists = searchLists.filter(x => x._id !== list._id)
+                  }
+                  }
+               }
+               console.log("handle search: ", searchText.length, 'searchLists card count: ')
+               this.board.lists = searchLists
+            } else {
+                this.getBoardBy(this.boardId) 
+            }
+        },
         isBtmViewVisible(list) {
             return list.headerType ==  'addList'  || list.headerType == 'creatingList' ? false : true
         },
@@ -352,7 +378,10 @@ export default {
                  apiBoard.lists[listIndex].cards = cards
                  this.allCards.push(cards)
                 }
+               this.allLists = apiBoard.lists
+               this.dblists = apiBoard.lists
                this.board = apiBoard
+               console.log('dblists card count: ', this.dblists.map(x => x.cards.length))
             } else {
                 console.log("You're not part of this board, request invitation from the owner")
                 this.$router.push({path: '/login'}) 

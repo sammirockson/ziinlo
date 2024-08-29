@@ -11,9 +11,10 @@
            <CreateNewBoardView @closeOverlay="handleCloseOverlay"/>
         </v-overlay>
     </div>
-    <div class="search-container">
+    <div class="right-container">
+        <div class="search-container">
         <img src="../assets/search.png" alt="">
-        <input type="text" placeholder="Search board">
+        <input type="text" v-model="searchText" placeholder="Search board" @input="handleSearch">
     </div>
     <div class="filter-container">
         <img src="../assets/filter.svg" alt="">
@@ -34,7 +35,8 @@
         <span class="material-symbols-sharp active" id="lightMode">light_mode</span>
         <span class="material-symbols-sharp" id="darmMode">dark_mode</span>
     </div>
-    <img src="@/assets/notification.png" class="notificationIcon">
+    <img src="@/assets/notification-white.svg" class="notificationIcon">
+    </div>
     <v-overlay v-model="isMemberVisible" class="align-top justify-end overLayContainer"  contained>
         <MemberOverlayView class="membersOverlayContainer" :boardId="boardId"></MemberOverlayView>
     </v-overlay>
@@ -62,12 +64,16 @@ export default {
         var isMemberVisible = ref(false)
         var members = ref([])
         var isCreateBoard = ref(false)
-        return { isMemberVisible, members, isCreateBoard }
+        var searchText = ref('')
+        return { isMemberVisible, members, isCreateBoard, searchText }
     }, 
     async mounted() {
         this.fetchMembers()
     },
     methods: {
+        handleSearch() {
+            this.$emit('handleSearchBoard', this.searchText)
+        },
         handleCloseOverlay() {
             console.log("is overlay closed")
             this.isCreateBoard = false 
@@ -112,7 +118,6 @@ export default {
     // Invitation link will be baseURL + invitation + b + inviter
     // https://trello.com/invite/b/5a168f578b36137f5cc81d7d/ATTI4c914267f82abd2db86a9a3da1405d3f5C34B7BA/ford-dst-tech-tasks
     // https://wwww.zinlo.com/invitation/b/1722579902069/i/66a6f66276e1d70286f59bec
-    // b = boardId permissionType m for member, a for admin
 }
 </script>
 <style scoped>
@@ -125,7 +130,7 @@ export default {
     margin-right: 15px;
 }
 .themeToggler span.active {
-    background-color: var(--color-bar-dark);
+    background-color: var(--color-light-variant);
     color: white;
     border-radius: var(--border-radius-1);
 }
@@ -133,7 +138,7 @@ export default {
 .themeToggler span {
     height: 100%;
     width: 50%;
-    padding-top: 8px;
+    padding-top: 4px;
 }
 
 .themeToggler {
@@ -141,12 +146,13 @@ export default {
     margin-top: auto;
     margin-bottom: auto;
     width: 100px;
-    height: 38px;
+    height: 34px;
     border-radius: var(--border-radius-1);
-    background-color: var(--color-light);
+    background-color: var(--color-light-variant);
     justify-content: space-between;
     align-items: center;
     justify-content: center;
+    margin-right: 10px;
 }
 .taskNotificationContainer button {
     display: flex;
@@ -160,12 +166,13 @@ export default {
     font-weight: 500;
 }
 .notificationIcon {
-    width: 34px;
-    height: 34px;
+    width: 24px;
+    height: 24px;
     border-radius: 4px;
     margin-top: auto;
     margin-bottom: auto;
-    margin-left: 8px;
+    object-fit: contain;
+    margin-right: 10px;
 }
 .searchContainer {
     width: calc(100% - 340px);
@@ -180,7 +187,7 @@ export default {
     display: flex;
     flex-direction: row;
     background-color: var(--color-bar-dark);
-    border-radius: var(--border-radius-2);
+    border-radius: var(--border-radius-1);
     margin-top: auto;
     margin-bottom: auto;
 }
@@ -269,12 +276,12 @@ export default {
     display: flex;
     align-items: center;
     color: white;
-    width: 200px;
     height: 40px;
     font-weight: 600;
     font-size: 20px;
     text-align: left;
     margin-left: 10px;
+    margin-right: 20px;
 }
 .membersOverlayContainer {
     display: flex;
@@ -309,10 +316,14 @@ export default {
     margin-bottom: auto;
     margin-right: 20px;
 }
+.right-container {
+    display: flex;
+    width: 800px;
+}
 .leftContentView {
     display: flex;
     align-items: center;
-    width: 50%;
+    width: calc(100% - 850px);
 }
 .boardNavItems {
     display: flex;
