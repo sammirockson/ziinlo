@@ -94,14 +94,14 @@
 
             <div class="controlsContainer">
              <label class="memberTitleLabel">Members</label>
-             <div class="membersContainer">
+             <div class="membersContainer" @click="handleJoinRemove">
                 <div class="memberCell" v-for="(index, member) in members" :key="member">
                    <img :src="require(index == 8 ? `@/assets/add.svg` : `@/assets/cardPhoto.png`)" class="memberPhoto">
                    <label class="memberNameLabel" v-if="index != 8">Name</label>
-                   <label class="memberNameLabel" v-else>Join</label>
+                   <label class="memberNameLabel" v-else @click="handleJoinRemove">Join</label>
                 </div>
              </div>
-             <label class="seeMoreMembersLabel">See more</label>
+             <label class="seeMoreMembersLabel" @click="handleJoinRemove">See more</label>
 
 
              <label class="memberLabel">Action</label>
@@ -249,6 +249,11 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
+        handleJoinRemove() {
+            // If user is a member, remove from card else add to card
+            let memberFilter = this.card.members.find(member => member === this.currentUser.id)
+            console.log("memberFilter: ", memberFilter, 'members: ', this.card.members)
+        },
         getResourceURL(attachment) {
             if (attachment.fileType == null || attachment.fileType.count == 0) {
                 return attachment.fileURL
@@ -949,6 +954,8 @@ export default {
     grid-column-gap: 1px;
     grid-row-gap: 1px;
     margin-top: 4px;
+    z-index: 99;
+    background-color: red;
 }
 
 .cardInfoContainer {

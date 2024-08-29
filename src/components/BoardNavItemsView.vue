@@ -23,9 +23,9 @@
     </div>
     <div class="membersContainer">
          <div class="profile-cell" v-for="(member, index) in members" :key="index">
-            <span class="profileIcon"> <img :src="member.picture.length > 0 ? member.picture : require('@/assets/orange_default.png')"></span>
+            <span class="profileIcon" v-if="member != null"> <img :src="member.picture.length > 0 ? member.picture : require('@/assets/orange_default.png')"></span>
          </div>
-        <label for="">+99</label>
+        <label v-if="remainingCount > 0">+{{ remainingCount }}</label>
     </div>
     <div class="inviteContentView" @click="handleShowMembers">
         <img src="@/assets/membersDark.png" class="memberIcon">
@@ -49,9 +49,6 @@ import MemberOverlayView from './MemberOverlayView.vue';
 import CreateNewBoardView from './CreateNewBoardView.vue'
 export default {
     props: {
-        boardId: {
-            type: String
-        }, 
         boardName: {
             type: String, 
             default: ''
@@ -65,7 +62,8 @@ export default {
         var members = ref([])
         var isCreateBoard = ref(false)
         var searchText = ref('')
-        return { isMemberVisible, members, isCreateBoard, searchText }
+        var remainingCount = ref(0)
+        return { isMemberVisible, members, isCreateBoard, searchText, remainingCount }
     }, 
     async mounted() {
         this.fetchMembers()
@@ -104,11 +102,14 @@ export default {
             }
         },
         async fetchMembers() {
+            let routeParams = this.$route.params
         let params = {
-            boardId: this.boardId
+            boardId: routeParams.boardId
          }
+         console.log('fetchMembers params: ', params)
          let allMembers = await APIService.getBoardMembers(params)
-         this.members = allMembers
+         this.remainingCount = allMembers.length - 5
+         this.members = allMembers.slice(0, 5);
          console.log("allMembers: ", allMembers)
         },
         handleShowMembers() {
@@ -257,7 +258,6 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 140px;
     height: 100%;
     float: right;
     padding-right: 10px;

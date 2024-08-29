@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- <NavBar :isExpanded="this.isSideBarExpanded"/> -->
-        <BoardNavItemsView class="boardBNavBar" :boardId="this.boardId" :boardName="this.board.name" @handleSearchBoard="handleSearchBoard"></BoardNavItemsView>
+        <BoardNavItemsView class="boardBNavBar" :boardId="this.board.id" :boardName="this.board.name" @handleSearchBoard="handleSearchBoard"></BoardNavItemsView>
         <div class="mainBoardConentView">
             <div class="boardListsContainer" id="boardListsContainer">
                  <div v-if="this.board != null" class="listContainer" id="listContainer"v-for="(list, index) in this.board.lists" :key="list.id">
