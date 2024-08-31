@@ -34,9 +34,9 @@ export default {
       handleMount() {
         let userCacheString = localStorage.getItem(USER_CACHE_KEY)
         console.log("userCacheString: ", userCacheString)
-        if (userCacheString.length == 0) {
+        if (userCacheString == null || userCacheString.length == 0) {
           console.log("login...")
-              this.$router.push({path: "/login"})
+              this.$router.push({path: "/home"})
             } else {
              let userCache = JSON.parse(userCacheString)
              let decryptionToken = userCache.token

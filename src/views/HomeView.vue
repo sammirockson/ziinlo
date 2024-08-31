@@ -59,6 +59,7 @@ export default {
   }, 
   mounted() {
     // this.checkAuthentication()
+    console.log('home mounted')
     var cachedKey = localStorage.getItem(SIDE_BAR_MENU_ITEM_KEY)
     if (cachedKey != null) {
       console.log("arrived at home: ", cachedKey)
@@ -67,7 +68,7 @@ export default {
     var userCacheString = localStorage.getItem(USER_CACHE_KEY)
     console.log("home user cache: ", userCacheString)
     if (userCacheString == null) {
-      this.$router.push({path: "/login"})
+      this.$router.push({path: "/home"})
     } else {
       this.$router.push({path: "/boards"})
     }

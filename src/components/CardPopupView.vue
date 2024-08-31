@@ -94,14 +94,14 @@
 
             <div class="controlsContainer">
              <label class="memberTitleLabel">Members</label>
-             <div class="membersContainer" @click="handleJoinRemove">
-                <div class="memberCell" v-for="(index, member) in members" :key="member">
-                   <img :src="require(index == 8 ? `@/assets/add.svg` : `@/assets/cardPhoto.png`)" class="memberPhoto">
-                   <label class="memberNameLabel" v-if="index != 8">Name</label>
-                   <label class="memberNameLabel" v-else @click="handleJoinRemove">Join</label>
+             <div class="membersContainer" v-if="members != null">
+                <div class="memberCell" v-for="(member) in members" :key="member._id" @click="handleJoinRemove(member)">
+                   <img :src="member.picture != null ? member.picture : require(`@/assets/attachment.png`)" class="memberPhoto">
+                   <label class="memberNameLabel" v-if="index != 8">{{ member.fullName }}</label>
+                   <label class="memberNameLabel" v-else>Join</label>
                 </div>
              </div>
-             <label class="seeMoreMembersLabel" @click="handleJoinRemove">See more</label>
+             <label class="seeMoreMembersLabel">See more</label>
 
 
              <label class="memberLabel">Action</label>
@@ -124,7 +124,7 @@
              </div>
         </div>
 
-        <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px;" activator="tagBtn" contained>
+        <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: '500px'" activator="tagBtn" contained>
             <TagContainerView @handleSaveTag="handleSaveTag" @refreshTags="refreshTags" @handleTagChanged="handleTagChanged" :boardTags="this.boardTags" class="tagContainerView"/>
         </v-overlay>
         <v-overlay v-model="isDateTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" activator="tagBtn" contained>
@@ -193,7 +193,7 @@ import axios from 'axios';
 import { ref } from 'vue'
 
 import CryptoJS from 'crypto-js'
-import Editor from 'primevue/editor'
+// import Editor from 'primevue/editor'
 import { VTimePicker } from 'vuetify/labs/VTimePicker'
 import { VueEditor } from 'vue2-editor'
 import APIService from '@/APIService'
@@ -201,11 +201,11 @@ import APIService from '@/APIService'
 export default {
   inject: ["cryptojs"],
   components: {
-    PopupOverlay, TextEditorView, Editor, AttachmentView, VTimePicker, VueEditor, AssigneeView, CommentEditorView, MemberOverlayView,
+    PopupOverlay, TextEditorView, AttachmentView, VTimePicker, VueEditor, AssigneeView, CommentEditorView, MemberOverlayView,
     PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView, AddCheckListView
   },
   setup() {
-    var members = ref([1, 2, 3, 4, 5, 6, 7, 8])
+    var members = ref([])
     var isTracked = ref(true)
     var card = ref(null)
     var list = ref(null)
@@ -249,10 +249,25 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
-        handleJoinRemove() {
+       async handleJoinRemove() {
             // If user is a member, remove from card else add to card
-            let memberFilter = this.card.members.find(member => member === this.currentUser.id)
-            console.log("memberFilter: ", memberFilter, 'members: ', this.card.members)
+            var cardMembers = this.card.members
+            let userid = this.currentUser.id
+            let memberFilter = cardMembers.filter(member => member === this.currentUser.id)
+            console.log("memberFilter: ", memberFilter, 'members: ', this.card.members, 'userid: ', userid)
+            if (memberFilter.length > 0) {
+                // remove
+                cardMembers = cardMembers.filter(member => member !== userid)
+            } else {
+                cardMembers.push(userid)
+            }
+            // call api to save
+            let params = {
+                card_id: this.card._id, 
+                members: cardMembers
+            }
+            await APIService.updateCardMembership(params)
+            this.getCardBy(this.card._id)
         },
         getResourceURL(attachment) {
             if (attachment.fileType == null || attachment.fileType.count == 0) {
@@ -446,6 +461,7 @@ export default {
                    this.list = resp.list
                    this.cardTags = resp.tags
                    this.attachments = resp.attachments
+                   this.members = resp.members
                    this.fetchTags()
                 }
               }
@@ -475,7 +491,7 @@ export default {
         getUserInfo() {
             let userCacheString = localStorage.getItem(USER_CACHE_KEY)
             if (userCacheString == null) {
-                this.$router.push({path: "/login"})
+                this.$router.push({path: "/home"})
             } else {
                 let userCache = JSON.parse(userCacheString)
                 let decryptionToken = userCache.token
@@ -892,6 +908,12 @@ export default {
     text-align: center;
     width: 100%;
     margin-left: 1px;
+    justify-content: center;
+    overflow: hidden;
+    max-lines: 1;
+    text-overflow: ellipsis;
+    height: 20px;
+    max-height: 20px;
 }
 .memberPhoto {
     width: 30px;
@@ -955,7 +977,6 @@ export default {
     grid-row-gap: 1px;
     margin-top: 4px;
     z-index: 99;
-    background-color: red;
 }
 
 .cardInfoContainer {

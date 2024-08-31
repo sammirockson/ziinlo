@@ -7,12 +7,18 @@ import SignUpView from '@/views/SignUp.vue'
 import CardPopupView from '@/components/CardPopupView.vue'
 import InvitationView from '@/views/InvitationView.vue'
 import InvoiceView from '@/components/InvoiceCreator.vue'
+import LandingPageView from '@/views/LandingPageView.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/home',
+    name: 'landing',
+    component: LandingPageView
   },
   {
     path: '/login',

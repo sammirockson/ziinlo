@@ -356,7 +356,7 @@ export default {
      async getBoardBy(boardId) {
         console.log("current user: ", this.currentUser)
         if (this.currentUser == null) {
-            this.$router.push({path: '/login'}) 
+            this.$router.push({path: '/home'}) 
         } else {
         let userId = this.currentUser.id
         this.isCardTapped = false
@@ -384,10 +384,10 @@ export default {
                console.log('dblists card count: ', this.dblists.map(x => x.cards.length))
             } else {
                 console.log("You're not part of this board, request invitation from the owner")
-                this.$router.push({path: '/login'}) 
+                this.$router.push({path: '/home'}) 
             }
         } else {
-            this.$router.push({path: '/login'}) 
+            this.$router.push({path: '/home'}) 
         }
       }
     }, 

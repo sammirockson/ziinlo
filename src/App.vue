@@ -28,6 +28,7 @@
   --color-background: #f6f6f9;
   --color-card-background: white;
   --color-card-title: #1C2634;
+  --color-light-yellow: #fff8df;
 
   /* FAFAFA f6f6f9 */
   --color-blue: #4d81E7;

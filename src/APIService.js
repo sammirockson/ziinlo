@@ -48,7 +48,12 @@ class APIService {
         return await this.baseRequest(path, params)
     }
 
+    async updateCardMembership(params) {
+        let path = "board/updateCardMembership"
+        return await this.baseRequest(path, params)
+    }
 
+    
     async baseRequest(path, params) {
         let header = {
             'Accept': 'application/json',
