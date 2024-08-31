@@ -35,7 +35,6 @@ export default {
         let userCacheString = localStorage.getItem(USER_CACHE_KEY)
         console.log("userCacheString: ", userCacheString)
         if (userCacheString == null || userCacheString.length == 0) {
-          console.log("login...")
               this.$router.push({path: "/home"})
             } else {
              let userCache = JSON.parse(userCacheString)

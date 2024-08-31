@@ -8,6 +8,7 @@ import CardPopupView from '@/components/CardPopupView.vue'
 import InvitationView from '@/views/InvitationView.vue'
 import InvoiceView from '@/components/InvoiceCreator.vue'
 import LandingPageView from '@/views/LandingPageView.vue'
+import PricingView from '@/views/PricingView.vue'
 
 const routes = [
   {
@@ -19,6 +20,11 @@ const routes = [
     path: '/home',
     name: 'landing',
     component: LandingPageView
+  },
+  {
+    path: '/pricing',
+    name: 'pricing',
+    component: PricingView
   },
   {
     path: '/login',

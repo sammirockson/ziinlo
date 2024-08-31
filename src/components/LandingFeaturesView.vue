@@ -6,7 +6,7 @@
                 <label class="main-title-label">The Ultimate Project <br>Management Solution</label>
                 <label class="main-sub-title">Stay in complete control of your workflow with the ability to define each stage of work, providing you with a clear overview of what's important and identifying any bottlenecks or hurdles that may arise.</label>
                 <div class="get-started-sales">
-                    <button class="get-started-btn">Get started now</button>
+                    <button class="get-started-btn" @click="handleGetStarted">Get started now</button>
                     <button class="see-how-btn">See how it works</button>
                 </div>
         </div>
@@ -14,8 +14,20 @@
    </div>
    <div class="project-snapshot">
          <div class="snap-bg">
-            <img src="../assets/macbook-mockup.png" class="snpshot">
+            <img src="../assets/mockshot.png" class="snpshot">
          </div>
+    </div>
+    <div class="complex-work">
+
+    </div>
+    <div class="bridge-team-gap">
+
+    </div>
+    <div class="efficient">
+
+    </div>
+    <div class="supercharge">
+
     </div>
  </div>
 </template>
@@ -23,19 +35,37 @@
 <script>
 export default {
 
+    methods: {
+        handleGetStarted() {
+            this.$router.push({path: "/pricing"})
+        }
+    }
 }
 </script>
 
 <style lang="scss" scoped>
+.efficient {
+    height: 400px;
+    background-color: white;
+}
+.bridge-team-gap {
+    height: 400px;
+    background-color: #a090f2;
+}
+.complex-work {
+    height: 400px;
+    background-color: var(--color-light-pink);
+}
 .snpshot {
+    width: 100%;
     height: 700px;
     object-fit: contain;
-    border-radius: var(--border-radius-1);
 }
 .project-snapshot {
     margin-top: -150px;
-    padding-top: 50px;
-    height: 800px;
+    padding-top: 10px;
+    height: 900px;
+    width: 100%;
     background-color: #111111;
 }
 .get-started-btn, .see-how-btn {

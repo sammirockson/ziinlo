@@ -1,5 +1,6 @@
 <template>
-  <div class="home">
+  <LandingPageView v-if="currentUser == null"/>
+  <div class="home" v-else>
     <SideBarView class="sideBar" @handleMenuTapped="handleChangeContainer" :cachedMenuKey="this.containerType" :isExpanded="this.isExpanded" :style="{width: isExpanded ? '250px' : '90px'}" @click="handleSideBarTapped"/>
     <!-- <HomeContentView v-if="containerType == 'home'" class="overviewContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/> -->
     <BoardView v-if="containerType == 'board'" class="posContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
@@ -17,6 +18,8 @@ import BoardView from '@/views/BoardView.vue'
 import HomeContentView from '@/views/HomeContentView.vue'
 import ChatView from '@/views/ChatView.vue'
 import CalendarView from '@/views/CalendarView.vue'
+import LandingPageView from '@/views/LandingPageView.vue'
+
 import { PICKMORE_MERCHANT_KEY, SIDE_BAR_MENU_ITEM_KEY, USER_CACHE_KEY } from '@/config'
 import CryptoJS from 'crypto-js'
 
@@ -24,13 +27,14 @@ export default {
   inject: ["cryptojs"],
   name: 'home',
   components: {
-    SideBarView, BoardView, HomeContentView, ChatView, CalendarView
+    SideBarView, BoardView, HomeContentView, ChatView, CalendarView, LandingPageView
   },
   setup() {
     const containerType = ref('home')
     var merchant = ref(Object)
     var isExpanded = ref(false)
-    return { containerType, merchant, isExpanded }
+    var currentUser = ref(null)
+    return { containerType, merchant, isExpanded, currentUser }
   }, 
   methods: {
     handleSideBarTapped() {
@@ -66,10 +70,9 @@ export default {
       this.containerType = cachedKey
     }
     var userCacheString = localStorage.getItem(USER_CACHE_KEY)
+    this.currentUser = userCacheString
     console.log("home user cache: ", userCacheString)
-    if (userCacheString == null) {
-      this.$router.push({path: "/home"})
-    } else {
+    if (userCacheString != null) {
       this.$router.push({path: "/boards"})
     }
   }

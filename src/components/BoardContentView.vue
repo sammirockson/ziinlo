@@ -354,7 +354,7 @@ export default {
             }, 500)
         }, 
      async getBoardBy(boardId) {
-        console.log("current user: ", this.currentUser)
+        console.log("my current current current current user: ", this.currentUser)
         if (this.currentUser == null) {
             this.$router.push({path: '/home'}) 
         } else {
@@ -366,8 +366,11 @@ export default {
         let boardResp = await APIService.getBoardById(params)
         let apiBoard = boardResp.board
         this.allBoardTags = boardResp.tags
-        console.log("board: ", boardResp)
-        if (apiBoard != null) {
+        console.log("apiBoard apiBoard apiBoard: ", apiBoard)
+        if (apiBoard === undefined) {
+            console.log('go home because undefined', apiBoard)
+            this.$router.push({path: '/boards'}) 
+        } else {
             let members = apiBoard.members.filter(member => member == userId)
             console.log("members: ", members, "userId: ", userId)
             if (members.length > 0 ) {
@@ -384,10 +387,8 @@ export default {
                console.log('dblists card count: ', this.dblists.map(x => x.cards.length))
             } else {
                 console.log("You're not part of this board, request invitation from the owner")
-                this.$router.push({path: '/home'}) 
+                this.$router.push({path: '/boards'}) 
             }
-        } else {
-            this.$router.push({path: '/home'}) 
         }
       }
     }, 

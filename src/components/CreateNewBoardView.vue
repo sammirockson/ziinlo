@@ -26,7 +26,7 @@ export default {
     mounted() {
         let userCacheString = localStorage.getItem(USER_CACHE_KEY)
             if (userCacheString == null) {
-                this.$router.push({path: "/home"})
+                // this.$router.push({path: "/home"})
             } else {
             let userCache = JSON.parse(userCacheString)
             let decryptionToken = userCache.token

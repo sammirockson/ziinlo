@@ -28,8 +28,8 @@ export default {
         return {
             navItems: [
             { title: 'Features', id: 'features' }, 
-            { title: 'Pricing', id: 'pricing' }, 
             { title: 'Templates', id: 'templates' }, 
+            { title: 'Pricing', id: 'pricing' }, 
             { title: 'About US', id: 'about' }
           ], 
           selectedNavItem: {}

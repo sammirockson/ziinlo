@@ -108,9 +108,12 @@ export default {
          }
          console.log('fetchMembers params: ', params)
          let allMembers = await APIService.getBoardMembers(params)
-         this.remainingCount = allMembers.length - 5
-         this.members = allMembers.slice(0, 5);
-         console.log("allMembers: ", allMembers)
+         if (allMembers != null) {
+            this.remainingCount = allMembers.length - 5
+            this.members = allMembers.slice(0, 5);
+           console.log("allMembers: ", allMembers)
+         }
+       
         },
         handleShowMembers() {
             this.isMemberVisible = true    

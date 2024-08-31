@@ -36,6 +36,7 @@
   --color-dark-theme: #1A1C1E;
   --color-light-green: #12B3A8;
   --color-bar-dark: #262626;
+  --color-light-pink: #f6f5ff;
 
   --card-border-radius: 2rem;
   --border-radius-1: 0.4rem;
