@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="line"></div>
-            <button class="signup-btn">Sign up now</button>
+            <button class="signup-btn" @click="handleNavToLogin">Sign up now</button>
           </div>
        </div>
    </div>
@@ -49,13 +49,13 @@ export default {
     data() {
         return {
             options: [
-                {title: 'Basic', subTitle: 'For an individual or a team of two getting started', price: 0, lists: [
+                {title: 'Basic', subTitle: 'For an individual or a team of two getting started', id: 'basic', price: 0, lists: [
                     'Limited to one board', 
                     'Limited to two members', 
                     'Unlimited lists', 
                     'Unlimited cards'
                 ]}, // Free
-                {title: 'Standard', subTitle: 'For a small team of five getting started', price: 10, lists: [
+                {title: 'Standard', subTitle: 'For a small team of five getting started', id: 'standard', price: 10, lists: [
                     'Team chat', 
                     'Team time tracking', 
                     'Limited to five members', 
@@ -65,23 +65,31 @@ export default {
                     'Card templates', 
                     'Private team and projects'
                 ]}, // 5 per month
-                {title: 'Business', subTitle: 'Mange teams, projects and capture employee time.', price: 15.00, lists: [
+                {title: 'Business', subTitle: 'Mange teams, projects and capture employee time.', id: 'business', price: 15.00, lists: [
                     'Unlimited boards and cards',
                     'Dasbhoard', 
-                    'Team chat', 
                     'Approvals', 
+                    'Team chat', 
                     'Team time tracking', 
                     'Card templates', 
                     'Custom field builder', 
                     'Advance integrations'
                 ]}, // 30 per month
             ], 
-            isYearly: false
+            isYearly: false, 
+            selectedPaymentType: 'basic'
         }
     },
     methods: {
         handleNavToLogin() {
-            this.$router.push({path: "/login"})
+             let path = "/login"
+            this.$router.push(
+                {
+                    path: path, 
+                    query: {
+                        paymentType: this.selectedPaymentType
+                    }
+                })
         }
     }
 }
@@ -166,6 +174,10 @@ export default {
     gap: 20px;
     background-color: #f8f4f4;
     border-radius: var(--border-radius-3);
+}
+.payment-cell:hover {
+    background-color: #ffcc44;
+    border: 1px solid var(--color-dark);
 }
 .payment-options {
     display: flex;

@@ -48,7 +48,8 @@ export default {
     var showPassword = ref(false)
     var googleUser = ref(null)
     var viewPassword = ref(false)
-    return { email, password, isLogActivated, showPassword, googleUser, viewPassword }
+    var paymentType = ref('basic')
+    return { email, password, isLogActivated, showPassword, googleUser, viewPassword, paymentType }
   },
   mounted() {
     APIService.init()
