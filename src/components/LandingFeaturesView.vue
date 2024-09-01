@@ -37,7 +37,7 @@ export default {
 
     methods: {
         handleGetStarted() {
-            this.$router.push({path: "/pricing"})
+            this.$emit('didTapGetStarted')
         }
     }
 }

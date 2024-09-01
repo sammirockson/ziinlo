@@ -13,16 +13,18 @@
         <button class="contact-us">Contact Us</button>
     </div>
     <div class="main-container">
-        <LandingFeaturesView />
+        <PricingView v-if="selectedNavItem.id == 'pricing'"/>
+        <LandingFeaturesView v-else @didTapGetStarted="handleGetStarted"/>
     </div>
   </div>
 </template>
 
 <script>
 import LandingFeaturesView from '@/components/LandingFeaturesView.vue';
+import PricingView from './PricingView.vue';
 export default {
     components: {
-        LandingFeaturesView
+        LandingFeaturesView, PricingView
     },
     data() {
         return {
@@ -36,11 +38,14 @@ export default {
         }
     },
     mounted() {
-        this.selectedNavItem = this.navItems[0]
+        this.selectedNavItem = this.navItems[2]
     }, 
     methods: {
         handleNavTapped(navItem) {
             this.selectedNavItem = navItem
+        }, 
+        handleGetStarted() {
+            this.selectedNavItem = this.navItems[2]
         }
     }
 }
@@ -94,6 +99,7 @@ export default {
 }
 .nav-bar {
     position: fixed;
+    z-index: 9999999;
     display: flex;
     justify-content: space-between;
     height: 60px;
