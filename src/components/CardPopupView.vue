@@ -25,7 +25,7 @@
                     <label class="listTagContainer">{{ list.listName }}</label>
                 </div>
 
-                <div class="statusContainer">
+                <div class="statusContainer" v-if="card.dueDate != null">
                     <div class="statusIconTitleView">
                         <img src="@/assets/duedate.png" alt="">
                         <label for="">Due Date</label>
@@ -96,15 +96,17 @@
              <label class="memberTitleLabel">Members</label>
              <div class="membersContainer" v-if="members != null">
                 <div class="memberCell" v-for="(member) in members" :key="member._id" @click="handleJoinRemove(member)">
-                   <img :src="member.picture != null ? member.picture : require(`@/assets/attachment.png`)" class="memberPhoto">
-                   <label class="memberNameLabel" v-if="index != 8">{{ member.fullName }}</label>
-                   <label class="memberNameLabel" v-else>Join</label>
+                    <img v-if="member._id == 'joinRemove'" :class="member.fullName" class="memberPhoto">
+                   <img v-else :src="member.picture != null ? member.picture : require(`@/assets/placeholder.png`)" class="memberPhoto">
+                   <label class="memberNameLabel" v-if="member._id == 'joinRemove'">{{ member.fullName }}</label>
+                   <label class="memberNameLabel" v-else>{{ member.fullName }}</label>
                 </div>
              </div>
-             <label class="seeMoreMembersLabel">See more</label>
+             <label class="seeMoreMembersLabel" v-if="members.length > 8">See more</label>
 
 
              <label class="memberLabel">Action</label>
+             <ButtonCard imageIcon="move.png" title="Forward"/>
              <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/>
              <ButtonCard imageIcon="priority.png" title="Priority level"/>
              <ButtonCard imageIcon="assignee.png" title="Assign"/>
@@ -244,20 +246,21 @@ export default {
       // fetch from api
       let routeParams = this.$route.params
       console.log("pop up params: ", routeParams)
+      this.getUserInfo()
       this.boardId = routeParams.boardId
       let card_id = routeParams.cardId
       this.getCardBy(card_id)
     },
     methods: {
-       async handleJoinRemove() {
-            // If user is a member, remove from card else add to card
+       async handleJoinRemove(tappedMember) {
+          if (tappedMember._id == 'joinRemove') {
+               // If user is a member, remove from card else add to card
             var cardMembers = this.card.members
             let userid = this.currentUser.id
-            let memberFilter = cardMembers.filter(member => member === this.currentUser.id)
-            console.log("memberFilter: ", memberFilter, 'members: ', this.card.members, 'userid: ', userid)
+            let memberFilter = cardMembers.filter(member => member === userid)
             if (memberFilter.length > 0) {
                 // remove
-                cardMembers = cardMembers.filter(member => member !== userid)
+                cardMembers = cardMembers.filter(member => member != userid)
             } else {
                 cardMembers.push(userid)
             }
@@ -268,6 +271,7 @@ export default {
             }
             await APIService.updateCardMembership(params)
             this.getCardBy(this.card._id)
+          }
         },
         getResourceURL(attachment) {
             if (attachment.fileType == null || attachment.fileType.count == 0) {
@@ -462,6 +466,14 @@ export default {
                    this.cardTags = resp.tags
                    this.attachments = resp.attachments
                    this.members = resp.members
+                   console.log('currentUser after fetch: ', this.currentUser)
+                   if (this.currentUser != null) {
+                    let memberFilter = this.members.filter(member => member.id === this.currentUser.id)
+                    console.log('memberFilter: ', memberFilter)
+                    console.log("members: ", this.members)
+                    this.members.push({'fullName': memberFilter.length > 0 ? 'Leave' : 'Join', '_id': 'joinRemove'})
+                   }
+                  
                    this.fetchTags()
                 }
               }
@@ -519,9 +531,9 @@ export default {
         }
     }, 
     watch: { 
-        card() { 
-           this.getUserInfo()
-        }, 
+        // card() { 
+        //    this.getUserInfo()
+        // }, 
         list(newVal, oldVal) { 
            this.selectedList = newVal
         }, 
@@ -547,7 +559,7 @@ export default {
 </script>
 
 
-<style scoped>
+<style lang="scss" scoped>
 .memberCarView {
     height: 500px;
     width: 300px;
@@ -898,22 +910,21 @@ export default {
 
 .memberCell {
     display: flex;
+    justify-content: center;
+    align-items: center;
     flex-direction: column;
 }
+.memberNameLabel img {
+    margin-left: 10px;
+}
 .memberNameLabel {
-    display: flex;
-    font-weight: 500;
-    font-size: 10px;
-    overflow: hidden;
-    text-align: center;
-    width: 100%;
-    margin-left: 1px;
-    justify-content: center;
-    overflow: hidden;
     max-lines: 1;
-    text-overflow: ellipsis;
-    height: 20px;
     max-height: 20px;
+    font-weight: 500;
+    overflow: hidden;
+    font-size: 12px;
+    margin-top: 4px;
+    width: 96%;
 }
 .memberPhoto {
     width: 30px;
@@ -921,6 +932,12 @@ export default {
     border-radius: var(--border-radius-1);
     object-fit: fill;
     overflow: hidden;
+    &.Join {
+        content: url('@/assets/add.svg');
+    }
+    &.Leave {
+        content: url('@/assets/remove.svg');
+    }
 }
 .memberTitleLabel {
     display: flex;
