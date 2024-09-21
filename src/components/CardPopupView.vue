@@ -62,7 +62,8 @@
                 </div>
 
                 <Label class="attachmentsTitleLabel">Description</Label>
-                <TextEditorView class="descriptionContainer" :editorHeight="descEditorHeight" :cardDescription="card.description" :isEditingDesc="this.isEditingDesc" @isEditing="handleDescEdit" @isMemberCardVisible="handleShowMemberCard"/>
+                <DescriptionEditor class="descriptionContainer"/>
+                <!-- <TextEditorView class="descriptionContainer" :editorHeight="descEditorHeight" :cardDescription="card.description" :isEditingDesc="this.isEditingDesc" @isEditing="handleDescEdit" @isMemberCardVisible="handleShowMemberCard"/> -->
                 <div class="descriptionBtns" v-if="isEditingDesc">
                     <button class="saveDescriptionBtn" @click="handleSaveDescription">Save</button>
                     <button class="canelDescripBtn" @click="handleCancelDescEditing">Cancel</button>
@@ -80,7 +81,8 @@
 
 
                 <Label class="attachmentsTitleLabel">Comments</Label>
-                <CommentEditorView class="descriptionContainer" id="commentEditor" :editorHeight="commentEditorHeight" :isEditingDesc="isEditingComment" v-if="isEditingComment"  @isMemberCardVisible="handleShowMemberCard"/>
+                <Editor class="commentContainer" v-if="isEditingComment"/>
+                <!-- <CommentEditorView class="descriptionContainer" id="commentEditor" :editorHeight="commentEditorHeight" :isEditingDesc="isEditingComment" v-if="isEditingComment"  @isMemberCardVisible="handleShowMemberCard"/> -->
                 <div v-else class="addCommentPlaceholderView" @click="handleEnableWriteComment">
                     <img src="@/assets/writecomment.png" alt="">
                     <label for="">Write a comment</label>
@@ -106,8 +108,8 @@
 
 
              <label class="memberLabel">Action</label>
-             <ButtonCard imageIcon="move.png" title="Forward"/>
-             <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/>
+             <!-- <ButtonCard imageIcon="move.png" title="Forward"/> -->
+             <!-- <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/> -->
              <ButtonCard imageIcon="priority.png" title="Priority level"/>
              <ButtonCard imageIcon="assignee.png" title="Assign"/>
              <ButtonCard imageIcon="move.png" title="Move"/>
@@ -126,7 +128,7 @@
              </div>
         </div>
 
-        <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: '500px'" activator="tagBtn" contained>
+        <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: '500px';" activator="tagBtn" contained>
             <TagContainerView @handleSaveTag="handleSaveTag" @refreshTags="refreshTags" @handleTagChanged="handleTagChanged" :boardTags="this.boardTags" class="tagContainerView"/>
         </v-overlay>
         <v-overlay v-model="isDateTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" activator="tagBtn" contained>
@@ -190,6 +192,8 @@ import CommentEditorView from '@/components/TextEditorView.vue'
 import AttachmentView from '@/components/AttachmentView.vue';
 import AddCheckListView from '@/components/AddCheckListView.vue'
 import MemberOverlayView from './MemberOverlayView.vue';
+import Editor from "../components/Editor";
+import DescriptionEditor from "../components/Editor";
 
 import axios from 'axios';
 import { ref } from 'vue'
@@ -204,7 +208,7 @@ export default {
   inject: ["cryptojs"],
   components: {
     PopupOverlay, TextEditorView, AttachmentView, VTimePicker, VueEditor, AssigneeView, CommentEditorView, MemberOverlayView,
-    PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView, AddCheckListView
+    PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView, AddCheckListView, Editor, DescriptionEditor
   },
   setup() {
     var members = ref([])
@@ -475,10 +479,18 @@ export default {
                    }
                   
                    this.fetchTags()
+                   this.updateViewCount()
                 }
               }
              }
           })
+        },
+        async updateViewCount() {
+            console.log('updating viewcount')
+            let params = {
+                card_id: this.card._id
+            }
+            await APIService.updateViewCount(params)
         },
         autoGrow() {
             let element = document.getElementById("cardNameId")
@@ -833,7 +845,7 @@ export default {
     background-color: white;
     border-radius: var(--border-radius-1);
 }
-.descriptionContainer {
+.descriptionContainer, .commentContainer {
     border: 1px solid var(--color-light);
     border-radius: var(--border-radius-1);
     margin-right: 500px;

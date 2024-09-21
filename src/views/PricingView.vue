@@ -13,8 +13,8 @@
        <label class="plan-title">Find the Perfect Plan for Your Needs</label>
        <div class="monthly-yearly-payment">
         <label for="">Pay monthly</label>
-        <v-switch v-model="isYearly" color="orange"></v-switch>
-        <label for="">Pay yearly</label>
+        <!-- <v-switch v-model="isYearly" color="orange"></v-switch>
+        <label for="">Pay yearly</label> -->
        </div>
        <div class="payment-options">
           <div class="payment-cell" v-for="option in options" :key="option.title">
@@ -36,12 +36,18 @@
           </div>
        </div>
    </div>
+   <FooterView />
   </div>
 </template>
 
 <script>
+import FooterView from '@/views/FooterView.vue';
 export default {
+    components: {
+        FooterView
+    },
     mounted() {
+        window.scrollTo(0, 0);
     //     setTimeout(() => {
     //      this.handleNavToLogin()
     //    }, 2000); 

@@ -43,6 +43,11 @@ class APIService {
         return await this.baseRequest(path, params)
     }
 
+    async updateViewCount(params) {
+        let path = "board/updateViewCount"
+        return await this.baseRequest(path, params)
+    }
+
     async getInvitationInfo(params) {
         let path = "board/getInviteInfo"
         return await this.baseRequest(path, params)

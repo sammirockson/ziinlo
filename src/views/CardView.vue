@@ -31,19 +31,18 @@
                </div> 
             <div class="viewMemberContainerView">
                 <div class="boardInfoView">
-                    <img src="@/assets/eyeViews.png" class="boardIcon">
-                    <label for="">4.7k</label>
-                    <img src="@/assets/comments.png" class="boardIcon">
-                    <label for="">20</label>
+                    <img v-if="card.viewCount" src="@/assets/eyeViews.png" class="boardIcon">
+                    <label v-if="card.viewCount">{{ card.viewCount }}</label>
+                    <img v-if="card.comments.length > 0" src="@/assets/comments.png" class="boardIcon">
+                    <label v-if="card.comments.length > 0">{{ card.comments.length }}</label>
                     <img v-if="card.attachments.length > 0" src="@/assets/attachment.png" class="boardIcon">
                     <label v-if="card.attachments.length > 0" for="">{{ card.attachments.length }}</label>
                 </div>
                 <div class="membersContainer">
-                    <span class="profileIcon"><img  src="https://picsum.photos/70"></span>
-                    <span class="profileIcon"><img src="https://picsum.photos/80"></span>
-                    <span class="profileIcon"> <img src="https://picsum.photos/90"></span>
-                    <span class="profileIcon"> <img src="https://picsum.photos/100"></span>
-                    <label for="">+99</label>
+                    <div class="card-members" v-for="member in card.members" :key="member">
+                        <span class="profileIcon"><img  :src="getMemberProfileURL(member)"></span>
+                    </div>
+                    <label v-if="card.members.length > 5">+{{ card.members.length - 5 }}</label>
                 </div>
             </div>
         </RouterLink>
@@ -54,11 +53,16 @@ import { ref } from 'vue'
 import moment from 'moment';
 
 export default {
-    props: ["card", "tags", "boardId"], 
+    props: ["card", "tags", "boardId", 'allMembers'], 
     setup() {
         return { }
     }, 
     methods: {
+        getMemberProfileURL(memberId) {
+            let member = this.allMembers.find(x => x.id === memberId)
+            console.log('card member: ', member)
+            return member !== undefined ? member.picture : 'https://picsum.photos/70'
+        },
         getImageFile(attachments) {
             let fileTypes = ["jpeg", "jpg", "png"]
             let imageAttachments = attachments.filter(x => fileTypes.includes(x.fileType));
@@ -107,6 +111,8 @@ export default {
     padding-right: 10px;
     direction: ltr;  /* This is to get the stack with left on top */
     padding-left: 20px;
+    margin-right: 8px;
+    justify-content: end;
 }
 
 .membersContainer label {

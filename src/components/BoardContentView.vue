@@ -35,7 +35,7 @@
                              ghost-class="ghost"
                              @change="onCardMoved">
                            <template #item="{element}">
-                            <CardView :card="element" :boardId="this.board.id" :tags="this.getCardTags(element)"></CardView>
+                            <CardView :card="element" :boardId="this.board.id" :allMembers="this.allMembers" :tags="this.getCardTags(element)"></CardView>
                            </template>
                        </DraggableView>
                       <!-- </RouterLink> -->
@@ -114,12 +114,24 @@ export default {
         var currentUser = ref(null)
         var dblists = ref([])
         var allLists = ref([])
+        var allMembers = ref([])
         return { 
             isSideBarExpanded, board, dblists, allLists, newCardName, newListName, isCardTapped, currentUser,
-            boardId, selectedCard, selectedList, allCards, isSavingCard, allBoardTags, isRefreshBoard
+            boardId, selectedCard, selectedList, allCards, isSavingCard, allBoardTags, isRefreshBoard, allMembers
         }
     },
     methods: {
+        async getAllMembers() {
+          let routeParams = this.$route.params
+          let params = {
+            boardId: routeParams.boardId
+          }
+          let allMembers = await APIService.getBoardMembers(params)
+          console.log("all card members: ", allMembers)
+          if (allMembers != null) {
+            this.allMembers = allMembers;
+          }
+        },
         handleSearchBoard(searchText) {
             if (searchText.length > 0) {
                var searchLists = []
@@ -384,7 +396,6 @@ export default {
                this.allLists = apiBoard.lists
                this.dblists = apiBoard.lists
                this.board = apiBoard
-               console.log('dblists card count: ', this.dblists.map(x => x.cards.length))
             } else {
                 console.log("You're not part of this board, request invitation from the owner")
                 this.$router.push({path: '/boards'}) 
@@ -420,6 +431,7 @@ export default {
         '$route' () {
           console.log("routed called")
           this.getBoardBy(this.boardId)
+          this.getAllMembers()
         }
     },  
     mounted() {
@@ -438,6 +450,7 @@ export default {
        
         this.boardId = routeParams.boardId
         this.getBoardBy(this.boardId)
+        this.getAllMembers()
     },
 }
 </script>
@@ -706,7 +719,8 @@ export default {
 }
 
 .mainBoardConentView {
-    width: calc(100% - 10px);
+    /* width: calc(100% - 10px); */
+    width: 100%;
     height: calc(100% - 50px);
     margin-left: auto;
     margin-right: auto;

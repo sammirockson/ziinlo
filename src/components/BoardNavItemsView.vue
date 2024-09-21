@@ -102,7 +102,7 @@ export default {
             }
         },
         async fetchMembers() {
-            let routeParams = this.$route.params
+        let routeParams = this.$route.params
         let params = {
             boardId: routeParams.boardId
          }
@@ -113,7 +113,6 @@ export default {
             this.members = allMembers.slice(0, 5);
            console.log("allMembers: ", allMembers)
          }
-       
         },
         handleShowMembers() {
             this.isMemberVisible = true    
@@ -262,6 +261,7 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
+    width: 100px;
     float: right;
     padding-right: 10px;
     direction: ltr;  /* This is to get the stack with left on top */

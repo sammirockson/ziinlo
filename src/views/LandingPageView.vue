@@ -3,7 +3,7 @@
     <div class="nav-bar">
         <div class="logo-container">
             <img src="../assets/logo.png" class="logo-icon">
-            <label class="brand-name-label">Zinlo</label>
+            <h1 class="brand-name-label">Zinlo</h1>
         </div>
         <div class="nav-items">
             <div class="nav-item-cell" v-for="item in navItems" :key="item.id" @click="handleNavTapped(item)">
@@ -11,20 +11,22 @@
             </div>
         </div>
         <button class="contact-us">Contact Us</button>
-    </div>
+    </div> 
     <div class="main-container">
-        <PricingView v-if="selectedNavItem.id == 'pricing'"/>
+        <PricingView v-if="selectedNavItem.id === 'pricing'"/>
+        <TemplatesView v-else-if="selectedNavItem.id === 'templates'"/>
         <LandingFeaturesView v-else @didTapGetStarted="handleGetStarted"/>
     </div>
   </div>
 </template>
 
 <script>
-import LandingFeaturesView from '@/components/LandingFeaturesView.vue';
+import LandingFeaturesView from '@/components/FeaturesView.vue';
 import PricingView from './PricingView.vue';
+import TemplatesView from '../components/TemplatesView.vue';
 export default {
     components: {
-        LandingFeaturesView, PricingView
+        LandingFeaturesView, PricingView, TemplatesView
     },
     data() {
         return {
@@ -38,7 +40,7 @@ export default {
         }
     },
     mounted() {
-        this.selectedNavItem = this.navItems[2]
+        this.selectedNavItem = this.navItems[1]
     }, 
     methods: {
         handleNavTapped(navItem) {
@@ -52,6 +54,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+footer {
+    height: 500px;
+    background-color: #111111;
+}
+
 .main-container {
     display: flex;
     flex-direction: column;

@@ -1,9 +1,9 @@
 <template>
     <div class="board">
-       <SideBarView class="sideBar" @handleMenuTapped="handleChangeContainer" :cachedMenuKey="this.containerType" :isExpanded="this.isExpanded" :style="{width: isExpanded ? '250px' : '90px'}"/>
-       <BoardContentView v-if="containerType == 'board'" class="fullBoardContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
-       <ChatView v-else-if="containerType == 'chat'" class="productContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
-       <CalendarView v-else="containerType == 'calendar'" class="addCategoryContainer" :isExpanded="this.isExpanded" :style="{width: isExpanded ? 'calc(100vw - 250px)' : 'calc(100vw - 80px)'}"/>
+       <!-- <SideBarView class="sideBar" @handleMenuTapped="handleChangeContainer" :cachedMenuKey="this.containerType" :isExpanded="this.isExpanded" :style="{width: isExpanded ? '250px' : '90px'}"/> -->
+       <BoardContentView v-if="containerType == 'board'" class="fullBoardContainer" :isExpanded="this.isExpanded"/>
+       <ChatView v-else-if="containerType == 'chat'" class="productContainer" :isExpanded="this.isExpanded"/>
+       <CalendarView v-else="containerType == 'calendar'" class="addCategoryContainer" :isExpanded="this.isExpanded"/>
     </div>
 </template>
 <script>
@@ -99,9 +99,11 @@ export default {
     object-fit: cover;
 }
 
+
 .fullBoardContainer, .overviewContainer, .productContainer, .settingsContainer, .addCategoryContainer {
   height: 100%;
-  width: calc(100vw - 250px);
+  /* width: calc(100vw - 250px); */
+  width: 100vw;
 }
 
 .board {

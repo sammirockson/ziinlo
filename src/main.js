@@ -4,7 +4,6 @@ import VueCryptojs from 'vue-cryptojs'
 // import PrimeVue from 'primevue/config';
 // import PrimeVueStyled from 'primevue/config';
 
-import Aura from '@primevue/themes/aura';
 
 // Vuetify
 import 'vuetify/styles'
@@ -14,6 +13,15 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import router from './router'
 import App from './App.vue'
+
+import PrimeVue from 'primevue/config';
+// import Aura from '@primevue/themes/aura';
+// import Aura from '@primevue/themes/aura';
+
+import ElementPlus from 'element-plus';
+import ElementTiptapPlugin from 'element-tiptap';
+// import ElementTiptap's styles
+import 'element-tiptap/lib/style.css';
 
 const vuetify = createVuetify({
     components,
@@ -29,6 +37,14 @@ const eventBus = mitt();
 //         darkModeSelector: 'system',
 //     }
 // })
-createApp(App).use(router).use(vuetify).use(VueCryptojs).provide('eventBus', eventBus).mount('#app')
+createApp(App).use(PrimeVue, {
+    unstyled: true
+    // theme: {
+    //     preset: Aura
+    // }
+})
+.use(ElementPlus).use(ElementTiptapPlugin).use(router)
+.use(vuetify).use(VueCryptojs).provide('eventBus', eventBus)
+.mount('#app')
 
 // .my-app-dark        darkModeSelector: 'system',

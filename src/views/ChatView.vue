@@ -1,7 +1,8 @@
 <template>
     <div class="chat">
-        <!-- <NavBar :isExpanded="this.isSideBarExpanded"/> -->
-
+        <div class="contact-view"></div>
+        <div class="chat-view"></div>
+        <div class="right-info-view"></div>
     </div>
 </template>
 <script>
@@ -25,7 +26,22 @@ export default {
 }
 </script>
 <style scoped>
+.chat-view {
+    width: calc(100% - 560px);
+    height: 100%;
+    background-color: orangered;
+}
+.right-info-view {
+    width: 280px;
+    height: 100%;
+    background-color: aliceblue;
+}
+.contact-view {
+    width: 280px;
+    height: 100%;
+    background-color: blue;
+}
  .chat {
-   background-color: orangered;
+    display: flex;
  }
 </style>
