@@ -157,7 +157,7 @@ export default {
             }
         },
         isBtmViewVisible(list) {
-            return list.headerType ==  'addList'  || list.headerType == 'creatingList' ? false : true
+            return list.cards.length == 0 || list.headerType ==  'addList'  || list.headerType == 'creatingList' ? false : true
         },
         getCardTags(card) {
             let tagIds = card.selectedTags
@@ -297,7 +297,7 @@ export default {
           isCreateList: false,
           headerType: "showListName",
           id: Date.now(), 
-          owner: "1721545684258"
+          owner: "1721545684258" // change ASAP
         }
         var fullURL = BASE_URL + "board/newList"
         console.log("full url: ", fullURL, "params: ", params)
@@ -334,7 +334,7 @@ export default {
              boardId: this.boardId,
              listId: list.id,
              id: Date.now(), 
-             owner: "1721545684258"
+             owner: "1721545684258" // Change ASAP
          }
          var fullURL = BASE_URL + "board/newCard"
          console.log("full url: ", fullURL, "params: ", params)
