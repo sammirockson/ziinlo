@@ -62,7 +62,7 @@
                 </div>
 
                 <Label class="attachmentsTitleLabel">Description</Label>
-                <DescriptionEditor class="descriptionContainer" :isReadonly="isDescReadonly" :content="card.description" @didUpdateEditor="didUpdateDescEditor"/>
+                <DescriptionEditor class="descriptionContainer" :readonly="isDescReadonly" :content="card.description" @didUpdateEditor="didUpdateDescEditor"/>
                 <!-- <TextEditorView class="descriptionContainer" :editorHeight="descEditorHeight" :cardDescription="card.description" :isEditingDesc="this.isEditingDesc" @isEditing="handleDescEdit" @isMemberCardVisible="handleShowMemberCard"/> -->
                 <div class="descriptionBtns">
                     <button class="saveDescriptionBtn" @click="handleSaveDescription">Save</button>
@@ -81,7 +81,7 @@
 
 
                 <Label class="attachmentsTitleLabel">Comments</Label>
-                <Editor class="commentContainer" v-if="isEditingComment"/>
+                <Editor class="commentContainer" v-if="isEditingComment" @didUpdateEditor="didUpdateCommentEditor"/>
                 <!-- <CommentEditorView class="descriptionContainer" id="commentEditor" :editorHeight="commentEditorHeight" :isEditingDesc="isEditingComment" v-if="isEditingComment"  @isMemberCardVisible="handleShowMemberCard"/> -->
                 <div v-else class="addCommentPlaceholderView" @click="handleEnableWriteComment">
                     <img src="@/assets/writecomment.png" alt="">
@@ -91,7 +91,7 @@
                     <button class="saveDescriptionBtn" @click="handleSaveComment">Save</button>
                     <button class="canelDescripBtn" @click="handleCancelComment">Cancel</button>
                 </div>
-                 <CommentsView class="commentsContainerView"/>
+                 <CommentsView class="commentsContainerView" :allCardComments="allCardComments"/>
              </div>
 
             <div class="controlsContainer">
@@ -239,10 +239,12 @@ export default {
     var isMemberCardVisible = ref(false)
     var isCheckListTapped = ref(false)
     var isDescReadonly = ref(false)
+    var comment = ref(null)
+    var allCardComments = ref([])
     return { 
           members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names, commentEditorHeight, descEditorHeight, selectedAttachment,
           currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment, isMemberCardVisible, isCheckListTapped, 
-          isDescReadonly
+          isDescReadonly, comment, allCardComments
         }
     },
     async mounted() {
@@ -258,26 +260,41 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
-       async handleJoinRemove(tappedMember) {
-          if (tappedMember._id == 'joinRemove') {
+    async handleSaveComment() {
+        let userid = this.currentUser.id
+        let params = {
+            cardId: this.card.id, 
+            listId: this.card.listId, 
+            boardId: this.boardId, 
+            commenter: userid, 
+            content: this.comment, 
+            date: Date.now()
+        }
+        await APIService.addComment(params)
+    },
+    didUpdateCommentEditor(comment) {
+        this.comment = comment
+    },
+    async handleJoinRemove(tappedMember) {
+        if (tappedMember._id == 'joinRemove') {
                // If user is a member, remove from card else add to card
-            var cardMembers = this.card.members
-            let userid = this.currentUser.id
-            let memberFilter = cardMembers.filter(member => member === userid)
-            if (memberFilter.length > 0) {
+        var cardMembers = this.card.members
+        let userid = this.currentUser.id
+        let memberFilter = cardMembers.filter(member => member === userid)
+        if (memberFilter.length > 0) {
                 // remove
                 cardMembers = cardMembers.filter(member => member != userid)
-            } else {
+         } else {
                 cardMembers.push(userid)
-            }
+         }                              
             // call api to save
-            let params = {
-                card_id: this.card._id, 
-                members: cardMembers
-            }
-            await APIService.updateCardMembership(params)
-            this.getCardBy(this.card._id)
-          }
+         let params = {
+            card_id: this.card._id, 
+            members: cardMembers
+         }
+          await APIService.updateCardMembership(params)
+          this.getCardBy(this.card._id)
+         }
         },
         getResourceURL(attachment) {
             if (attachment.fileType == null || attachment.fileType.count == 0) {
@@ -488,10 +505,17 @@ export default {
                   
                    this.fetchTags()
                    this.updateViewCount()
+                   this.getCardComments()
                 }
               }
              }
           })
+        },
+        async getCardComments() {
+         let cardParam = {
+           cardId: this.card.id
+         }
+         this.allCardComments = await APIService.getComments(cardParam)
         },
         async updateViewCount() {
             console.log('updating viewcount')

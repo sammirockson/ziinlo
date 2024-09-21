@@ -1,7 +1,7 @@
 
 <template>
-    <el-tiptap :extensions="isReadonly ? readOnlyExtension : extensions" @onUpdate="onEditorUpdate" :enableCharCount="false" :content="content" placeholder="Write something ..."/>
-    <!-- readonly -->
+    <el-tiptap :extensions="extensions" @onUpdate="onEditorUpdate" :enableCharCount="false" :content="content" placeholder="Write something ..."/>
+    <!-- <el-tiptap v-else :extensions="readOnlyExtension" @onUpdate="onEditorUpdate" :enableCharCount="false"  :content="content" readonly placeholder="Write something ..."/> -->
   </template>
   
   <script>
@@ -31,18 +31,13 @@
     CodeView
     // SelectAll,
   } from "element-tiptap";
-import { isReadonly } from "vue";
-  
+
   export default {
     name: "Editor",
     props: {
         isReadonly: {
             type: Boolean, 
             default: true 
-        }, 
-        description: {
-            type: String, 
-            default: ''
         }, 
         content: {
             type: String, 
@@ -51,8 +46,7 @@ import { isReadonly } from "vue";
     },
     watch: {
         isReadonly(newValue, oldValue) {
-            console.log('isReadonly updated newValue: ', newValue, 'oldValue: ', oldValue)
-            // this.isEditable = !this.isReadonly
+            // this.isEditable = newValue ? false : true
         }
     },
     data: () => ({
@@ -60,7 +54,6 @@ import { isReadonly } from "vue";
         Document,
         Text,
         Paragraph,
-        // new Heading({ level: 5 }),
         Bold,
         Italic,
         Underline,
@@ -92,8 +85,7 @@ import { isReadonly } from "vue";
         Text,
         Paragraph
       ],
-    //   content: '',
-      isEditable: true
+      isEditable: false
     }), 
     methods: {
         onEditorUpdate(updatedContent) {
@@ -106,8 +98,8 @@ import { isReadonly } from "vue";
   
 
 <style lang="scss">
-// .el-tiptap-editor__menu-bar:before {
-//     background-color: transparent !important;
-// }
+.el-tiptap-editor__menu-bar:before {
+    background-color: red !important;
+}
 
 </style>

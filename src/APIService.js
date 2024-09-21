@@ -9,15 +9,25 @@ class APIService {
         console.log("APIService has been initiated")
     }
 
-    async saveDesc(cardDesc, card_id) {
-        var params = {
-            card_id: card_id,
-            cardDesc: cardDesc
-        }
-        console.log('descrip params: ', params)
-        await this.baseRequest("board/addDescriptionToCard", params)
+
+    async addComment(params) {
+        let path = "comment/add"
+        return await this.baseRequest(path, params)
     }
 
+    async getComments(params) {
+        let path = "comment/byCardId"
+        return await this.baseRequest(path, params)
+    }
+
+
+    async saveDesc(cardDesc, card_id) {
+      var params = {
+        card_id: card_id,
+        cardDesc: cardDesc
+      }
+      await this.baseRequest("board/addDescriptionToCard", params)
+    }
 
     async getBoardMembers(params) {
         let path = "board/getBoardMembers"

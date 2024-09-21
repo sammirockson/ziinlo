@@ -1,14 +1,14 @@
 <template>
     <div class="commentsView">
-        <div class="commentsCell" v-for="(item, index) in comments" :key="index">
-            <img src="https://cdn-prd.content.metamorphosis.com/wp-content/uploads/sites/6/2022/12/shutterstock_781327003-1.jpg" class="profileImage">
+        <div class="commentsCell" v-for="(comment, index) in allCardComments" :key="index">
+            <img :src="comment.commenter.picture" class="profileImage">
             <div class="commentContainer">
               <div class="profileNameAndDateView">
-              <label class="commenterLabel">Samuel Rockson</label>
+              <label class="commenterLabel">{{ comment.commenter.fullName }}</label>
               <label class="commentDateLabel">Thur 11:44PM</label>
               </div>
               <div class="commentContentView">
-                <label for="">{{ item }}</label>
+                <p v-html="comment.content"></p>
               </div>
             </div>
         </div>
@@ -17,9 +17,11 @@
 <script>
 import { ref } from 'vue'
 export default {
-    setup() {
-        var comments = ref(["The list of nameplates form LVDB for a market should reflect for mapping under “Ford Protect”.", "two", "three", "four", "five"])
-        return { comments }
+    props: {
+        allCardComments: {
+            type: [Object], 
+            default: []
+        }
     }
 }
 </script>
@@ -35,7 +37,8 @@ export default {
     color: var(--color-card-title);
 }
 
-.commentContentView label {
+.commentContentView p {
+    display: flex;
     font-weight: 500;
     font-size: 15px;
     display: flex;
@@ -47,6 +50,7 @@ export default {
     border-top-right-radius: 8px;
     margin-top: 4px;
     margin-bottom: 10px;
+    overflow: hidden;
 }
 .profileNameAndDateView {
     display: flex;
