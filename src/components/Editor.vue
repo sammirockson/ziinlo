@@ -1,6 +1,7 @@
 
 <template>
-    <el-tiptap :extensions="extensions" :content="content" placeholder="Write something ..."/>
+    <el-tiptap :extensions="isReadonly ? readOnlyExtension : extensions" @onUpdate="onEditorUpdate" :enableCharCount="false" :content="content" placeholder="Write something ..."/>
+    <!-- readonly -->
   </template>
   
   <script>
@@ -30,9 +31,30 @@
     CodeView
     // SelectAll,
   } from "element-tiptap";
+import { isReadonly } from "vue";
   
   export default {
     name: "Editor",
+    props: {
+        isReadonly: {
+            type: Boolean, 
+            default: true 
+        }, 
+        description: {
+            type: String, 
+            default: ''
+        }, 
+        content: {
+            type: String, 
+            default: ''
+        }
+    },
+    watch: {
+        isReadonly(newValue, oldValue) {
+            console.log('isReadonly updated newValue: ', newValue, 'oldValue: ', oldValue)
+            // this.isEditable = !this.isReadonly
+        }
+    },
     data: () => ({
       extensions: [
         Document,
@@ -47,7 +69,7 @@
         Link,
         Image,
         Text,
-        OrderedList
+        OrderedList        
         // new Blockquote(),
         // new TextAlign(),
         // new BulletList({ bubble: true }),
@@ -65,9 +87,27 @@
         // }),
         // History
       ],
-  
-      content: ''
-    })
+      readOnlyExtension: [
+        Document,
+        Text,
+        Paragraph
+      ],
+    //   content: '',
+      isEditable: true
+    }), 
+    methods: {
+        onEditorUpdate(updatedContent) {
+            console.warn('editor updated: ', updatedContent)
+            this.$emit('didUpdateEditor', updatedContent)
+        }
+    }
   };
   </script>
   
+
+<style lang="scss">
+// .el-tiptap-editor__menu-bar:before {
+//     background-color: transparent !important;
+// }
+
+</style>

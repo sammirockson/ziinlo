@@ -14,7 +14,8 @@ class APIService {
             card_id: card_id,
             cardDesc: cardDesc
         }
-        await this.baseRequest("board/addDueDescriptionToCard", params)
+        console.log('descrip params: ', params)
+        await this.baseRequest("board/addDescriptionToCard", params)
     }
 
 

@@ -62,9 +62,9 @@
                 </div>
 
                 <Label class="attachmentsTitleLabel">Description</Label>
-                <DescriptionEditor class="descriptionContainer"/>
+                <DescriptionEditor class="descriptionContainer" :isReadonly="isDescReadonly" :content="card.description" @didUpdateEditor="didUpdateDescEditor"/>
                 <!-- <TextEditorView class="descriptionContainer" :editorHeight="descEditorHeight" :cardDescription="card.description" :isEditingDesc="this.isEditingDesc" @isEditing="handleDescEdit" @isMemberCardVisible="handleShowMemberCard"/> -->
-                <div class="descriptionBtns" v-if="isEditingDesc">
+                <div class="descriptionBtns">
                     <button class="saveDescriptionBtn" @click="handleSaveDescription">Save</button>
                     <button class="canelDescripBtn" @click="handleCancelDescEditing">Cancel</button>
                 </div>
@@ -196,7 +196,7 @@ import Editor from "../components/Editor";
 import DescriptionEditor from "../components/Editor";
 
 import axios from 'axios';
-import { ref } from 'vue'
+import { isReadonly, ref } from 'vue'
 
 import CryptoJS from 'crypto-js'
 // import Editor from 'primevue/editor'
@@ -238,9 +238,11 @@ export default {
     var descEditorHeight = ref(340)
     var isMemberCardVisible = ref(false)
     var isCheckListTapped = ref(false)
+    var isDescReadonly = ref(false)
     return { 
           members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names, commentEditorHeight, descEditorHeight, selectedAttachment,
-          currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment, isMemberCardVisible, isCheckListTapped
+          currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment, isMemberCardVisible, isCheckListTapped, 
+          isDescReadonly
         }
     },
     async mounted() {
@@ -303,6 +305,10 @@ export default {
                 }
             }
         },
+        didUpdateDescEditor(cardDesc) {
+            this.card.description = cardDesc
+            console.log('updated card desc: ', this.card)
+        },
         handleCheckListTapped() {
             this.isCheckListTapped = true
         },
@@ -351,11 +357,14 @@ export default {
         }, 
         handleCancelDescEditing() {
             this.isEditingDesc = false 
-            setTimeout(()=>{
-             let editorElement = document.getElementById("editor")
-             let scrollHeight = editorElement.scrollHeight
-             editorElement.style.height = scrollHeight + "px";
-            }, 0)
+            this.isDescReadonly = true 
+            console.log('is isDescReadonly: ', this.isDescReadonly)
+            // Hide controls and make it read only
+            // setTimeout(()=>{
+            //  let editorElement = document.getElementById("editor")
+            //  let scrollHeight = editorElement.scrollHeight
+            //  editorElement.style.height = scrollHeight + "px";
+            // }, 0)
         },
         handleDescEdit() {
             this.isEditingDesc = true 
@@ -435,9 +444,8 @@ export default {
         this.$router.push({path: path})
       },
       async handleSaveDescription() {
+         let html = this.card.description
           console.log("save description tapped")
-          let html = document.getElementById("editor").innerHTML
-          console.log("editor html: ", html)
           this.isEditingDesc = false 
           await APIService.saveDesc(html, this.card._id)
       },
@@ -720,6 +728,7 @@ export default {
     width: 160px;
     height: 40px;
     margin-bottom: 10px;
+    margin-top: 20px;
 }
 .canelDescripBtn {
     font-weight: 600;
@@ -846,7 +855,6 @@ export default {
     border-radius: var(--border-radius-1);
 }
 .descriptionContainer, .commentContainer {
-    border: 1px solid var(--color-light);
     border-radius: var(--border-radius-1);
     margin-right: 500px;
 }
