@@ -1,9 +1,12 @@
 <template>
     <div class="memberOverlay">
         <div class="search-input-container">
-            <!-- <v-text-field type="email" prepend-inner-icon="mdi-magnify" class="searchField" height="20px" rounded="lg" v-model="searchText" variant="outlined" label="Enter email to send invite"></v-text-field> -->
              <input type="email" class="invite-email-field" placeholder="Email address">
             <button>Send Invite</button>
+        </div>
+        <div class="invitation-link-container">
+            <img src="../assets/link.png">
+            <label>Anyone with the link can join the board <br><span @click="handleCopyURL">Copy link</span></label>
         </div>
         <label class="memberTitleLabel">Members</label>
         <div class="separatorLineView"/>
@@ -18,10 +21,6 @@
                     <label class="fullNameLabel">{{ member.fullName }}</label>
                 </div>
               </div> 
-             <button class="adminBtn">
-                 Member 
-                <img src="@/assets/arrow-down.png">
-             </button>
            </div>
         </div>
     </div>
@@ -49,6 +48,10 @@ export default {
         }
     },
     methods: {
+        handleCopyURL() {
+            let url = `https://wwww.zinlo.io/invitation/b/${this.boardId}/i/66a6f66276e1d70286f59bec`
+            this.copyToClipboard(url)
+        },
         async fetchMembers() {
             let params = {
                 boardId: this.boardId
@@ -57,7 +60,29 @@ export default {
           console.log("allMembers: ", allMembers, "params: ", params)
           this.members = allMembers
           this.searchResults = allMembers
-        }
+        }, 
+     copyToClipboard(text) {
+       if (window.clipboardData && window.clipboardData.setData) {
+        // IE specific code path to prevent textarea being shown while dialog is visible.
+        return clipboardData.setData("Text", text); 
+
+      } else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+        var textarea = document.createElement("textarea");
+        textarea.textContent = text;
+        textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in MS Edge.
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            alert('Copied')
+            return document.execCommand("copy"); 
+        } catch (ex) {
+            console.warn("Copy to clipboard failed.", ex);
+            return false;
+        } finally {
+            document.body.removeChild(textarea);
+      }
+    }
+}
     }, 
     mounted() {
         APIService.init()
@@ -65,7 +90,26 @@ export default {
     }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
+.invitation-link-container {
+    display: flex;
+    margin-top: 15px;
+    gap: 8px;
+    align-items: center;
+}
+.invitation-link-container img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    margin-left: 20px;
+}
+.invitation-link-container label {
+    text-align: left;
+    font-size: 13px;
+    span {
+        color: blue
+    }
+}
 .invite-email-field {
     height: 44px;
     width: 270px;
@@ -86,9 +130,9 @@ export default {
 }
 
 .memberTitleLabel {
-    margin-top: 40px;
+    margin-top: 20px;
     display: flex;
-    margin-left: 30px;
+    margin-left: 20px;
     font-weight: 500;
     font-size: 14px;
 }
@@ -115,6 +159,7 @@ export default {
 .fullNameLabel {
     font-weight: 500;
     font-size: 14px;
+    text-align: left;
 }
 .adminBtn, .search-input-container button {
     display: flex;
@@ -163,7 +208,7 @@ export default {
 }
 .memberCell {
     display: flex;
-    padding-left: 15px;
+    padding-left: 20px;
     height: 50px;
     justify-content: space-between;
     align-items: center
@@ -185,6 +230,5 @@ export default {
     height: 100%;
     display: flex;
     flex-direction: column;
-    background-color: red;
 }
 </style>

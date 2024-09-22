@@ -33,7 +33,7 @@
                     <label class="dueDateTitelLabel">{{ formatDate(card) }}</label>
                 </div>
 
-                <div class="statusContainer">
+                <!-- <div class="statusContainer">
                     <div class="statusIconTitleView">
                         <img src="@/assets/assignee.png" alt="">
                         <label for="">Assignee</label>
@@ -45,9 +45,9 @@
                        </v-chip>
                       </v-chip-group>
                     </div>
-                </div>
+                </div> -->
 
-                <div class="statusContainer">
+                <div class="statusContainer" v-if="cardTags.length > 0">
                     <div class="statusIconTitleView">
                         <img src="@/assets/tags.png" alt="">
                         <label for="">Tags</label>
@@ -66,7 +66,7 @@
                 <!-- <TextEditorView class="descriptionContainer" :editorHeight="descEditorHeight" :cardDescription="card.description" :isEditingDesc="this.isEditingDesc" @isEditing="handleDescEdit" @isMemberCardVisible="handleShowMemberCard"/> -->
                 <div class="descriptionBtns">
                     <button class="saveDescriptionBtn" @click="handleSaveDescription">Save</button>
-                    <button class="canelDescripBtn" @click="handleCancelDescEditing">Cancel</button>
+                    <!-- <button class="canelDescripBtn" @click="handleCancelDescEditing">Cancel</button> -->
                 </div>
                 <label class="attachmentsTitleLabel" v-if=" this.attachments.length > 0">Attachments</label>
                 <div class="attachmentListView">
@@ -270,7 +270,10 @@ export default {
             content: this.comment, 
             date: Date.now()
         }
+        this.isEditingComment = false
         await APIService.addComment(params)
+        this.getCardComments()
+
     },
     didUpdateCommentEditor(comment) {
         this.comment = comment

@@ -63,7 +63,8 @@ export default {
         var isCreateBoard = ref(false)
         var searchText = ref('')
         var remainingCount = ref(0)
-        return { isMemberVisible, members, isCreateBoard, searchText, remainingCount }
+        var boardId = ref('')
+        return { isMemberVisible, members, isCreateBoard, searchText, remainingCount, boardId }
     }, 
     async mounted() {
         this.fetchMembers()
@@ -103,6 +104,7 @@ export default {
         },
         async fetchMembers() {
         let routeParams = this.$route.params
+        this.boardId = routeParams.boardId
         let params = {
             boardId: routeParams.boardId
          }
@@ -119,8 +121,8 @@ export default {
         }
     }
     // Invitation link will be baseURL + invitation + b + inviter
-    // https://trello.com/invite/b/5a168f578b36137f5cc81d7d/ATTI4c914267f82abd2db86a9a3da1405d3f5C34B7BA/ford-dst-tech-tasks
     // https://wwww.zinlo.com/invitation/b/1722579902069/i/66a6f66276e1d70286f59bec
+    // http://localhost:8080/invitation/b/1722579902069/i/66a6f66276e1d70286f59bec
 }
 </script>
 <style scoped>
@@ -293,7 +295,7 @@ export default {
     width: 400px;
     background-color: white;
     border-radius: var(--border-radius-1);
-    margin-top: 110px;
+    margin-top: 50px;
     margin-right: 8px;
 }
 .memberIcon {

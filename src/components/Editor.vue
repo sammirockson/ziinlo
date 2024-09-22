@@ -98,8 +98,8 @@
   
 
 <style lang="scss">
-.el-tiptap-editor__menu-bar:before {
-    background-color: red !important;
-}
+// .el-tiptap-editor__menu-bar:before {
+//     background-color: red !important;
+// }
 
 </style>
