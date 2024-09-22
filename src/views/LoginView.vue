@@ -89,12 +89,13 @@ export default {
         this.$emit('navToRegister', true)
       }, 
      async loginWithGoogle() {
+      var host = window.location.host
       googleSdkLoaded(google => {
         google.accounts.oauth2
           .initCodeClient({
             client_id: config.GOOGLE_AUTH_CLIENT_ID,
             scope: "email profile openid",
-            redirect_uri: "http://localhost:4000/auth/callback",
+            redirect_uri: `${host}/auth/callback`,
             callback: response => {
               if (response.code) {
                 this.sendCodeToBackend(response.code);
