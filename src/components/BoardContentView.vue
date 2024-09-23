@@ -57,7 +57,7 @@
                     </div>
                     
                  </div>
-                   <div class="bottomView" :id="'bottomView_' + list._id" v-if="this.isBtmViewVisible(list)">
+                   <div class="bottomView" :id="'bottomView_' + list._id" v-if="this.isBtmViewVisible(list)" :class="{'is-create-card': list.isCreateCard}">
                        <div v-if="list.isCreateCard == true" class="createListTipFooterView">
                             <!-- <textarea name="text" v-model="newCardName" @input="autoGrow(index, list)" placeholder="Give your card a name" class="addListInputField" :id="`newCardField_` + index"></textarea>
                             <button v-if="isSavingCard" class="addListBtn buttonload">
@@ -326,7 +326,8 @@ export default {
         autoGrow(index, list) {
             let element = document.getElementById(`newCardField_` + index)
             element.style.height = "15px";
-            element.style.height = (element.scrollHeight) + "px";
+            let scrollheight = element.scrollHeight >= 58 ?  58 : element.scrollHeight 
+            element.style.height = scrollheight + "px";
         },
        async handleCreateCard(list, index) {
           var params = {
@@ -453,7 +454,7 @@ export default {
     },
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .drag {
   transform: rotate(5deg);
 }
@@ -545,7 +546,7 @@ export default {
     display: block;
     width: 100px;
     height: 34px;
-    background-color: #FC6363;
+    background-color: var(--color-dark-theme);
     color: white;
     border-radius: var(--border-radius-1);
     margin-left: 8px;
@@ -553,6 +554,7 @@ export default {
     font-weight: 600;
     margin-top: 10px;
     margin-bottom: 10px;
+    z-index: 2;
 }
 .addListInputField, .createNewListField {
   padding: 8px;
@@ -570,6 +572,7 @@ export default {
   font-weight: 500;
   font-size: 14px;
   color: var(--color-dark-blue);
+  max-lines: 2;
 }
 
 .createListContainer  {
@@ -676,7 +679,7 @@ export default {
 
 .boardListsContainer {
     width: 100%;
-    height: calc(100vh - 70px);
+    height: 100%;
     white-space: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
@@ -693,7 +696,6 @@ export default {
     display: inline-block;
     zoom: 1;
     overflow: hidden;
-
     display: table-cell;
     vertical-align: top;
     padding-left: 15px;
@@ -702,7 +704,8 @@ export default {
 .listBackgroundView {
     width: 100%;
     background-color: var(--color-background);
-    max-height: calc(100vh - 230px);
+    max-height: calc(100vh - 180px);
+    /* max-height: calc(100vh - 230px); */
     overflow-y: scroll;
     margin-top: -10px;
     /* border-bottom-left-radius: var(--border-radius-2);
@@ -715,6 +718,9 @@ export default {
     background-color: var(--color-background);
     border-bottom-left-radius: var(--border-radius-2);
     border-bottom-right-radius: var(--border-radius-2);
+    &.is-create-card {
+        background-color: white;
+    }
 }
 
 .mainBoardConentView {
