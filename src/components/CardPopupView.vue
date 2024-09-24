@@ -63,7 +63,6 @@
 
                 <Label class="attachmentsTitleLabel">Description</Label>
                 <DescriptionEditor class="descriptionContainer" :readonly="isDescReadonly" :content="card.description" @didUpdateEditor="didUpdateDescEditor"/>
-                <!-- <TextEditorView class="descriptionContainer" :editorHeight="descEditorHeight" :cardDescription="card.description" :isEditingDesc="this.isEditingDesc" @isEditing="handleDescEdit" @isMemberCardVisible="handleShowMemberCard"/> -->
                 <div class="descriptionBtns">
                     <button class="saveDescriptionBtn" @click="handleSaveDescription">Save</button>
                     <!-- <button class="canelDescripBtn" @click="handleCancelDescEditing">Cancel</button> -->
@@ -71,7 +70,8 @@
                 <label class="attachmentsTitleLabel" v-if=" this.attachments.length > 0">Attachments</label>
                 <div class="attachmentListView">
                     <div class="attachmentCell" v-for="(attachment, index) in this.attachments" :key="index" @click="handleFileBrowserTapped(attachment)">
-                         <img :src="this.getResourceURL(attachment)" class="attchmentPreview">
+                         <img v-if="['png', 'jpg', 'jpeg'].includes(attachment.fileType.toLowerCase())" :src="attachment.fileURL" class="attchmentPreview">
+                         <img v-else :class="attachment.fileType.toLowerCase()" class="attchmentPreview">
                          <div class="attachmentInfoContainer">
                              <label class="attachmentFileNameLabel">{{ attachment.fileName }}</label>
                              <label class="attachmentDateLabel">{{ this.formatFileSize(attachment) }}MB</label>
@@ -82,7 +82,6 @@
 
                 <Label class="attachmentsTitleLabel">Comments</Label>
                 <Editor class="commentContainer" v-if="isEditingComment" @didUpdateEditor="didUpdateCommentEditor"/>
-                <!-- <CommentEditorView class="descriptionContainer" id="commentEditor" :editorHeight="commentEditorHeight" :isEditingDesc="isEditingComment" v-if="isEditingComment"  @isMemberCardVisible="handleShowMemberCard"/> -->
                 <div v-else class="addCommentPlaceholderView" @click="handleEnableWriteComment">
                     <img src="@/assets/writecomment.png" alt="">
                     <label for="">Write a comment</label>
@@ -128,7 +127,7 @@
              </div>
         </div>
 
-        <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: '500px';" activator="tagBtn" contained>
+        <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" activator="tagBtn" contained>
             <TagContainerView @handleSaveTag="handleSaveTag" @refreshTags="refreshTags" @handleTagChanged="handleTagChanged" :boardTags="this.boardTags" class="tagContainerView"/>
         </v-overlay>
         <v-overlay v-model="isDateTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" activator="tagBtn" contained>
@@ -299,32 +298,6 @@ export default {
           this.getCardBy(this.card._id)
          }
         },
-        getResourceURL(attachment) {
-            if (attachment.fileType == null || attachment.fileType.count == 0) {
-                return attachment.fileURL
-            } else {
-                let fileType = attachment.fileType.toLowerCase()
-                if (fileType  == "png" || fileType == "jpg" || fileType == "jpeg") {
-                    return attachment.fileURL
-                } else {
-                    if (fileType == "pdf") {
-                        return require("@/assets/pdfIcon.png")
-                    } else if (fileType == "docx") {
-                        return require("@/assets/docxIcon.png")
-                    } else if (fileType == "xlsx") {
-                        return require("@/assets/xlsxICon.png")
-                    } else if (fileType == "pptx") {
-                        return require("@/assets/pptxIcon.png")
-                    } else if (fileType == "mp4") {
-                        return require("@/assets/mp4Icon.png")
-                    } else if (fileType == "mov") {
-                        return require("@/assets/movIcon.png")
-                    } else {
-                        return attachment.fileURL
-                    }
-                }
-            }
-        },
         didUpdateDescEditor(cardDesc) {
             this.card.description = cardDesc
             console.log('updated card desc: ', this.card)
@@ -378,13 +351,6 @@ export default {
         handleCancelDescEditing() {
             this.isEditingDesc = false 
             this.isDescReadonly = true 
-            console.log('is isDescReadonly: ', this.isDescReadonly)
-            // Hide controls and make it read only
-            // setTimeout(()=>{
-            //  let editorElement = document.getElementById("editor")
-            //  let scrollHeight = editorElement.scrollHeight
-            //  editorElement.style.height = scrollHeight + "px";
-            // }, 0)
         },
         handleDescEdit() {
             this.isEditingDesc = true 
@@ -731,8 +697,28 @@ export default {
     margin-left: 10px;
     object-fit: contain;
     overflow: hidden;
+    &.pdf {
+        content: url('../assets/pdfIcon.png');
+    }
+    &.docx {
+        content: url('../assets/docxIcon.png');
+    }
+    &.doc {
+        content: url('../assets/docxIcon.png');
+    }
+    &.xlsx {
+        content: url('../assets/xlsxICon.png');
+    }
+    &.pptx {
+        content: url('../assets/pptxIcon.png');
+    }
+    &.mp4 {
+        content: url('../assets/mp4Icon.png');
+    }
+    &.mov {
+        content: url('../assets/movIcon.png');
+    }
 }
-
 .attachmentsTitleLabel {
     margin-top: 20px;
     font-weight: 600;

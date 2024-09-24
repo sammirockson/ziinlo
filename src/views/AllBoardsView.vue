@@ -1,6 +1,7 @@
 <template>
      <div class="allBoards">
-            <div class="boardContentView">
+     <label class="title-label">My Projects</label>
+        <div class="boardContentView">
             <v-row style="overflow: hidden;">
              <v-col v-for="board in boards" :key="board" cols="auto"> 
                <div class="productGridCellWithBorder"  @click="handleBoardTapped(board)">
@@ -55,12 +56,6 @@ export default {
       handleBoardTypeTapped(item) {
         this.selectedTaskBoardType = item
       },
-    watch: { 
-        // isExpanded: function(newVal, oldVal) {
-        //     console.log('Prop changed isSideBarExpanwded: ', newVal)
-        //     this.isSideBarExpanded = newVal
-        // }
-    }, 
     async fetchBoards() {
         var params = {
             owner: this.currentUser.id
@@ -86,7 +81,7 @@ export default {
     } 
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
     .productCellImage {
     height: 200px;
     width: 232px;
@@ -94,10 +89,15 @@ export default {
     margin-left: auto;
     background-color: var(--color-light);
     object-fit: cover;
+    margin-bottom: 10px;
 }
 
 .productGridCellWithBorder {
     border: 2px solid var(--color-light);
+    label {
+      font-weight: 600;
+      font-size: 20px;
+    }
 }
 .productGridCell, .productGridCellWithBorder {
     display: block;
@@ -109,11 +109,11 @@ export default {
 }
 
 .boardContentView {
-    width: 99%;
-    height: 96%;
+    width: 80%;
+    height: 400px;
     display: flex;
-    justify-content: left;
-    align-items: start;
+    justify-content: center;
+    align-items: center;
     margin: auto;
     padding: 30px;
 }
@@ -122,5 +122,16 @@ export default {
     width: 100vw;
     height: 100vh;
     background-color: white;
+    .title-label {
+      display: flex;
+      width: 80%;
+      text-align: left;
+      font-weight: 700;
+      font-size: 34px;
+      margin-left: 10%;
+      padding-top: 100px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--color-light);
+    }
 }
 </style>
