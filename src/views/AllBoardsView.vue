@@ -1,37 +1,51 @@
 <template>
      <div class="allBoards">
-     <label class="title-label">My Projects</label>
+      <div class="board-top">
+        <label>My Projects</label>
+        <img src="../assets/add.svg" @click="onPrepareToCreateBoard">
+      </div>
         <div class="boardContentView">
             <v-row style="overflow: hidden;">
              <v-col v-for="board in boards" :key="board" cols="auto"> 
                <div class="productGridCellWithBorder"  @click="handleBoardTapped(board)">
                   <img src="@/assets/board_placeholder.png" class="productCellImage">
                   <label class="productNameLabel">{{ board.name }}</label>
-               </div>
-              </v-col>
-            </v-row>
-           </div>
-        </div>
+            </div>
+          </v-col>
+        </v-row>
+       </div>
+      <v-overlay  v-model="isCreateBoard" class="align-center justify-center" contained>
+        <CreateNewBoardView @closeOverlay="onCloseOverlay"/>
+     </v-overlay>
+    </div>
 </template>
 <script>
 import { ref } from 'vue'
 import CryptoJS from 'crypto-js'
 import { BASE_URL, USER_CACHE_KEY } from '@/config'
 import axios from 'axios';
+import CreateNewBoardView from '../components/CreateNewBoardView.vue'
 
 export default {
   inject: ["cryptojs"],
     components: {
-        
+      CreateNewBoardView
     }, 
     setup() {
         var isSideBarExpanded = ref(false)
         var selectedTaskBoardType = ref("All Team")
         var boards = ref([])
         var currentUser = ref({})
-        return { isSideBarExpanded, boards, selectedTaskBoardType, currentUser}
+        var isCreateBoard = ref(false)
+        return { isSideBarExpanded, boards, selectedTaskBoardType, currentUser, isCreateBoard}
     },
     methods: {
+      onCloseOverlay() {
+        this.fetchBoards()
+      },
+      onPrepareToCreateBoard() {
+        this.isCreateBoard = true
+      },
       handleMount() {
         let userCacheString = localStorage.getItem(USER_CACHE_KEY)
         console.log("userCacheString: ", userCacheString)
@@ -122,16 +136,23 @@ export default {
     width: 100vw;
     height: 100vh;
     background-color: white;
-    .title-label {
+    .board-top {
       display: flex;
       width: 80%;
-      text-align: left;
-      font-weight: 700;
-      font-size: 34px;
       margin-left: 10%;
       padding-top: 100px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--color-light);
+       padding-bottom: 8px;
+       border-bottom: 1px solid var(--color-light);
+      justify-content: space-between;
+      img {
+        width: 40px;
+        height: 40px;
+      }
+      label {
+       text-align: left;
+       font-weight: 700;
+       font-size: 34px;
+     }
     }
 }
 </style>
