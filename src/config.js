@@ -6,5 +6,3 @@ module.exports = {
     GOOGLE_AUTH_CLIENT_ID: "43796092749-aq1dc9tq96lcb48jvm93ke8pmlb2l1ia.apps.googleusercontent.com",
     GOOGLE_AUTH_CLEINT_SECRET: "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"
 };
-// remote: http://159.65.130.98/
-// local:  http://localhost:3000/v1/
