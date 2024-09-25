@@ -71,17 +71,18 @@ class APIService {
 
     
     async baseRequest(path, params) {
-        let header = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-        let options = {
-            method: 'POST',
-            headers: header,
-            body: JSON.stringify(params)
-        }
-        let fullURL = BASE_URL + path
         try {
+            let header = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+            let options = {
+                method: 'POST',
+                headers: header,
+                body: JSON.stringify(params)
+            }
+            let fullURL = BASE_URL + path
+            console.log('Request url: ', fullURL)
             const response = await fetch(fullURL, options)
             let jsonResp = await response.json()
             return jsonResp.resp

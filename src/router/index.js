@@ -27,7 +27,7 @@ const routes = [
     component: PricingView
   },
   {
-    path: '/login/:paymentType?',
+    path: '/login/:subscriptionType?',
     name: 'login',
     component: LoginView
   },
