@@ -1,5 +1,5 @@
 module.exports = {
-    BASE_URL: "https://api.ziinlo.com:3000/v1/",
+    BASE_URL: "https://api.ziinlo.com/v1/",
     USER_CACHE_KEY: "zinlo_cache",
     SIDE_BAR_MENU_ITEM_KEY: "sideBarMenuItemKey",
     CREATE_PRODUCT: "product", 
