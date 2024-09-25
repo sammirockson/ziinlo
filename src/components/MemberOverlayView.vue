@@ -26,9 +26,13 @@
     </div>
 </template>
 <script>
+import { USER_CACHE_KEY } from '@/config'
 import APIService from '@/APIService';
 import { ref } from 'vue'
+import CryptoJS from 'crypto-js'
+
 export default {
+    inject: ["cryptojs"],
     props: {
         boardId: {
             type: String
@@ -38,8 +42,9 @@ export default {
         var members = ref([])
         var searchResults = ref([])
         var searchText = ref("")
+        var currentUser = ref(null)
         return {
-            members, searchText, searchResults
+            members, searchText, searchResults, currentUser
         }
     }, 
     watch: {
@@ -49,8 +54,11 @@ export default {
     },
     methods: {
         handleCopyURL() {
-            let url = `https://wwww.ziinlo.io/invitation/b/${this.boardId}/i/66a6f66276e1d70286f59bec`
-            this.copyToClipboard(url)
+            if (this.currentUser !== null) {
+                let currentUserId = this.currentUser._id
+               let url = `https://ziinlo.com/invitation/b/${this.boardId}/i/${currentUserId}`
+               this.copyToClipboard(url)
+            }
         },
         async fetchMembers() {
             let params = {
@@ -85,6 +93,15 @@ export default {
 }
     }, 
     mounted() {
+        let userCacheString = localStorage.getItem(USER_CACHE_KEY)
+       if (userCacheString != null && userCacheString.length > 0) {
+          let userCache = JSON.parse(userCacheString)
+          let decryptionToken = userCache.token
+          let encryptedUserData = userCache.user
+          let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
+          let cacheInfoObject = JSON.parse(decryptedData)
+         this.currentUser = cacheInfoObject.user
+       }
         APIService.init()
         this.fetchMembers()
     }
