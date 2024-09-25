@@ -3,7 +3,7 @@
     <div class="nav-bar">
         <div class="logo-container">
             <img src="../assets/logo.png" class="logo-icon">
-            <h1 class="brand-name-label">Zinloe</h1>
+            <h1 class="brand-name-label">Ziinlo</h1>
         </div>
         <div class="nav-items">
             <div class="nav-item-cell" v-for="item in navItems" :key="item.id" @click="handleNavTapped(item)">

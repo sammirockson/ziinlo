@@ -121,7 +121,7 @@ export default {
         }
     }
     // Invitation link will be baseURL + invitation + b + inviter
-    // https://wwww.zinlo.com/invitation/b/1722579902069/i/66a6f66276e1d70286f59bec
+    // https://wwww.ziinlo.com/invitation/b/1722579902069/i/66a6f66276e1d70286f59bec
     // http://localhost:8080/invitation/b/1722579902069/i/66a6f66276e1d70286f59bec
 }
 </script>

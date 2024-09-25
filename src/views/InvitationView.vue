@@ -2,7 +2,7 @@
      <div class="navBar">
           <div class="logoNameContainer">
           <img src="@/assets/logo.png" class="logoIcon">
-           <label for="">Zinlo</label>
+           <label for="">Ziinlo</label>
           </div>
           <div class="loginSignUpContainer" v-if="!isAuth">
               <button class="loginBtn" @click="handleJoinBoard">Log In</button>

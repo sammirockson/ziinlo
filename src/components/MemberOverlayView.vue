@@ -49,7 +49,7 @@ export default {
     },
     methods: {
         handleCopyURL() {
-            let url = `https://wwww.zinlo.io/invitation/b/${this.boardId}/i/66a6f66276e1d70286f59bec`
+            let url = `https://wwww.ziinlo.io/invitation/b/${this.boardId}/i/66a6f66276e1d70286f59bec`
             this.copyToClipboard(url)
         },
         async fetchMembers() {
