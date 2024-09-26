@@ -131,7 +131,7 @@
         </div>
 
         <v-overlay v-model="isAssign" class="align-center justify-center overLayContainer" style="padding-left: 500px" contained>
-             <AssignOverlayView :boardId="this.boardId" :assigned-user-ids="assigneeIds" @didAssignMembers="onAssignMembers"/>
+             <AssignOverlayView :boardId="this.boardId" :card_id="this.card._id" :assigned-user-ids="assigneeIds" @didAssignMembers="onAssignMembers"/>
         </v-overlay>
 
         <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" activator="tagBtn" contained>
@@ -184,7 +184,7 @@ import ReadOnlyEditor from './ReadOnlyEditor.vue';
 
 import _ from 'lodash'
 import axios from 'axios';
-import { isReadonly, ref } from 'vue'
+import { ref } from 'vue'
 
 import CryptoJS from 'crypto-js'
 // import Editor from 'primevue/editor'
@@ -456,10 +456,20 @@ export default {
                    this.fetchTags()
                    this.updateViewCount()
                    this.getCardComments()
+                   this.getCardAssignees()
                 }
               }
              }
           })
+        },
+        async getCardAssignees() {
+            let params = {
+                assigneeIds: this.card.assignees
+            }
+           let cardAssignees = await APIService.getCardAssignees(params)
+           this.assigneeIds = _.map(cardAssignees, 'id');
+           this.assignees = cardAssignees
+           // get the assignee ids
         },
         async getCardComments() {
          let cardParam = {

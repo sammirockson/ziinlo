@@ -26,6 +26,9 @@ export default {
     }, 
     assignedUserIds: {
       type: []
+    }, 
+    card_id: {
+      type: String
     }
   },
   mounted() {
@@ -40,7 +43,7 @@ export default {
     }
   }, 
   methods: {
-    handleRowTapped(member) {
+    async handleRowTapped(member) {
       if (this.assigneeIds.includes(member.id)) {
         _.remove(this.assigneeIds, function(id) {
           return id === member.id
@@ -54,6 +57,11 @@ export default {
       }
       // Update API
       this.$emit('didAssignMembers', this.assignees, this.assigneeIds)
+      let params = {
+        card_id: this.card_id, 
+        assigneeIds: this.assigneeIds
+      }
+      await APIService.updateAssignees(params)
     },
     async fetchMembers() {
       let params = {

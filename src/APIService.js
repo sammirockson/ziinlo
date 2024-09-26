@@ -26,6 +26,16 @@ class APIService {
       await this.baseRequest("board/addDescriptionToCard", params)
     }
 
+    async getCardAssignees(params) {
+        let path = "board/getCardAssignees"
+        return await this.baseRequest(path, params)
+    }
+
+    async updateAssignees(params) {
+        let path = "board/updateCardAssignees"
+        return await this.baseRequest(path, params)
+    }
+
     async updateDueDate(params) {
         let path = "board/addDueDateToCard"
         return await this.baseRequest(path, params)
