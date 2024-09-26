@@ -1,7 +1,6 @@
 
 <template>
-    <el-tiptap :extensions="extensions" @onUpdate="onEditorUpdate" :enableCharCount="false" :content="content" placeholder="Write something ..."/>
-    <!-- <el-tiptap v-else :extensions="readOnlyExtension" @onUpdate="onEditorUpdate" :enableCharCount="false"  :content="content" readonly placeholder="Write something ..."/> -->
+    <el-tiptap v-if="extensions.length > 0" :extensions="extensions" @onUpdate="onEditorUpdate" :enableCharCount="false" :content="content" placeholder="Write something ..."/>
   </template>
   
   <script>
@@ -35,61 +34,30 @@
   export default {
     name: "Editor",
     props: {
-        isReadonly: {
-            type: Boolean, 
-            default: true 
-        }, 
-        content: {
-            type: String, 
-            default: ''
-        }
-    },
-    watch: {
-        isReadonly(newValue, oldValue) {
-            // this.isEditable = newValue ? false : true
-        }
+      content: {
+        type: String, 
+        default: ''
+      }
     },
     data: () => ({
       extensions: [
-        Document,
-        Text,
-        Paragraph,
-        Bold,
-        Italic,
-        Underline,
-        Strike,
-        TextAlign,
-        Link,
-        Image,
-        Text,
-        OrderedList        
-        // new Blockquote(),
-        // new TextAlign(),
-        // new BulletList({ bubble: true }),
-        // new OrderedList({ bubble: true }),
-        // new Indent(),
-        // new HardBreak(),
-        // new HorizontalRule({ bubble: true }),
-        // new Fullscreen(),
-        // new CodeView({
-        //   codemirror,
-        //   codemirrorOptions: {
-        //     styleActiveLine: true,
-        //     autoCloseTags: true
-        //   }
-        // }),
-        // History
-      ],
-      readOnlyExtension: [
-        Document,
-        Text,
-        Paragraph
+          Document,
+          Text,
+          Paragraph,
+          Bold,
+          Italic,
+          Underline,
+          Strike,
+          TextAlign,
+          Link,
+          Image,
+          Text,
+         OrderedList
       ],
       isEditable: false
     }), 
     methods: {
         onEditorUpdate(updatedContent) {
-            console.warn('editor updated: ', updatedContent)
             this.$emit('didUpdateEditor', updatedContent)
         }
     }

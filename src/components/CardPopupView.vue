@@ -62,10 +62,11 @@
                 </div>
 
                 <Label class="attachmentsTitleLabel">Description</Label>
-                <DescriptionEditor class="descriptionContainer" :readonly="isDescReadonly" :content="card.description" @didUpdateEditor="didUpdateDescEditor"/>
-                <div class="descriptionBtns">
+                <ReadOnlyEditor v-if="isDescReadonly" class="descriptionContainer" :content="card.description" @click="handleDidTapDescription"/>
+                <DescriptionEditor v-else class="descriptionContainer" :content="card.description" @didUpdateEditor="didUpdateDescEditor"/>
+                <div class="descriptionBtns" v-if="isDescReadonly === false">
                     <button class="saveDescriptionBtn" @click="handleSaveDescription">Save</button>
-                    <!-- <button class="canelDescripBtn" @click="handleCancelDescEditing">Cancel</button> -->
+                    <button class="canelDescripBtn" @click="handleCancelDescEditing">Cancel</button>
                 </div>
                 <label class="attachmentsTitleLabel" v-if=" this.attachments.length > 0">Attachments</label>
                 <div class="attachmentListView">
@@ -191,8 +192,9 @@ import CommentEditorView from '@/components/TextEditorView.vue'
 import AttachmentView from '@/components/AttachmentView.vue';
 import AddCheckListView from '@/components/AddCheckListView.vue'
 import MemberOverlayView from './MemberOverlayView.vue';
-import Editor from "../components/Editor";
-import DescriptionEditor from "../components/Editor";
+import Editor from "../components/Editor.vue";
+import DescriptionEditor from "../components/Editor.vue";
+import ReadOnlyEditor from './ReadOnlyEditor.vue';
 
 import axios from 'axios';
 import { isReadonly, ref } from 'vue'
@@ -207,7 +209,7 @@ export default {
   inject: ["cryptojs"],
   components: {
     PopupOverlay, TextEditorView, AttachmentView, VTimePicker, VueEditor, AssigneeView, CommentEditorView, MemberOverlayView,
-    PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView, AddCheckListView, Editor, DescriptionEditor
+    PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView, AddCheckListView, Editor, DescriptionEditor, ReadOnlyEditor
   },
   setup() {
     var members = ref([])
@@ -237,7 +239,7 @@ export default {
     var descEditorHeight = ref(340)
     var isMemberCardVisible = ref(false)
     var isCheckListTapped = ref(false)
-    var isDescReadonly = ref(false)
+    var isDescReadonly = ref(true)
     var comment = ref(null)
     var allCardComments = ref([])
     return { 
@@ -259,6 +261,10 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
+        handleDidTapDescription() {
+            this.isDescReadonly = false
+            this.$forceUpdate()
+        },
     async handleSaveComment() {
         let userid = this.currentUser.id
         let params = {
@@ -300,13 +306,11 @@ export default {
         },
         didUpdateDescEditor(cardDesc) {
             this.card.description = cardDesc
-            console.log('updated card desc: ', this.card)
         },
         handleCheckListTapped() {
             this.isCheckListTapped = true
         },
         handleShowMemberCard(isVisible) {
-            console.log("visible")
             this.isMemberCardVisible = isVisible 
         },
         handleCancelComment() {
@@ -323,7 +327,6 @@ export default {
             this.isShowFileView = false
         },
         handleFileBrowserTapped(attachment) {
-            console.log("file browser tapped")
             this.selectedAttachment = attachment
             this.isShowFileView = true 
         },
@@ -332,7 +335,6 @@ export default {
             this.attachments = updatedCard.attachments
         },
         async handleSaveTag(tag) {
-         console.log("prepare to save tag")
          var params = {
             boardId: this.boardId, 
             cardId: this.card.id,
@@ -372,7 +374,6 @@ export default {
                 this.card.dueDate = dueDateMilliSec
                 this.selectedDate = null
                 this.isDateTapped = false 
-                console.log("list and card info updated: ", data.resp)
               }
              }
           })
@@ -396,7 +397,6 @@ export default {
           await axios.post(fullURL, params).then((response) => {
             if (response.data != null) {
              let data = response.data
-             console.log("tags updated: ", data)
             }
           })
         },
@@ -412,7 +412,6 @@ export default {
           await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
              let data = response.data
-             console.log("fetch tag resps: ", data)
              this.autoGrow()
              if (data.resp != null) {
                 var tags = []
@@ -431,8 +430,8 @@ export default {
       },
       async handleSaveDescription() {
          let html = this.card.description
-          console.log("save description tapped")
           this.isEditingDesc = false 
+          this.isDescReadonly = true
           await APIService.saveDesc(html, this.card._id)
       },
       allowedHours: v => v % 2,
@@ -457,18 +456,14 @@ export default {
             let data = response.data
             if (data.statusCode == 200) {
                 let resp = data.resp
-                console.log("card detail data: ", resp)
                 if (resp != null) {
                    this.card = resp.card
                    this.list = resp.list
                    this.cardTags = resp.tags
                    this.attachments = resp.attachments
                    this.members = resp.members
-                   console.log('currentUser after fetch: ', this.currentUser)
                    if (this.currentUser != null) {
                     let memberFilter = this.members.filter(member => member.id === this.currentUser.id)
-                    console.log('memberFilter: ', memberFilter)
-                    console.log("members: ", this.members)
                     this.members.push({'fullName': memberFilter.length > 0 ? 'Leave' : 'Join', '_id': 'joinRemove'})
                    }
                   
@@ -487,7 +482,6 @@ export default {
          this.allCardComments = await APIService.getComments(cardParam)
         },
         async updateViewCount() {
-            console.log('updating viewcount')
             let params = {
                 card_id: this.card._id
             }
@@ -524,34 +518,23 @@ export default {
                 let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
                 let cacheInfoObject = JSON.parse(decryptedData)
                 this.currentUser = cacheInfoObject.user
-               console.log("currentUser: ", this.currentUser)
             }
         }, 
         async handleContentInfoTapped() {
-          console.log("selectedCard: ", this.card)
           var params = {
             card_id: this.card._id, 
             cardName: this.card.cardName, 
             cardDesc: this.cardDesc
          }
          var fullURL = BASE_URL + "board/updateCard"
-         await axios.post(fullURL, params).then((response) => {
-          if (response.data != null) {
-             let data = response.data
-             console.log("card detail resp data: ", data)
-            }
-          })
+         await axios.post(fullURL, params).then((response) => {})
         }
     }, 
     watch: { 
-        // card() { 
-        //    this.getUserInfo()
-        // }, 
         list(newVal, oldVal) { 
            this.selectedList = newVal
         }, 
         tags(newVal, oldVal) { 
-           console.log('tags popover prop changed: ', newVal, ' | was: ', oldVal)
            var tags = []
             for (var index in newVal) {
                 let item = newVal[index]
@@ -565,7 +548,6 @@ export default {
            this.time = hour.toString() + ":" + minute.toString()
         }, 
         selectedDate(newVal, oldVal) {
-            console.log('date changed: ', newVal, ' | was: ', oldVal)
         }
     }
 }

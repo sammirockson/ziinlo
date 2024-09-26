@@ -31,10 +31,10 @@
         <img src="@/assets/membersDark.png" class="memberIcon">
         <label for="">Members</label>
     </div>
-    <div class="themeToggler" @click="handleThemeToggle">
+    <!-- <div class="themeToggler" @click="handleThemeToggle">
         <span class="material-symbols-sharp active" id="lightMode">light_mode</span>
         <span class="material-symbols-sharp" id="darmMode">dark_mode</span>
-    </div>
+    </div> -->
     <img src="@/assets/notification-white.svg" class="notificationIcon">
     </div>
     <v-overlay v-model="isMemberVisible" class="align-top justify-end overLayContainer"  contained>
@@ -323,7 +323,7 @@ export default {
 }
 .right-container {
     display: flex;
-    width: 650px;
+    width: 550px;
 }
 .leftContentView {
     display: flex;
