@@ -86,6 +86,7 @@ import DraggableView from 'vuedraggable'
 import CardView from '@/views/CardView.vue'
 import BoardNavItemsView from './BoardNavItemsView.vue'
 import APIService from '@/APIService';
+import _ from 'lodash'
 
 import { ref } from 'vue'
 import CryptoJS from 'crypto-js'
@@ -219,13 +220,7 @@ export default {
         }
         var fullURL = BASE_URL + "board/updateList"
         await axios.post(fullURL, params).then((response) => {
-          if (response.data != null) {
-            let data = response.data
-            if (data.statusCode == 200) {
-                console.log("list and card info updated: ", data.resp)
-              }
-             }
-          })
+        })
       },
       onCardMoved(e) {
        console.log("onCardMoved: ", e) 
@@ -250,7 +245,6 @@ export default {
             this.setListEmpty(list_id)
           }
         }
-        // this.getBoardBy(this.boardId)
       }
 
       if (e.moved != null) { // moved: moved within the same list
@@ -268,6 +262,18 @@ export default {
             cards.push({id: card.id, position: cardPosition})
         }
         this.updateBoardInfo(cards, cardIds, list_id, listId)
+      }
+
+      if (e.added != null) {
+        let card_id = _.get(e.added.element, '_id')
+        let cardName = _.get(e.added.element, 'cardName')
+        _.forEach(this.board.lists, function(list) {
+            let addedCard = _.find(list.cards, { '_id': card_id})
+            if (addedCard !== undefined) {
+                console.log(`${cardName} has been moved to: `, list.listName, 'list')
+                // Send notification to members of the card
+            }
+        }) 
       }
     },
         handleOverlayDismissed() {

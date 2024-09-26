@@ -108,15 +108,17 @@
 
 
              <label class="memberLabel">Action</label>
-             <!-- <ButtonCard imageIcon="move.png" title="Forward"/> -->
-             <!-- <ButtonCard imageIcon="eyeViews.png" title="Tracking" class="dueDateField" isTracked="true"/> -->
              <ButtonCard imageIcon="priority.png" title="Priority level"/>
              <ButtonCard imageIcon="assignee.png" title="Assign"/>
              <ButtonCard imageIcon="move.png" title="Move"/>
 
              <label class="memberLabel">Manage</label>
              <ButtonCard imageIcon="tags.png" title="Tags" @click="handleTagTapped"/>
-             <ButtonCard imageIcon="duedate.png" title="Due Date" @click="handleDateTapped"/>
+             <date-picker v-model="selectedDate" @update:model-value="handleSaveDate"  time-picker-inline >
+               <template #trigger>
+                 <ButtonCard imageIcon="duedate.png" title="Due Date"/>
+               </template>
+             </date-picker>
              <ButtonCard imageIcon="poll.png" title="Poll"/>
              <ButtonCard imageIcon="checklist.png" title="Checklist" @click="handleCheckListTapped"/>
              <ButtonCard imageIcon="fileAttachment.png" title="Attachments" @click="handleAttachmentTapped"/>
@@ -130,27 +132,6 @@
 
         <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" activator="tagBtn" contained>
             <TagContainerView @handleSaveTag="handleSaveTag" @refreshTags="refreshTags" @handleTagChanged="handleTagChanged" :boardTags="this.boardTags" class="tagContainerView"/>
-        </v-overlay>
-        <v-overlay v-model="isDateTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" activator="tagBtn" contained>
-          <div class="dueDateMainView">
-           <div class="dateContainerView">
-               <v-container>
-                 <v-row justify="space-around">
-                   <v-date-picker show-adjacent-months v-model="selectedDate"></v-date-picker>
-                 </v-row>
-                </v-container>
-            </div>
-            <div class="timePickerContainer">   
-        <v-row justify="space-around">
-      <v-time-picker
-        v-model="time"
-        format="12hr"
-        scrollable
-      ></v-time-picker>
-    </v-row>
-        </div>
-            <button :class="selectedDate == null ? `dateBtnDisabled` : `saveDateBtn`" :disabled="selectedDate == null" @click="handleSaveDate">Save Date</button>
-        </div>
         </v-overlay>
 
         <v-overlay v-model="isAttachmentTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" contained>
@@ -358,26 +339,15 @@ export default {
             this.isEditingDesc = true 
         },
         async handleSaveDate() {
-            let timeArray = this.time.split(':')
-            this.selectedDate.setHours(timeArray[0])
-            this.selectedDate.setMinutes(timeArray[1])
-            let dueDateMilliSec = this.selectedDate.getTime()
-            var params = {
-                card_id: this.card._id, 
-                dueDate: dueDateMilliSec
-        }
-        var fullURL = BASE_URL + "board/addDueDateToCard"
-        await axios.post(fullURL, params).then((response) => {
-          if (response.data != null) {
-            let data = response.data
-            if (data.statusCode == 200) {
-                this.card.dueDate = dueDateMilliSec
-                this.selectedDate = null
-                this.isDateTapped = false 
-              }
-             }
-          })
-        },
+          let dueDateMilliSec = this.selectedDate.getTime()
+          var params = {
+            card_id: this.card._id, 
+            dueDate: dueDateMilliSec
+         }
+        await APIService.updateDueDate(params)
+        this.card.dueDate = dueDateMilliSec
+        this.selectedDate = null
+      },
       async handleTagChanged(tag) {
             if (tag.isChecked) {
                 this.cardTags.push(tag)
@@ -807,7 +777,8 @@ export default {
     background-color: white;
     /* height: 550px; */
     /* min-height: 970px; */
-    min-height: 970px;
+    width: 300px;
+    min-height: 600px;
     border-radius: var(--border-radius-2);
     overflow-y: scroll;
 }

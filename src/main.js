@@ -22,6 +22,8 @@ import ElementPlus from 'element-plus';
 import ElementTiptapPlugin from 'element-tiptap';
 // import ElementTiptap's styles
 import 'element-tiptap/lib/style.css';
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
 
 const vuetify = createVuetify({
     components,
@@ -45,6 +47,7 @@ createApp(App).use(PrimeVue, {
 })
 .use(ElementPlus).use(ElementTiptapPlugin).use(router)
 .use(vuetify).use(VueCryptojs).provide('eventBus', eventBus)
+.component('date-picker', VueDatePicker)
 .mount('#app')
 
 // .my-app-dark        darkModeSelector: 'system',
