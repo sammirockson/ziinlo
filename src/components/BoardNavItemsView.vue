@@ -16,11 +16,6 @@
         <img src="../assets/search.png" alt="">
         <input type="text" v-model="searchText" placeholder="Search board" @input="handleSearch">
     </div>
-    <!-- <div class="filter-container">
-        <img src="../assets/filter.svg" alt="">
-        <label for="">Filter</label>
-        <img src="../assets/arrow-down.png" alt="">
-    </div> -->
     <div class="membersContainer">
          <div class="profile-cell" v-for="(member, index) in members" :key="index">
             <span class="profileIcon" v-if="member != null"> <img :src="member.picture.length > 0 ? member.picture : require('@/assets/orange_default.png')"></span>
@@ -222,6 +217,7 @@ export default {
 .search-container {
     width: 280px;
     background-color: white;
+    margin-right: 50px;
 }
 .filter-container img, .search-container img {
     object-fit: contain;

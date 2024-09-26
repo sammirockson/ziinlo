@@ -33,19 +33,19 @@
                     <label class="dueDateTitelLabel">{{ formatDate(card) }}</label>
                 </div>
 
-                <!-- <div class="statusContainer">
+                <div class="statusContainer">
                     <div class="statusIconTitleView">
                         <img src="@/assets/assignee.png" alt="">
                         <label for="">Assignee</label>
                     </div>
-                    <div class="assigneeContainerView">
+                    <div class="assigneeContainerView" v-if="assignees.length > 0">
                         <v-chip-group selected-class="text-primary" column>
-                        <v-chip  v-for="(item, index) in names" :key="index" style="border-radius: 19px;">
-                            <AssigneeView :title="item" imageIcon="https://cdn-prd.content.metamorphosis.com/wp-content/uploads/sites/6/2022/12/shutterstock_781327003-1.jpg" class="asigneeCellView"></AssigneeView>
+                        <v-chip  v-for="(assignee, index) in this.assignees" :key="index" style="border-radius: 19px;">
+                            <AssigneeView :title="assignee.fullName" :imageIcon="assignee.picture" class="asigneeCellView"></AssigneeView>
                        </v-chip>
                       </v-chip-group>
                     </div>
-                </div> -->
+                </div>
 
                 <div class="statusContainer" v-if="cardTags.length > 0">
                     <div class="statusIconTitleView">
@@ -109,7 +109,7 @@
 
              <label class="memberLabel">Action</label>
              <ButtonCard imageIcon="priority.png" title="Priority level"/>
-             <ButtonCard imageIcon="assignee.png" title="Assign"/>
+             <ButtonCard imageIcon="assignee.png" title="Assign" @click="handleAssign"/>
              <ButtonCard imageIcon="move.png" title="Move"/>
 
              <label class="memberLabel">Manage</label>
@@ -129,6 +129,10 @@
              <ButtonCard imageIcon="archive.png" title="Delete"/>
              </div>
         </div>
+
+        <v-overlay v-model="isAssign" class="align-center justify-center overLayContainer" style="padding-left: 500px" contained>
+             <AssignOverlayView :boardId="this.boardId" :assigned-user-ids="assigneeIds" @didAssignMembers="onAssignMembers"/>
+        </v-overlay>
 
         <v-overlay v-model="isTagTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" activator="tagBtn" contained>
             <TagContainerView @handleSaveTag="handleSaveTag" @refreshTags="refreshTags" @handleTagChanged="handleTagChanged" :boardTags="this.boardTags" class="tagContainerView"/>
@@ -162,6 +166,7 @@ import PopupRouterView from './PopupRouterView.vue';
 import { BASE_URL, USER_CACHE_KEY } from '@/config'
 import AssigneeView from '@/components/AssigneeView.vue'
 import CommentsView from '@/components/CommentsView.vue'
+import AssignOverlayView from './AssignOverlayView.vue';
 
 import ButtonCard from '@/components/ButtonCard.vue'
 import DescriptionViewFrom from '@/components/DescriptionViewForm.vue'
@@ -177,6 +182,7 @@ import Editor from "../components/Editor.vue";
 import DescriptionEditor from "../components/Editor.vue";
 import ReadOnlyEditor from './ReadOnlyEditor.vue';
 
+import _ from 'lodash'
 import axios from 'axios';
 import { isReadonly, ref } from 'vue'
 
@@ -189,7 +195,7 @@ import APIService from '@/APIService'
 export default {
   inject: ["cryptojs"],
   components: {
-    PopupOverlay, TextEditorView, AttachmentView, VTimePicker, VueEditor, AssigneeView, CommentEditorView, MemberOverlayView,
+    PopupOverlay, TextEditorView, AttachmentView, VTimePicker, VueEditor, AssigneeView, CommentEditorView, MemberOverlayView, AssignOverlayView,
     PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView, AddCheckListView, Editor, DescriptionEditor, ReadOnlyEditor
   },
   setup() {
@@ -222,11 +228,14 @@ export default {
     var isCheckListTapped = ref(false)
     var isDescReadonly = ref(true)
     var comment = ref(null)
+    var isAssign = ref(false)
     var allCardComments = ref([])
+    var assignees = ref([])
+    var assigneeIds = ref([])
     return { 
           members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names, commentEditorHeight, descEditorHeight, selectedAttachment,
           currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment, isMemberCardVisible, isCheckListTapped, 
-          isDescReadonly, comment, allCardComments
+          isDescReadonly, comment, allCardComments, isAssign, assignees, assigneeIds
         }
     },
     async mounted() {
@@ -242,10 +251,17 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
-        handleDidTapDescription() {
-            this.isDescReadonly = false
-            this.$forceUpdate()
+        onAssignMembers(assignees, assigneeIds) {
+            this.assignees = assignees
+            this.assigneeIds = assigneeIds
         },
+    handleAssign() {
+        this.isAssign = true 
+    },
+    handleDidTapDescription() {
+        this.isDescReadonly = false
+        this.$forceUpdate()
+    },
     async handleSaveComment() {
         let userid = this.currentUser.id
         let params = {
