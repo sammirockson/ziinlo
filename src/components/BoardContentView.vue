@@ -127,7 +127,6 @@ export default {
             boardId: routeParams.boardId
           }
           let allMembers = await APIService.getBoardMembers(params)
-          console.log("all card members: ", allMembers)
           if (allMembers != null) {
             this.allMembers = allMembers;
           }
@@ -140,7 +139,6 @@ export default {
                for (var index in searchLists) {
                   let list = searchLists[index]
                   if (list != undefined) {
-                    console.log('list: ', list)
                   let cards = list.cards
                   let cardFilter = cards.filter(card => card.cardName.toLowerCase().includes(searchKey))
                   if (cardFilter.length > 0) {
@@ -150,7 +148,6 @@ export default {
                   }
                   }
                }
-               console.log("handle search: ", searchText.length, 'searchLists card count: ')
                this.board.lists = searchLists
             } else {
                 this.getBoardBy(this.boardId) 

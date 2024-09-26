@@ -60,7 +60,6 @@ export default {
     methods: {
         getMemberProfileURL(memberId) {
             let member = this.allMembers.find(x => x.id === memberId)
-            console.log('card member: ', member)
             return member !== undefined ? member.picture : 'https://picsum.photos/70'
         },
         getImageFile(attachments) {

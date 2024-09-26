@@ -9,7 +9,7 @@
              <v-col v-for="board in boards" :key="board" cols="auto"> 
                <div class="productGridCellWithBorder"  @click="handleBoardTapped(board)">
                   <img src="@/assets/board_placeholder.png" class="productCellImage">
-                  <label class="productNameLabel">{{ board.name }}</label>
+                  <label>{{ board.name }}</label>
             </div>
           </v-col>
         </v-row>
@@ -48,7 +48,6 @@ export default {
       },
       handleMount() {
         let userCacheString = localStorage.getItem(USER_CACHE_KEY)
-        console.log("userCacheString: ", userCacheString)
         if (userCacheString == null || userCacheString.length == 0) {
               this.$router.push({path: "/home"})
             } else {
@@ -58,7 +57,6 @@ export default {
              let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
              let cacheInfoObject = JSON.parse(decryptedData)
              this.currentUser = cacheInfoObject.user
-             console.log("parsed credentials: ", userCache)
              this.fetchBoards()
        }
       },
@@ -110,7 +108,7 @@ export default {
     border: 2px solid var(--color-light);
     label {
       font-weight: 600;
-      font-size: 20px;
+      font-size: 14px;
     }
 }
 .productGridCell, .productGridCellWithBorder {
@@ -124,12 +122,10 @@ export default {
 
 .boardContentView {
     width: 80%;
-    height: 400px;
+    height: 80%;
     display: flex;
-    justify-content: center;
-    align-items: center;
     margin: auto;
-    padding: 30px;
+    padding: 50px 0 0 0;
 }
 
 .allBoards {

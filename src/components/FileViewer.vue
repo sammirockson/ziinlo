@@ -5,6 +5,7 @@
         <videoplayer v-if="attachment != null && (attachment.fileType.toLowerCase() == 'mp4' ||  attachment.fileType.toLowerCase() == 'mov')" :src="attachment.fileURL" controls="true" height="800" width="1200"></videoplayer>
         <vue-office-docx v-if="attachment != null && (attachment.fileType.toLowerCase() == 'docx' || attachment.fileType.toLowerCase() == 'doc')" :src="attachment.fileURL" @rendered="rendered"  class="previewer"/>
         <vue-office-excel v-if="attachment != null && (attachment.fileType.toLowerCase() == 'xlsx' || attachment.fileType.toLowerCase() == 'xls')"  :src="attachment.fileURL" class="previewer"/>
+        <img src="../assets/close-icon.png" class="close-icon" @click="dismissFileViewer">
     </div>
 </template>
 <script>
@@ -30,9 +31,6 @@ export default {
     },
     methods: {
         dismissFileViewer() {
-            // this.$refs.horizontal.scrollToIndex(1)
-            // .ppt, .pptx, .doc, .docx, .xls and .xlsx
-            console.log("Attempting to scroll to index: ", this.$refs.horizontal == null)
             this.$emit("dismissFileViewer")
         }
     },
@@ -42,22 +40,21 @@ export default {
 }
 </script>
 <style scoped>
-
+.close-icon {
+    float: right;
+    margin-right: 20px;
+    width: 40px;
+    height: 40px;
+}
 .previewer {
     object-fit: contain;
 }
 .fileViewCell, .previewer, .fileViewContainer {
-    height: 92vh;
-    width: 90vw;
+    height: 80vh;
+    width: 80vw;
     margin-top: 3vh;
     margin-right: auto;
     margin-left: auto;
 }
-/* .fileViewContainer {
-    display: flex;
-    height: 100%;
-    width: 100vw;
-    overflow-x: scroll;
-} */
     
 </style>

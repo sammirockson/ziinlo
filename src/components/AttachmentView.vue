@@ -54,7 +54,6 @@ export default {
           let fileTypes = this.selectedFile.name.split(".")
            if (this.selectedFile != null && this.localeFileURL != null && fileTypes.length > 0) {
             let fileType = fileTypes.pop()
-            console.log("fileTypes: ", fileTypes, "fileType: ", fileType.toLowerCase())
                var postJson = {
                  card_id: this.card_id,
                  fileType: fileType.toLowerCase()
@@ -68,7 +67,6 @@ export default {
                 this.isUploading = false 
                 this.selectedFile = null
                 this.localeFileURL = null
-                 console.log("upload file response: ", response)
                  if (response.data != null) {
                    let data = response.data
                   if (data.statusCode == 200) {

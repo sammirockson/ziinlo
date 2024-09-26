@@ -5,10 +5,7 @@ import _ from 'lodash'
 
 class APIService {
 
-    init() {
-        console.log("APIService has been initiated")
-    }
-
+    init() {}
 
     async addComment(params) {
         let path = "comment/add"
@@ -82,7 +79,6 @@ class APIService {
                 body: JSON.stringify(params)
             }
             let fullURL = BASE_URL + path
-            console.log('Request url: ', fullURL)
             const response = await fetch(fullURL, options)
             let jsonResp = await response.json()
             return jsonResp.resp
