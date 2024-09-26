@@ -5,7 +5,7 @@
             <div class="commentContainer">
               <div class="profileNameAndDateView">
               <label class="commenterLabel">{{ comment.commenter.fullName }}</label>
-              <label class="commentDateLabel">Thur 11:44PM</label>
+              <label class="commentDateLabel">{{ getDateFormat(comment.createdAt) }}</label>
               </div>
               <div class="commentContentView">
                 <p v-html="comment.content"></p>
@@ -16,11 +16,18 @@
 </template>
 <script>
 import { ref } from 'vue'
+import Dayjs from 'dayjs';
 export default {
     props: {
         allCardComments: {
             type: [Object], 
             default: []
+        }
+    }, 
+    methods: {
+        getDateFormat(createdAt) {
+            // Thur 11:44PM
+           return Dayjs(createdAt).format('DD-MM-YYYY HH:mm A')
         }
     }
 }

@@ -18,8 +18,11 @@
 
 <script>
 import APIService from '@/APIService';
+import { USER_CACHE_KEY } from '@/config'
+import CryptoJS from 'crypto-js'
 
 export default {
+  inject: ["cryptojs"],
   props: {
     boardId: {
       type: String
@@ -34,16 +37,29 @@ export default {
   mounted() {
     this.assigneeIds = this.assignedUserIds
     this.fetchMembers()
+    let userCacheString = localStorage.getItem(USER_CACHE_KEY)
+       if (userCacheString != null && userCacheString.length > 0) {
+          let userCache = JSON.parse(userCacheString)
+          let decryptionToken = userCache.token
+          let encryptedUserData = userCache.user
+          let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
+          let cacheInfoObject = JSON.parse(decryptedData)
+         this.currentUser = cacheInfoObject.user
+      }
   },
   data() {
     return {
       members: [], 
       assigneeIds: [], 
-      assignees: []
+      assignees: [], 
+      currentUser: null
     }
   }, 
   methods: {
     async handleRowTapped(member) {
+      if (this.currentUser === null) {
+        return 
+      }
       if (this.assigneeIds.includes(member.id)) {
         _.remove(this.assigneeIds, function(id) {
           return id === member.id
@@ -59,8 +75,10 @@ export default {
       this.$emit('didAssignMembers', this.assignees, this.assigneeIds)
       let params = {
         card_id: this.card_id, 
-        assigneeIds: this.assigneeIds
+        assigneeIds: this.assigneeIds, 
+        assigner: this.currentUser.id // current user id
       }
+      console.log('params for update assignees: ', params)
       await APIService.updateAssignees(params)
     },
     async fetchMembers() {

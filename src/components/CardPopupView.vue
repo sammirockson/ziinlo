@@ -287,15 +287,16 @@ export default {
         let userid = this.currentUser.id
         let memberFilter = cardMembers.filter(member => member === userid)
         if (memberFilter.length > 0) {
-                // remove
-                cardMembers = cardMembers.filter(member => member != userid)
+            // remove
+            cardMembers = cardMembers.filter(member => member != userid)
          } else {
-                cardMembers.push(userid)
+            cardMembers.push(userid)
          }                              
-            // call api to save
+        // call api to save
          let params = {
             card_id: this.card._id, 
-            members: cardMembers
+            members: cardMembers, 
+            currentUserId: userid
          }
           await APIService.updateCardMembership(params)
           this.getCardBy(this.card._id)
