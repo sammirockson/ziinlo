@@ -40,11 +40,10 @@ export default {
         }
     },
     mounted() {
-        console.log('landing mounted')
         this.selectedNavItem = this.navItems[0]
-        this.$gtag.event('latest-release-click', {
-        'event_category': 'documentation',
-        'event_label': 'Latest Release Button Clicked',
+        this.$gtag.event('Arrived on landing page', {
+        'event_category': 'landing',
+        'event_label': 'User arrived on the landing page',
         'value': 1
       })
     }, 
