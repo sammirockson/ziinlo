@@ -40,7 +40,13 @@ export default {
         }
     },
     mounted() {
+        console.log('landing mounted')
         this.selectedNavItem = this.navItems[0]
+        this.$gtag.event('latest-release-click', {
+        'event_category': 'documentation',
+        'event_label': 'Latest Release Button Clicked',
+        'value': 1
+      })
     }, 
     methods: {
         handleNavTapped(navItem) {

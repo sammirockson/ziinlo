@@ -36,6 +36,7 @@
     "vue-demi": "^0.14.6",
     "vue-doc-preview": "^0.3.2",
     "vue-google-oauth2": "^1.5.10",
+    "vue-gtag": "^2.0.1",
     "vue-horizontal": "^1.0.2",
     "vue-pdf": "^4.3.0",
     "vue-router": "^4.0.3",

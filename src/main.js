@@ -25,6 +25,11 @@ import 'element-tiptap/lib/style.css';
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 
+// Google Analytics
+import VueGtag from "vue-gtag"
+import { GOOGLE_ANALYTICS_ID } from './config.js'
+
+
 const vuetify = createVuetify({
     components,
     directives
@@ -39,15 +44,18 @@ const eventBus = mitt();
 //         darkModeSelector: 'system',
 //     }
 // })
-createApp(App).use(PrimeVue, {
+createApp(App)
+.use(PrimeVue, {
     unstyled: true
-    // theme: {
-    //     preset: Aura
-    // }
+})
+.use(VueGtag, {
+   config: { id: GOOGLE_ANALYTICS_ID }
 })
 .use(ElementPlus).use(ElementTiptapPlugin).use(router)
 .use(vuetify).use(VueCryptojs).provide('eventBus', eventBus)
 .component('date-picker', VueDatePicker)
 .mount('#app')
+
+Vue.config.productionTip = false
 
 // .my-app-dark        darkModeSelector: 'system',
