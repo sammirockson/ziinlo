@@ -39,10 +39,13 @@ export default {
     var googleUser = ref(null)
     var viewPassword = ref(false)
     var fullName = ref("")
-    return { email, password, isLogActivated, showPassword, googleUser, viewPassword, fullName }
+    var subscriptionType = ref('basic')
+    return { email, password, isLogActivated, showPassword, googleUser, viewPassword, fullName, subscriptionType }
   }, 
   mounted() {
     APIService.init()
+    let routeParams = this.$route.query
+    this.subscriptionType = routeParams.subscription
   },
   methods: {
     handleLogin() {
@@ -56,6 +59,7 @@ export default {
       this.showPassword = !this.showPassword
     },
     async handleSignUp() {
+      // if subscriptionType === standard or enterprise then process payment
       this.isLogActivated = true 
       var params = {
         email : this.email, 
@@ -63,6 +67,7 @@ export default {
         password: this.password, 
         isEmailVerified: false,
         isViaGoogle: false,
+        subscriptionType: this.subscriptionType,
         id: Date.now()
       }
       let userInfo = await APIService.signUp(params)

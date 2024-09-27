@@ -26,8 +26,10 @@ export default {
     }, 
     methods: {
         getDateFormat(createdAt) {
-            // Thur 11:44PM
-           return Dayjs(createdAt).format('DD-MM-YYYY HH:mm A')
+            let date = Dayjs(createdAt)
+            let today = new Date()
+            let isAfterToday = date.isAfter(today, 'day')
+           return isAfterToday ? Dayjs(createdAt).format('DD-MM-YYYY ddd HH:mm A') : Dayjs(createdAt).format('ddd HH:mm A') 
         }
     }
 }

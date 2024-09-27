@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="line"></div>
-            <button class="signup-btn" @click="handleNavToLogin">Sign up now</button>
+            <button class="signup-btn" @click="handleNavToLogin(option)">Sign up now</button>
           </div>
        </div>
    </div>
@@ -71,7 +71,7 @@ export default {
                     'Card templates', 
                     'Private team and projects'
                 ]}, // 5 per month
-                {title: 'Business', subTitle: 'Mange teams, projects and capture employee time.', id: 'business', price: 15.00, lists: [
+                {title: 'Enterprise', subTitle: 'Mange teams, projects and capture employee time.', id: 'business', price: 15.00, lists: [
                     'Unlimited boards and cards',
                     'Dasbhoard', 
                     'Approvals', 
@@ -83,17 +83,21 @@ export default {
                 ]}, // 30 per month
             ], 
             isYearly: false, 
-            selectedPaymentType: 'basic'
+            subscriptionType: 'basic'
         }
     },
     methods: {
-        handleNavToLogin() {
+        handleNavToLogin(option) {
+            console.log('option: ', option)
+            this.subscriptionType = option.title.toLowerCase()
+            // let path = "/login/" + this.subscriptionType
+            // this.$router.push({path: path})
              let path = "/login"
             this.$router.push(
                 {
                     path: path, 
                     query: {
-                        paymentType: this.selectedPaymentType
+                        subscription: this.subscriptionType
                     }
                 })
         }

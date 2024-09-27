@@ -27,13 +27,15 @@ const routes = [
     component: PricingView
   },
   {
-    path: '/login/:subscriptionType?',
+    path: '/login/:subscription?',
     name: 'login',
+    props: true, 
     component: LoginView
   },
   {
-    path: '/signup',
+    path: '/signup/:subscription?',
     name: 'signup',
+    props: true, 
     component: SignUpView
   },
   {

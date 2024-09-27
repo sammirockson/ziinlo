@@ -38,7 +38,10 @@ import APIService from '@/APIService';
 
 export default {
   props: {
-    isInvite: false
+    isInvite: {
+      type: Boolean, 
+      default: false
+    }
   },
   inject: ["cryptojs"],
   setup() {
@@ -48,23 +51,28 @@ export default {
     var showPassword = ref(false)
     var googleUser = ref(null)
     var viewPassword = ref(false)
-    var paymentType = ref('basic')
-    return { email, password, isLogActivated, showPassword, googleUser, viewPassword, paymentType }
+    var subscriptionType = ref('basic')
+    return { email, password, isLogActivated, showPassword, googleUser, viewPassword, subscriptionType }
   },
   mounted() {
     APIService.init()
-  },
-  computed: {
-    isInvite() {
-      get
-    }
+    let routeParams = this.$route.query
+    this.subscriptionType = routeParams.subscription
   },
   methods: {
       handleNavToSignUp() {
         if (this.isInvite) {
           this.$emit("didTapNavToSignUp")
         } else {
-          this.$router.push({path: "/signup"})
+          let path = "/signup"
+          this.$router.push(
+            {
+              path: path, 
+                query: {
+                subscription: this.subscriptionType
+              }
+            })
+          // this.$router.push({path: "/signup"})
         }
       },
       viewPassword() {
@@ -131,7 +139,6 @@ export default {
         if (userResponse && userResponse.data) {
           // Set the userDetails data property to the userResponse object
           this.googleUser = userResponse.data;
-          console.log("user data: ", userResponse.data)
           this.handleAuthGoogleUser()
         } else {
           // Handle the case where userResponse or userResponse.data is undefined
@@ -143,6 +150,7 @@ export default {
     }, 
    async handleAuthGoogleUser() {
       if (this.googleUser == null) { return }
+      // if subscriptionType === standard or enterprise then process payment
       let gUser = this.googleUser
       let params = {
         email: gUser.email, 
@@ -151,17 +159,16 @@ export default {
         picture: gUser.picture, 
         isEmailVerified: gUser.email_verified,
         isViaGoogle: true, 
+        subscriptionType: this.subscriptionType,
         id: Date.now()
       }
 
       let fullURL = BASE_URL + "auth/googleAuth"
-      console.log("full url: ", fullURL, "params: ", params)
       await axios.post(fullURL, params).then((response) => {
         if (response.data != null) {
           let data = response.data
           if (data.statusCode == 200) {
             let gUserInfo = data.resp 
-            console.log("gUserInfo signed up info: ", gUserInfo)
             gUserInfo.password = ""
             let token = gUserInfo.token
             this.encryptAndNavigate(gUserInfo, token)
