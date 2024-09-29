@@ -41,11 +41,11 @@ export default {
     },
     mounted() {
         this.selectedNavItem = this.navItems[0]
-        this.$gtag.event('Arrived on landing page', {
+        this.$gtag.event('Landing page mounted', {
         'event_category': 'landing',
         'event_label': 'User arrived on the landing page',
         'value': 1
-      })
+       })
     }, 
     methods: {
         handleNavTapped(navItem) {

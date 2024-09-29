@@ -1,7 +1,7 @@
 <template>
      <div class="allBoards">
       <div class="board-top">
-        <label>My Projects</label>
+        <label>My Boards</label>
         <img src="../assets/add.svg" @click="onPrepareToCreateBoard">
       </div>
         <div class="boardContentView">
@@ -38,6 +38,13 @@ export default {
         var currentUser = ref({})
         var isCreateBoard = ref(false)
         return { isSideBarExpanded, boards, selectedTaskBoardType, currentUser, isCreateBoard}
+    },
+    mounted() {
+      this.$gtag.event('All Boards', {
+          'event_category': 'board',
+          'event_label': 'All boards mounted',
+          'value': 1
+      })
     },
     methods: {
       onCloseOverlay() {

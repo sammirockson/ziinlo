@@ -272,6 +272,11 @@ export default {
             if (addedCard !== undefined) {
                 console.log(`${cardName} has been moved to: `, list.listName, 'list')
                 // Send notification to members of the card
+                this.$gtag.event('Moved card', {
+                   'event_category': 'Card',
+                   'event_label': `${cardName} has been moved to: ${list.listName} list`,
+                   'value': cardName
+               })
             }
         }) 
       }
@@ -400,6 +405,11 @@ export default {
                this.allLists = apiBoard.lists
                this.dblists = apiBoard.lists
                this.board = apiBoard
+               this.$gtag.event('Board opened', {
+                   'event_category': 'board',
+                   'event_label': `Opened ${apiBoard.name} board with ${apiBoard.lists.length} lists`,
+                   'value': apiBoard.name
+               })
             } else {
                 console.log("You're not part of this board, request invitation from the owner")
                 this.$router.push({path: '/boards'}) 
