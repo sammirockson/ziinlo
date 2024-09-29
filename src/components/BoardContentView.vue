@@ -275,7 +275,7 @@ export default {
                 this.$gtag.event('Moved card', {
                    'event_category': 'Card',
                    'event_label': `${cardName} has been moved to: ${list.listName} list`,
-                   'value': cardName
+                   'value': 1
                })
             }
         }) 
@@ -408,7 +408,7 @@ export default {
                this.$gtag.event('Board opened', {
                    'event_category': 'board',
                    'event_label': `Opened ${apiBoard.name} board with ${apiBoard.lists.length} lists`,
-                   'value': apiBoard.name
+                   'value': 1
                })
             } else {
                 console.log("You're not part of this board, request invitation from the owner")
