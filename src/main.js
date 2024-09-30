@@ -56,6 +56,4 @@ createApp(App)
 .component('date-picker', VueDatePicker)
 .mount('#app')
 
-Vue.config.productionTip = false
-
 // .my-app-dark        darkModeSelector: 'system',

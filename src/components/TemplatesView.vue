@@ -1,5 +1,6 @@
 <template>
     <div class="templates-container">
+        <NavBar :selectedIndex="1" @didSelectNavItem="didSelectNavItem"/>
         <div class="top-content-view">
         <img src="../assets/lists.png" class="icon">
         <div class="center-info-container">
@@ -38,9 +39,10 @@
 
 <script>
 import FooterView from '@/views/FooterView.vue';
+import NavBar from '@/components/NavBar.vue';
 export default {
     components: {
-        FooterView
+        FooterView, NavBar
    },
    data() {
     return {
@@ -52,6 +54,16 @@ export default {
     methods: {
         handleGetStarted() {
             this.$emit('didTapGetStarted')
+        }, 
+        didSelectNavItem(navItem) {
+            console.log('navItem: ', navItem)
+            if (navItem.id === 'features') { // Template
+                this.$router.push({path: '/'})
+            } else if (navItem.id === 'pricing') { // Pricing
+                this.$router.push({path: '/pricing'})
+            } else if (navItem.id === 'about') { // About
+                this.$router.push({path: '/about'})
+            }
         }
     }
 }
@@ -283,4 +295,11 @@ export default {
     background-color: var(--color-light-yellow);
 }
 
+
+.templates-container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    background-color: white;
+}
 </style>

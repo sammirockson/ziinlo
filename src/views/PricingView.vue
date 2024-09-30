@@ -1,5 +1,6 @@
 <template>
   <div class="pricing">
+    <NavBar :selectedIndex="2" @didSelectNavItem="didSelectNavItem"/>
     <div class="top-content-view">
         <img src="../assets/right-shape.png" class="right-shape">
         <div class="center-info-container">
@@ -42,9 +43,11 @@
 
 <script>
 import FooterView from '@/views/FooterView.vue';
+import NavBar from '@/components/NavBar.vue';
+
 export default {
     components: {
-        FooterView
+        FooterView, NavBar
     },
     mounted() {
         window.scrollTo(0, 0);
@@ -100,6 +103,15 @@ export default {
                         subscription: this.subscriptionType
                     }
                 })
+        }, 
+        didSelectNavItem(navItem) {
+            if (navItem.id === 'templates') { // Template
+                this.$router.push({path: '/templates'})
+            } else if (navItem.id === 'features') { // Pricing
+                this.$router.push({path: '/'})
+            } else if (navItem.id === 'about') { // Pricing
+                this.$router.push({path: '/about'})
+            }
         }
     }
 }

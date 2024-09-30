@@ -9,6 +9,9 @@ import InvitationView from '@/views/InvitationView.vue'
 import InvoiceView from '@/components/InvoiceCreator.vue'
 import LandingPageView from '@/views/LandingPageView.vue'
 import PricingView from '@/views/PricingView.vue'
+import FeaturesView from '@/components/FeaturesView.vue'
+import TemplatesView from '@/components/TemplatesView.vue'
+import AboutView from '@/components/AboutView.vue'
 
 const routes = [
   {
@@ -20,11 +23,6 @@ const routes = [
     path: '/home',
     name: 'landing',
     component: LandingPageView
-  },
-  {
-    path: '/pricing',
-    name: 'pricing',
-    component: PricingView
   },
   {
     path: '/login/:subscription?',
@@ -42,6 +40,26 @@ const routes = [
     path: '/boards',
     name: 'boards',
     component: AllTaskboardsView
+  },
+  {
+    path: '/pricing',
+    name: 'pricing',
+    component: PricingView
+  },
+  {
+    path: '/features',
+    name: 'features',
+    component: FeaturesView
+  },
+  {
+    path: '/templates',
+    name: 'templates',
+    component: TemplatesView
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: AboutView
   },
   {
     path: '/b/:boardId',
