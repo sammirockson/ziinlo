@@ -1,36 +1,47 @@
 <template>
+  <paystack v-if="isPay"
+      :amount="amount"
+      :email="receiptEmail"
+      :paystackkey="paystackkey"
+      :reference="reference"
+      :callback="callback"
+      :close="close"
+      :embed="false"
+    >
+    </paystack>
     <form class="authContentView">
       <div class="inputFieldContainer">
         <img src="@/assets/logo.png" class="brandLogo">
         <v-text-field type="name" prepend-inner-icon="mdi-account-circle-outline" class="fullNameField" v-model="fullName" variant="outlined" label="Full Name"></v-text-field>
-            <v-text-field type="email" prepend-inner-icon="mdi-email-outline" class="emailField" v-model="email" variant="outlined" label="Email Address"></v-text-field>
+            <v-text-field type="email" prepend-inner-icon="mdi-email-outline" class="emailField" v-model="email" required variant="outlined" label="Email Address"></v-text-field>
             <v-text-field
             :type="showPassword ? 'text' : 'password'"  prepend-inner-icon="mdi-lock-outline" :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-outline'"
              @click:append-inner="viewPassword" class="passwordField"  v-model="password" label="Password" variant="outlined"></v-text-field>  
              <v-file-input label="Profile photo" class="emailField"></v-file-input>
-              <button v-if="isLogActivated" class="login buttonload">
+              <button v-if="isLogActivated" class="buttonload">
                   <i class="fa fa-circle-o-notch fa-spin"></i> Signing up... 
               </button>
-              <button v-else @click.prevent="handleSignUp"  v-on:keyup.enter="handleSignUp">Sign Up</button>
+              <button :disabled="isBtnDisabled" v-else @click.prevent="handleSignUp"  v-on:keyup.enter="handleSignUp">Sign Up</button>
               <label class="forgotTitleLabel" @click.prevent="handleLogin">Have an account? <span>Log In</span></label>
       </div>
     </form>
 </template>
 <script>
-import { BASE_URL, PICKMORE_MERCHANT_KEY, SIDE_BAR_MENU_ITEM_KEY } from '@/config';
+import paystack from '../components/paystack.vue';
 import { ref } from 'vue'
-import axios from 'axios';
-import { googleSdkLoaded } from "vue3-google-login";
-import config from '@/config';
 import CryptoJS from 'crypto-js'
-import { USER_CACHE_KEY } from '@/config'
+import { USER_CACHE_KEY, PAYSTACK_KEY, PRICING } from '@/config'
 import APIService from '@/APIService';
+import _ from 'lodash';
 
 export default {
   props: {
     isInvite: false
   },
   inject: ["cryptojs"],
+  components: {
+     paystack
+  },
   setup() {
     var email = ref("")
     var password = ref("")
@@ -40,14 +51,39 @@ export default {
     var viewPassword = ref(false)
     var fullName = ref("")
     var subscriptionType = ref('basic')
-    return { email, password, isLogActivated, showPassword, googleUser, viewPassword, fullName, subscriptionType }
+    var paystackkey = ref(PAYSTACK_KEY)
+    var amount = ref(10000)
+    var isPay = ref(false)
+    var receiptEmail = ref("receipt@ziinlo.com")
+    return { email, password, isLogActivated, showPassword, googleUser, isPay,
+         viewPassword, fullName, subscriptionType, paystackkey, amount, receiptEmail
+      }
   }, 
+  computed: {
+    reference(){
+      let text = "";
+      let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for( let i=0; i < 10; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+      return text;
+    }, 
+    isBtnDisabled() {
+      let isValidEmail = this.validateEmail(this.email)
+      return this.fullName.length === 0 || !isValidEmail || this.password.length === 0
+    }
+  },
   mounted() {
     APIService.init()
     let routeParams = this.$route.query
     this.subscriptionType = routeParams.subscription
+    let selectedPrice = _.get(PRICING, this.subscriptionType.toLowerCase(), false)
+    console.log('PRICING: ', PRICING, 'selectedPrice: ', selectedPrice)
   },
   methods: {
+    validateEmail(email) {
+      var re = /\S+@\S+\.\S+/
+     return re.test(email);
+    },
     handleLogin() {
       if (this.isInvite) {
           this.$emit("didTapNavToLogin")
@@ -58,8 +94,13 @@ export default {
     viewPassword() {
       this.showPassword = !this.showPassword
     },
-    async handleSignUp() {
-      // if subscriptionType === standard or enterprise then process payment
+    handleSignUp() {
+      this.isPay = true 
+    },
+    handleSignUpTapped() {
+      this.$emit('navToRegister', true)
+    }, 
+    async completedSignUp() {
       this.isLogActivated = true 
       var params = {
         email : this.email, 
@@ -90,13 +131,22 @@ export default {
             }
          }
       },
-      handleSignUpTapped() {
-        this.$emit('navToRegister', true)
+      callback: function(response){
+        console.log("paystack: ", response)
+        this.isPay = false 
+        if (response.status === "success" && response.message === "Approved") {
+          console.log('transaction succeeded')
+          //  0.0632034
+        }
+      },
+      close: function(){
+        this.isPay = false 
+        console.log("Payment closed")
       }
    }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .googleTitleLabel {
   font-weight: 500;
   font-size: 16px;
@@ -180,6 +230,9 @@ export default {
   background-color: var(--color-bar-dark);
   border: 0px solid transparent;
   border-radius: var(--border-radius-1);
+   &:disabled {
+    background-color: var(--color-light);
+   }
 }
 
 .inputFieldContainer {
@@ -237,4 +290,10 @@ export default {
   margin-top: 30px;
 }
 
+</style>
+
+<style> 
+.cardFormPaymentButton {
+    background-color: red;
+}
 </style>

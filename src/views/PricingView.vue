@@ -23,7 +23,7 @@
             <label class="plan-subtitle">{{ option.subTitle }}</label>
             <label class="plan-title" v-if="option.title == 'Enterprise'">---</label>
             <label class="plan-title" v-else-if="option.price == 0">Free</label>
-            <label class="plan-title" v-else-if="option.title == 'Business'">US${{option.price}}<span>/user/month</span></label>
+            <label class="plan-title" v-else-if="option.title == 'Business'">US${{option.price}}<span>/month</span></label>
             <label class="plan-title" v-else>US${{option.price}}<span>/month</span></label>
             <div class="line"></div>
             <div class="list">
@@ -33,7 +33,8 @@
                 </div>
             </div>
             <div class="line"></div>
-            <button class="signup-btn" @click="handleNavToLogin(option)">Sign up now</button>
+            <button v-if="option.id === 'enterprise'" class="signup-btn" @click="handleNavToLogin(option)">Contact Support</button>
+            <button v-else class="signup-btn" @click="handleNavToLogin(option)">Get Started</button>
           </div>
        </div>
    </div>
@@ -64,7 +65,7 @@ export default {
                     'Unlimited lists', 
                     'Unlimited cards'
                 ]}, // Free
-                {title: 'Standard', subTitle: 'For a small team of five getting started', id: 'standard', price: 10, lists: [
+                {title: 'Standard', subTitle: 'For a small team of five getting started', id: 'standard', price: 5, lists: [
                     'Team chat', 
                     'Team time tracking', 
                     'Limited to five members', 
@@ -74,12 +75,22 @@ export default {
                     'Card templates', 
                     'Private team and projects'
                 ]}, // 5 per month
-                {title: 'Enterprise', subTitle: 'Mange teams, projects and capture employee time.', id: 'business', price: 15.00, lists: [
+                {title: 'Business', subTitle: 'Mange teams, projects and capture employee time.', id: 'business', price: 15, lists: [
                     'Unlimited boards and cards',
                     'Dasbhoard', 
                     'Approvals', 
                     'Team chat', 
-                    'Team time tracking', 
+                    'Employee attendance tracking', 
+                    'Card templates', 
+                    'Custom field builder', 
+                    'Advance integrations'
+                ]},
+                {title: 'Enterprise', subTitle: 'Mange teams, projects and capture employee time.', id: 'enterprise', price: 100.00, lists: [
+                    'Unlimited boards and cards',
+                    'Dasbhoard', 
+                    'Approvals', 
+                    'Team chat', 
+                    'Employee attendance tracking', 
                     'Card templates', 
                     'Custom field builder', 
                     'Advance integrations'
@@ -93,8 +104,7 @@ export default {
         handleNavToLogin(option) {
             console.log('option: ', option)
             this.subscriptionType = option.title.toLowerCase()
-            // let path = "/login/" + this.subscriptionType
-            // this.$router.push({path: path})
+            // this.$router.push({path: '/pay'})
              let path = "/login"
             this.$router.push(
                 {

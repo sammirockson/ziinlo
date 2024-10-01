@@ -12,6 +12,7 @@ import PricingView from '@/views/PricingView.vue'
 import FeaturesView from '@/components/FeaturesView.vue'
 import TemplatesView from '@/components/TemplatesView.vue'
 import AboutView from '@/components/AboutView.vue'
+import PaymentView from '@/components/PaymentView.vue'
 
 const routes = [
   {
@@ -60,6 +61,11 @@ const routes = [
     path: '/about',
     name: 'about',
     component: AboutView
+  },
+  {
+    path: '/pay',
+    name: 'pay',
+    component: PaymentView
   },
   {
     path: '/b/:boardId',
