@@ -293,7 +293,7 @@ export default {
 </style>
 
 <style> 
-.cardFormPaymentButton {
+.cardFormPaymentButton, .button {
     background-color: red;
 }
 </style>

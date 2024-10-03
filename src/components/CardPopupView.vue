@@ -286,9 +286,11 @@ export default {
         var cardMembers = this.card.members
         let userid = this.currentUser.id
         let memberFilter = cardMembers.filter(member => member === userid)
+        var isJoin = true 
         if (memberFilter.length > 0) {
             // remove
             cardMembers = cardMembers.filter(member => member != userid)
+            isJoin = false 
          } else {
             cardMembers.push(userid)
          }                              
@@ -296,7 +298,8 @@ export default {
          let params = {
             card_id: this.card._id, 
             members: cardMembers, 
-            currentUserId: userid
+            currentUserId: userid, 
+            isJoin: isJoin
          }
           await APIService.updateCardMembership(params)
           this.getCardBy(this.card._id)
