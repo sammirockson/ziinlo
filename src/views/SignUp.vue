@@ -52,7 +52,7 @@ export default {
     var fullName = ref("")
     var subscriptionType = ref('basic')
     var paystackkey = ref(PAYSTACK_KEY)
-    var amount = ref(10000)
+    var amount = ref(12600)
     var isPay = ref(false)
     var receiptEmail = ref("receipt@ziinlo.com")
     var userId = ref('')
@@ -115,6 +115,7 @@ export default {
         subscriptionType: this.subscriptionType,
         id: Date.now()
       }
+      this.receiptEmail = this.email
       let userInfo = await APIService.signUp(params)
       if (userInfo.token.length > 0) {
           let token = userInfo.token

@@ -69,7 +69,7 @@ export default {
     var subscriptionType = ref('basic')
     var isPay = ref(false)
     var paystackkey = ref(PAYSTACK_KEY)
-    var amount = ref(10000)
+    var amount = ref(12600)
     var userId = ref('')
     var receiptEmail = ref("receipt@ziinlo.com")
     return { 
@@ -199,7 +199,7 @@ export default {
         isViaGoogle: true,
         id: Date.now()
       }
-
+      this.receiptEmail = gUser.email
       let fullURL = BASE_URL + "auth/googleAuth"
       await axios.post(fullURL, params).then((response) => {
         if (response.data != null) {
