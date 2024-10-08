@@ -1,5 +1,15 @@
 <template>
     <div class="authContentView">
+      <paystack v-if="isPay"
+      :amount="amount"
+      :email="receiptEmail"
+      :paystackkey="paystackkey"
+      :reference="reference"
+      :callback="callback"
+      :close="close"
+      :embed="false"
+    >
+    </paystack>
       <div class="inputFieldContainer">
         <img src="@/assets/logo.png" class="brandLogo">
             <v-text-field type="email" prepend-inner-icon="mdi-email-outline" class="emailField" v-model="email" variant="outlined" label="Email Address"></v-text-field>
@@ -33,8 +43,10 @@ import axios from 'axios';
 import { googleSdkLoaded } from "vue3-google-login";
 import config from '@/config';
 import CryptoJS from 'crypto-js'
-import { USER_CACHE_KEY } from '@/config'
+import { USER_CACHE_KEY, PAYSTACK_KEY, PRICING } from '@/config'
 import APIService from '@/APIService';
+import paystack from '../components/paystack.vue';
+
 
 export default {
   props: {
@@ -44,6 +56,9 @@ export default {
     }
   },
   inject: ["cryptojs"],
+  components: {
+     paystack
+  },
   setup() {
     var email = ref("")
     var password = ref("")
@@ -52,12 +67,36 @@ export default {
     var googleUser = ref(null)
     var viewPassword = ref(false)
     var subscriptionType = ref('basic')
-    return { email, password, isLogActivated, showPassword, googleUser, viewPassword, subscriptionType }
+    var isPay = ref(false)
+    var paystackkey = ref(PAYSTACK_KEY)
+    var amount = ref(10000)
+    var userId = ref('')
+    var receiptEmail = ref("receipt@ziinlo.com")
+    return { 
+      email, password, isLogActivated, showPassword, googleUser, receiptEmail,
+      viewPassword, subscriptionType, isPay, paystackkey, amount, userId 
+    }
+  },
+  computed: {
+    reference(){
+      let text = "";
+      let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for( let i=0; i < 10; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+      return text;
+    }
   },
   mounted() {
     APIService.init()
     let routeParams = this.$route.query
-    this.subscriptionType = routeParams.subscription
+    console.log('query: ', routeParams.subscription)
+    this.subscriptionType = _.get(routeParams, 'subscription', false) 
+    if (this.subscriptionType !== false) {
+      let selectedPrice = _.get(PRICING, this.subscriptionType.toLowerCase(), false)
+      console.log('PRICING: ', PRICING, 'selectedPrice: ', selectedPrice)
+    }
+   
+    // TODO: Compute the price from cedis to dollars
   },
   methods: {
       handleNavToSignUp() {
@@ -86,7 +125,6 @@ export default {
           }
 
         let userInfo = await APIService.login(params)
-        console.log("userInfo login info: ", userInfo)
         if (userInfo.token.length > 0) {
           userInfo.password = ""
           let token = userInfo.token
@@ -158,8 +196,7 @@ export default {
         password: gUser.sub, 
         picture: gUser.picture, 
         isEmailVerified: gUser.email_verified,
-        isViaGoogle: true, 
-        subscriptionType: this.subscriptionType,
+        isViaGoogle: true,
         id: Date.now()
       }
 
@@ -179,21 +216,48 @@ export default {
         })
     }, 
      encryptAndNavigate(gUserInfo, token) {
+      this.userId = gUserInfo.user._id
         let userDataStr = JSON.stringify(gUserInfo)
         let encyrptedUserData = CryptoJS.AES.encrypt(userDataStr, token).toString()
         let cacheData = {
             token: token, 
             user: encyrptedUserData
         }
-        console.log("encrypted data: ", cacheData)
+        console.log("gUserInfo data: ", gUserInfo, 'isValid: ', (gUserInfo.isNewUser && (this.subscriptionType === 'standard' || this.subscriptionType === 'business')), 'subscription: ', this.subscriptionType)
         localStorage.removeItem(USER_CACHE_KEY)
         localStorage.setItem(USER_CACHE_KEY, JSON.stringify(cacheData))
-        if (this.isInvite) {
-          this.$emit("didLogIn", gUserInfo)
+        if (gUserInfo.isNewUser && (this.subscriptionType === 'standard' || this.subscriptionType === 'business')) {
+          this.isPay = true 
+        } else if (this.isInvite) {
+          this.$emit("didLogIn", gUserInfo.user)
         } else {
           this.$router.push({path: "/boards"})
         }
-     }
+     }, 
+     callback: function(response){
+        console.log("paystack: ", response)
+        this.isPay = false 
+        if (response.status === "success" && response.message === "Approved") {
+          console.log('transaction succeeded')
+          // Update user subscription type before going home
+           this.updateSubscription()
+        } else {
+          this.$router.push({path: "/"})
+        }
+      },
+      close: function(){
+        this.isPay = false 
+        console.log("Payment closed")
+    },
+     async updateSubscription() {
+        let param = {
+          userId: this.userId, 
+          subscriptionType: this.subscriptionType
+        }
+        console.log('update params: ', param)
+        await APIService.updateSubscription(param)
+        this.$router.push({path: "/boards"})
+      }
    }
 }
 </script>

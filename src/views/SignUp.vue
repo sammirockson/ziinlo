@@ -1,5 +1,6 @@
 <template>
-  <paystack v-if="isPay"
+    <form class="authContentView">
+      <paystack v-if="isPay"
       :amount="amount"
       :email="receiptEmail"
       :paystackkey="paystackkey"
@@ -9,7 +10,6 @@
       :embed="false"
     >
     </paystack>
-    <form class="authContentView">
       <div class="inputFieldContainer">
         <img src="@/assets/logo.png" class="brandLogo">
         <v-text-field type="name" prepend-inner-icon="mdi-account-circle-outline" class="fullNameField" v-model="fullName" variant="outlined" label="Full Name"></v-text-field>
@@ -55,7 +55,8 @@ export default {
     var amount = ref(10000)
     var isPay = ref(false)
     var receiptEmail = ref("receipt@ziinlo.com")
-    return { email, password, isLogActivated, showPassword, googleUser, isPay,
+    var userId = ref('')
+    return { email, password, isLogActivated, showPassword, googleUser, isPay, userId,
          viewPassword, fullName, subscriptionType, paystackkey, amount, receiptEmail
       }
   }, 
@@ -75,9 +76,12 @@ export default {
   mounted() {
     APIService.init()
     let routeParams = this.$route.query
-    this.subscriptionType = routeParams.subscription
-    let selectedPrice = _.get(PRICING, this.subscriptionType.toLowerCase(), false)
-    console.log('PRICING: ', PRICING, 'selectedPrice: ', selectedPrice)
+    this.subscriptionType = _.get(routeParams, 'subscription', false) 
+    if (this.subscriptionType !== false) {
+      let selectedPrice = _.get(PRICING, this.subscriptionType.toLowerCase(), false)
+      console.log('PRICING: ', PRICING, 'selectedPrice: ', selectedPrice)
+    }
+    // TODO: Compute the price from cedis to dollars
   },
   methods: {
     validateEmail(email) {
@@ -95,7 +99,7 @@ export default {
       this.showPassword = !this.showPassword
     },
     handleSignUp() {
-      this.isPay = true 
+      this.completedSignUp()
     },
     handleSignUpTapped() {
       this.$emit('navToRegister', true)
@@ -112,31 +116,43 @@ export default {
         id: Date.now()
       }
       let userInfo = await APIService.signUp(params)
-      console.log("userInfo singup info: ", userInfo)
       if (userInfo.token.length > 0) {
           let token = userInfo.token
+            this.userId = userInfo.user._id
             let userDataStr = JSON.stringify(userInfo)
             let encyrptedUserData = CryptoJS.AES.encrypt(userDataStr, token).toString()
             let cacheData = {
               token: token, 
               user: encyrptedUserData
             }
-            console.log("encrypted data: ", cacheData)
             localStorage.removeItem(USER_CACHE_KEY)
             localStorage.setItem(USER_CACHE_KEY, JSON.stringify(cacheData))
-            if (this.isInvite) {
+            if (this.subscriptionType === 'standard' || this.subscriptionType === 'business') {
+              this.isPay = true 
+            } else if (this.isInvite) { 
               this.$emit("didSignUp", userInfo.user)
             } else {
               this.$router.push({path: "/"})
             }
          }
       },
+      async updateSubscription() {
+        let param = {
+          userId: this.userId, 
+          subscriptionType: this.subscriptionType
+        }
+        await APIService.updateSubscription(param)
+        this.$router.push({path: "/"})
+      },
       callback: function(response){
         console.log("paystack: ", response)
         this.isPay = false 
         if (response.status === "success" && response.message === "Approved") {
           console.log('transaction succeeded')
-          //  0.0632034
+          // Update user subscription type before going home
+           this.updateSubscription()
+        } else {
+          this.$router.push({path: "/"})
         }
       },
       close: function(){

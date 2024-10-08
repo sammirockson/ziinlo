@@ -65,7 +65,7 @@ export default {
                     'Unlimited lists', 
                     'Unlimited cards'
                 ]}, // Free
-                {title: 'Standard', subTitle: 'For a small team of five getting started', id: 'standard', price: 5, lists: [
+                {title: 'Standard', subTitle: 'For a small team of five getting started', id: 'standard', price: 8, lists: [
                     'Team chat', 
                     'Team time tracking', 
                     'Limited to five members', 

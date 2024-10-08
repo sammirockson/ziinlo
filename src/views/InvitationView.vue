@@ -28,7 +28,6 @@ import SignUpView from '@/views/SignUp.vue'
 import APIService from '@/APIService';
 import CryptoJS from 'crypto-js'
 import { USER_CACHE_KEY } from '@/config'
-// http://localhost:8080/invitation/b/1724072881650/i/66a6f66276e1d70286f59bec
 export default {
     inject: ["cryptojs"],
     components: {
