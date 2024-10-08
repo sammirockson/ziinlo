@@ -9,7 +9,7 @@
                 <a href="#" :class="{ active: index === selectedIndex}">{{ item.title }}</a>
             </div>
         </div>
-        <button class="contact-us">Contact Us</button>
+        <button class="contact-us" @click.prevent="handleContactUs" :class="{'is-visible': isContactVisible}">Contact Us</button>
     </div> 
 </template>
 
@@ -19,6 +19,10 @@ export default {
         selectedIndex: {
             type: Number, 
             default: 0
+        }, 
+        isContactVisible: {
+            type: Boolean, 
+            default: true
         }
     },
     data() {
@@ -34,6 +38,9 @@ export default {
     methods: {
         handleNavTapped(navItem) {
             this.$emit('didSelectNavItem', navItem)
+        }, 
+        handleContactUs() {
+            this.$emit('onContactUs')
         }
     }
 }
@@ -89,5 +96,11 @@ export default {
     padding-left: 50px;
     padding-right: 50px;
     align-items: center;
+    button {
+        opacity: 0;
+        &.is-visible {
+            opacity: 1;
+        }
+    }
 }
 </style>
