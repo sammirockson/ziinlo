@@ -14,7 +14,7 @@
           </v-col>
         </v-row>
        </div>
-      <v-overlay  v-model="isCreateBoard" class="align-center justify-center" contained>
+      <v-overlay  v-model="isCreateBoard" :persistent="isPeristent" class="align-center justify-center" contained>
         <CreateNewBoardView @closeOverlay="onCloseOverlay"/>
      </v-overlay>
     </div>
@@ -37,17 +37,13 @@ export default {
         var boards = ref([])
         var currentUser = ref({})
         var isCreateBoard = ref(false)
-        return { isSideBarExpanded, boards, selectedTaskBoardType, currentUser, isCreateBoard}
-    },
-    mounted() {
-      this.$gtag.event('All Boards', {
-          'event_category': 'board',
-          'event_label': 'All boards mounted',
-          'value': 1
-      })
+        var isPeristent = ref(false)
+        return { isSideBarExpanded, boards, selectedTaskBoardType, currentUser, isCreateBoard, isPeristent}
     },
     methods: {
       onCloseOverlay() {
+        this.isCreateBoard = false 
+        this.isPeristent = false 
         this.fetchBoards()
       },
       onPrepareToCreateBoard() {
@@ -90,12 +86,21 @@ export default {
                 let allBoard = data.resp
                 console.log("boards: ", allBoard)
                 this.boards = allBoard
+                if (allBoard.length === 0) {
+                  this.isPeristent = true 
+                  this.isCreateBoard = true 
+                }
               }
              }
           })
         }
     },
     mounted() {
+      this.$gtag.event('All Boards', {
+          'event_category': 'board',
+          'event_label': 'All boards mounted',
+          'value': 1
+      })
       this.handleMount()
     } 
 }

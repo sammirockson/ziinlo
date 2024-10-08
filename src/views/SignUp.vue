@@ -158,7 +158,7 @@ export default {
       },
       close: function(){
         this.isPay = false 
-        console.log("Payment closed")
+        this.$router.push({path: "/"})
       }
    }
 }
