@@ -14,14 +14,14 @@
    </div>
    <div class="project-snapshot">
          <div class="snap-bg">
-            <img src="../assets/mockshot.png" class="snpshot">
+            <img src="../assets/mockshot.svg" class="snpshot">
          </div>
     </div>
     <div class="complex-work">
         <label for="">Manage Teams and Complex <br> Projects With Ease</label>
         <div class="img-showcase">
-            <img src="../assets/board-showcase.jpeg" class="board-showcase">
-            <img src="../assets/file-detail.jpeg" class="card-detail-showcase">
+            <img src="../assets/board-showcase.svg" class="board-showcase">
+            <img src="../assets/file-detail.svg" class="card-detail-showcase">
         </div>
     </div>
     <div class="simplify-workflow">
@@ -160,7 +160,8 @@ export default {
     font-size: 34px;
     margin-top: 20px;
 }
-.img-showcase:first-child,.img-showcase:last-child {
+.img-showcase:first-child,
+.img-showcase:last-child {
     object-fit: contain;
     height: 500px;
     overflow: hidden;
