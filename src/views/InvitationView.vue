@@ -40,7 +40,8 @@ export default {
         var isAuth = ref(false)
         var isLogin = ref(true)
         var currentUser = ref({})
-        return { inviter, board, isAuth, isLogin, currentUser}
+        var inviterId = ref('')
+        return { inviter, board, isAuth, isLogin, currentUser, inviterId}
     }, 
     mounted() {
         APIService.init()
@@ -48,6 +49,7 @@ export default {
         console.log("invitation params: ", routeParams)
         let boardId = routeParams.boardId
         let inviterId = routeParams.inviter
+        this.inviterId = inviterId
         this.getInviteInfo(boardId, inviterId)
     }, 
    methods: {
@@ -90,7 +92,8 @@ export default {
       if (this.currentUser.id.length > 0) { 
         var params = {
           boardId: this.board.id,
-          inviteeId: this.currentUser.id
+          inviteeId: this.currentUser.id, 
+          inviterId: this.inviterId
        }
        console.log("confirm invitation params: ", params)
        let resp = await APIService.confirmInvitation(params)

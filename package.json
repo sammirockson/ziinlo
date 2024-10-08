@@ -50,7 +50,7 @@
     "@types/vue2-editor": "^2.6.5",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
+    "@vue/cli-service": "~5.0.8",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.40",
     "sass": "^1.77.8",
