@@ -45,7 +45,6 @@ export default {
     mounted() {
         APIService.init()
         let routeParams = this.$route.params
-        console.log("invitation params: ", routeParams)
         let boardId = routeParams.boardId
         let inviterId = routeParams.inviter
         this.inviterId = inviterId
@@ -69,7 +68,6 @@ export default {
        }
 
        let resp = await APIService.getInvitationInfo(params)
-       console.log("inviter resp: ", resp)
        this.inviter = resp.inviter
        this.board = resp.board
        let userCacheString = localStorage.getItem(USER_CACHE_KEY)
@@ -94,9 +92,7 @@ export default {
           inviteeId: this.currentUser.id, 
           inviterId: this.inviterId
        }
-       console.log("confirm invitation params: ", params)
        let resp = await APIService.confirmInvitation(params)
-       console.log("confirm invitation: ", resp)
        if (resp._id != null && resp._id.length > 0) {
          // go to the boards
          this.$router.push({path: "/boards"})

@@ -34,7 +34,6 @@ export default {
             let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
             let cacheInfoObject = JSON.parse(decryptedData)
             this.currentUser = cacheInfoObject.user
-            console.log("currentUser: ", this.currentUser)
         }
     },
     methods: {
@@ -47,15 +46,12 @@ export default {
                 id: Date.now()
             }
             var fullURL = BASE_URL + "board/new"
-            console.log("full url: ", fullURL, "params: ", params)
             await axios.post(fullURL, params).then((response) => {
               this.isCreatingBoard = false
-              console.log("board response: ", response)
               if (response.data != null) {
                 let data = response.data
                 if (data.statusCode == 200) {
                     let board = data.resp
-                    console.log("board: ", board)
                     // Go to boards
                     this.$emit('closeOverlay', true)
                     this.$router.push({path: "/boards"})

@@ -68,6 +68,11 @@
                     <button class="saveDescriptionBtn" @click="handleSaveDescription">Save</button>
                     <button class="canelDescripBtn" @click="handleCancelDescEditing">Cancel</button>
                 </div>
+
+                <div class="checklist-container">
+                    <CheckListView class="checklist-view" v-for="checklist in cardCheckLists" :key="checklist.id" :checklist="checklist" @onAddListItem="onAddListItem"/> 
+                </div>
+
                 <label class="attachmentsTitleLabel" v-if=" this.attachments.length > 0">Attachments</label>
                 <div class="attachmentListView">
                     <div class="attachmentCell" v-for="(attachment, index) in this.attachments" :key="index" @click="handleFileBrowserTapped(attachment)">
@@ -119,7 +124,7 @@
                  <ButtonCard imageIcon="duedate.png" title="Due Date"/>
                </template>
              </date-picker>
-             <ButtonCard imageIcon="poll.png" title="Poll"/>
+             <!-- <ButtonCard imageIcon="poll.png" title="Poll"/> -->
              <ButtonCard imageIcon="checklist.png" title="Checklist" @click="handleCheckListTapped"/>
              <ButtonCard imageIcon="fileAttachment.png" title="Attachments" @click="handleAttachmentTapped"/>
              <label class="memberLabel">Connect</label>
@@ -143,7 +148,7 @@
         </v-overlay>
 
         <v-overlay v-model="isCheckListTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" contained>
-            <AddCheckListView :card="this.card._id" class="attachmentContainerView" @fileUploadComplete="handleDidUploadFile"/>
+            <AddCheckListView :card="this.card._id" class="attachmentContainerView" @fileUploadComplete="handleDidUploadFile" :cardId="this.card._id"/>
         </v-overlay>
 
         <v-overlay v-model="isShowFileView" class="align-center justify-center overLayContainer" contained>
@@ -170,6 +175,7 @@ import AssignOverlayView from './AssignOverlayView.vue';
 
 import ButtonCard from '@/components/ButtonCard.vue'
 import DescriptionViewFrom from '@/components/DescriptionViewForm.vue'
+import CheckListView from './CheckListView.vue';
 
 import TagContainerView from '@/components/TagContainerView.vue';
 import TextEditorView from '@/components/TextEditorView.vue'
@@ -195,7 +201,7 @@ import APIService from '@/APIService'
 export default {
   inject: ["cryptojs"],
   components: {
-    PopupOverlay, TextEditorView, AttachmentView, VTimePicker, VueEditor, AssigneeView, CommentEditorView, MemberOverlayView, AssignOverlayView,
+    PopupOverlay, TextEditorView, AttachmentView, VTimePicker, VueEditor, AssigneeView, CommentEditorView, MemberOverlayView, AssignOverlayView, CheckListView,
     PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView, AddCheckListView, Editor, DescriptionEditor, ReadOnlyEditor
   },
   setup() {
@@ -232,10 +238,11 @@ export default {
     var allCardComments = ref([])
     var assignees = ref([])
     var assigneeIds = ref([])
+    var cardCheckLists = ref([])
     return { 
           members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names, commentEditorHeight, descEditorHeight, selectedAttachment,
           currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment, isMemberCardVisible, isCheckListTapped, 
-          isDescReadonly, comment, allCardComments, isAssign, assignees, assigneeIds
+          isDescReadonly, comment, allCardComments, isAssign, assignees, assigneeIds, cardCheckLists
         }
     },
     async mounted() {
@@ -244,17 +251,25 @@ export default {
     created() {
       // fetch from api
       let routeParams = this.$route.params
-      console.log("pop up params: ", routeParams)
       this.getUserInfo()
       this.boardId = routeParams.boardId
       let card_id = routeParams.cardId
       this.getCardBy(card_id)
     },
     methods: {
-        onAssignMembers(assignees, assigneeIds) {
-            this.assignees = assignees
-            this.assigneeIds = assigneeIds
+        async onAddListItem(listItem, checkListId) {
+            let checklistIndex = _.findIndex(this.cardCheckLists, function(o) { return o._id === checkListId });
+            this.cardCheckLists[checklistIndex].lists.push(listItem)
+            let params = {
+                checkListId: checkListId, 
+                lists: this.cardCheckLists[checklistIndex].lists
+            }
+            await APIService.updateChecklist(params)
         },
+    onAssignMembers(assignees, assigneeIds) {
+        this.assignees = assignees
+        this.assigneeIds = assigneeIds
+    },
     handleAssign() {
         this.isAssign = true 
     },
@@ -347,7 +362,6 @@ export default {
          await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
              let data = response.data
-             console.log("tag resp data: ", data)
             }
           })
         }, 
@@ -444,6 +458,7 @@ export default {
         await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
             let data = response.data
+            console.log('card detail: ', data)
             if (data.statusCode == 200) {
                 let resp = data.resp
                 if (resp != null) {
@@ -452,6 +467,7 @@ export default {
                    this.cardTags = resp.tags
                    this.attachments = resp.attachments
                    this.members = resp.members
+                   this.cardCheckLists = resp.checklist
                    if (this.currentUser != null) {
                     let memberFilter = this.members.filter(member => member.id === this.currentUser.id)
                     this.members.push({'fullName': memberFilter.length > 0 ? 'Leave' : 'Join', '_id': 'joinRemove'})
@@ -501,11 +517,9 @@ export default {
             this.fetchTags()
         },
         handleTagTapped() {
-            console.log("Tags tapped")
             this.isTagTapped = true 
         },
         expandAll() {
-            console.log("finally updated...")
         },
         getUserInfo() {
             let userCacheString = localStorage.getItem(USER_CACHE_KEY)
@@ -547,8 +561,7 @@ export default {
            let minute = curentDate.getMinutes()
            this.time = hour.toString() + ":" + minute.toString()
         }, 
-        selectedDate(newVal, oldVal) {
-        }
+        selectedDate(newVal, oldVal) {}
     }
 }
 </script>

@@ -79,7 +79,6 @@ export default {
     this.subscriptionType = _.get(routeParams, 'subscription', false) 
     if (this.subscriptionType !== false) {
       let selectedPrice = _.get(PRICING, this.subscriptionType.toLowerCase(), false)
-      console.log('PRICING: ', PRICING, 'selectedPrice: ', selectedPrice)
     }
     // TODO: Compute the price from cedis to dollars
   },
@@ -135,6 +134,8 @@ export default {
             } else {
               this.$router.push({path: "/"})
             }
+         } else {
+          alert(userInfo.msg)
          }
       },
       async updateSubscription() {
@@ -146,10 +147,8 @@ export default {
         this.$router.push({path: "/"})
       },
       callback: function(response){
-        console.log("paystack: ", response)
         this.isPay = false 
         if (response.status === "success" && response.message === "Approved") {
-          console.log('transaction succeeded')
           // Update user subscription type before going home
            this.updateSubscription()
         } else {

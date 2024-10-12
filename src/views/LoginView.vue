@@ -89,11 +89,9 @@ export default {
   mounted() {
     APIService.init()
     let routeParams = this.$route.query
-    console.log('query: ', routeParams.subscription)
     this.subscriptionType = _.get(routeParams, 'subscription', false) 
     if (this.subscriptionType !== false) {
       let selectedPrice = _.get(PRICING, this.subscriptionType.toLowerCase(), false)
-      console.log('PRICING: ', PRICING, 'selectedPrice: ', selectedPrice)
     }
    
     // TODO: Compute the price from cedis to dollars
@@ -223,7 +221,6 @@ export default {
             token: token, 
             user: encyrptedUserData
         }
-        console.log("gUserInfo data: ", gUserInfo, 'isValid: ', (gUserInfo.isNewUser && (this.subscriptionType === 'standard' || this.subscriptionType === 'business')), 'subscription: ', this.subscriptionType)
         localStorage.removeItem(USER_CACHE_KEY)
         localStorage.setItem(USER_CACHE_KEY, JSON.stringify(cacheData))
         if (gUserInfo.isNewUser && (this.subscriptionType === 'standard' || this.subscriptionType === 'business')) {
@@ -235,10 +232,8 @@ export default {
         }
      }, 
      callback: function(response){
-        console.log("paystack: ", response)
         this.isPay = false 
         if (response.status === "success" && response.message === "Approved") {
-          console.log('transaction succeeded')
           // Update user subscription type before going home
            this.updateSubscription()
         } else {
@@ -254,7 +249,6 @@ export default {
           userId: this.userId, 
           subscriptionType: this.subscriptionType
         }
-        console.log('update params: ', param)
         await APIService.updateSubscription(param)
         this.$router.push({path: "/boards"})
       }

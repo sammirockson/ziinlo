@@ -26,6 +26,15 @@ class APIService {
       await this.baseRequest("board/addDescriptionToCard", params)
     }
 
+    async updateChecklist(params) {
+        let path = "board/updateCardChecklist"
+        return await this.baseRequest(path, params)
+    }
+
+    async createNewChecklist(params) {
+        let path = "board/addCheckList"
+        return await this.baseRequest(path, params)
+    }
     
     async updateSubscription(params) {
         let path = "auth/updateSubscription"
@@ -102,7 +111,6 @@ class APIService {
             let fullURL = BASE_URL + path
             const response = await fetch(fullURL, options)
             let jsonResp = await response.json()
-            console.log('apiservice resp: ', jsonResp)
             return jsonResp.resp
         } catch (err) {
             console.log("error occurred: ", err)

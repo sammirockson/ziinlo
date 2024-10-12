@@ -1,6 +1,7 @@
 <template>
     <div class="boardNavItems">
     <div class="leftContentView">
+        <img src="../assets/menu_icon.png" class="menu-icon">
        <label class="boardNameLabel">{{ boardName }}</label>
        <div class="taskNotificationContainer">
             <button @click="handleCreateBoard()">       
@@ -42,6 +43,7 @@ import { ref } from 'vue'
 import APIService from '@/APIService';
 import MemberOverlayView from './MemberOverlayView.vue';
 import CreateNewBoardView from './CreateNewBoardView.vue'
+import SideBarView from './SideBarView.vue';
 export default {
     props: {
         boardName: {
@@ -50,7 +52,7 @@ export default {
         }
     },
     components: {
-        MemberOverlayView, CreateNewBoardView
+        MemberOverlayView, CreateNewBoardView, SideBarView
     },
     setup() {
         var isMemberVisible = ref(false)
@@ -69,7 +71,6 @@ export default {
             this.$emit('handleSearchBoard', this.searchText)
         },
         handleCloseOverlay() {
-            console.log("is overlay closed")
             this.isCreateBoard = false 
         },
         handleCreateBoard() {
@@ -103,12 +104,10 @@ export default {
         let params = {
             boardId: routeParams.boardId
          }
-         console.log('fetchMembers params: ', params)
          let allMembers = await APIService.getBoardMembers(params)
          if (allMembers != null) {
             this.remainingCount = allMembers.length - 5
             this.members = allMembers.slice(0, 5);
-           console.log("allMembers: ", allMembers)
          }
         },
         handleShowMembers() {
@@ -121,6 +120,10 @@ export default {
 }
 </script>
 <style scoped>
+.menu-icon {
+    width: 32px;
+    height: 32px;
+}
 .profileImage {    
     height: 40px;
     width: 40px;

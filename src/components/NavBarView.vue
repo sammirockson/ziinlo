@@ -1,5 +1,6 @@
 <template>
     <div class="navBar">
+        <!-- <SideBarView class="sideBar" @handleMenuTapped="handleChangeContainer" :cachedMenuKey="this.containerType" :isExpanded="this.isExpanded" :style="{width: isExpanded ? '250px' : '90px'}"/> -->
        <div class="searchContainer">
         <!-- <v-autocomplete
               :items="searchHistory"
@@ -32,10 +33,11 @@
 </template>
 <script>
 import CreateNewBoardView from '@/components/CreateNewBoardView.vue'
+import SideBarView from '@/components/SideBarView.vue'
 import { ref } from 'vue'
 export default {
     components: {
-        CreateNewBoardView
+        CreateNewBoardView, SideBarView
     },
     props: ["isExpanded"],
     setup() {
@@ -47,7 +49,6 @@ export default {
     }, 
     methods: {
         handleCloseOverlay() {
-            console.log("is overlay closed")
             this.isCreateBoard = false 
         },
         handleCreateBoard() {

@@ -102,7 +102,6 @@ export default {
     },
     methods: {
         handleNavToLogin(option) {
-            console.log('option: ', option)
             this.subscriptionType = option.title.toLowerCase()
             // this.$router.push({path: '/pay'})
              let path = "/login"

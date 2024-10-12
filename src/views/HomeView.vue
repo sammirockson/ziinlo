@@ -49,7 +49,6 @@ export default {
     //    }
     // }, 
     handleChangeContainer(menuId) {
-      console.log("menuId: ", menuId)
       this.containerType = menuId
       // this.isExpanded = menuId != "board" 
     //     .sideBar {

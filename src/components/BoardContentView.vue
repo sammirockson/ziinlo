@@ -249,7 +249,6 @@ export default {
 
       if (e.moved != null) { // moved: moved within the same list
         let listId = e.moved.element.listId
-        console.log("moved: ", e.moved.element, "listId: ", listId)
         let listIndex = this.board.lists.findIndex(x => x.id === listId);
         let list = this.board.lists[listIndex]
         let list_id = list._id
@@ -375,7 +374,6 @@ export default {
             }, 500)
         }, 
      async getBoardBy(boardId) {
-        console.log("my current current current current user: ", this.currentUser)
         if (this.currentUser == null) {
             this.$router.push({path: '/home'}) 
         } else {
@@ -387,7 +385,6 @@ export default {
         let boardResp = await APIService.getBoardById(params)
         let apiBoard = boardResp.board
         this.allBoardTags = boardResp.tags
-        console.log("apiBoard apiBoard apiBoard: ", apiBoard)
         if (apiBoard === undefined) {
             console.log('go home because undefined', apiBoard)
             this.$router.push({path: '/boards'}) 
@@ -450,7 +447,6 @@ export default {
     mounted() {
         APIService.init()
         let routeParams = this.$route.params
-        console.log("main routeParams: ", routeParams)
        let userCacheString = localStorage.getItem(USER_CACHE_KEY)
        if (userCacheString != null && userCacheString.length > 0) {
         let userCache = JSON.parse(userCacheString)
