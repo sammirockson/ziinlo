@@ -9,8 +9,8 @@
      </div>
      <v-progress-linear :model-value="progress" rounded="lg"></v-progress-linear>
      <div class="list-view">
-        <div class="list-cell" v-for="list in checklist.lists">
-            <v-checkbox v-model="list.isChecked"></v-checkbox>
+        <div class="list-cell" v-for="(list, index) in checklist.lists">
+            <v-checkbox v-model="checklist.lists[index].isChecked" @click="onCheckboxClicked($event)"></v-checkbox>
             <label for="">{{ list.name }}</label>
         </div>
      </div>
@@ -40,6 +40,9 @@ export default {
         }
     }, 
     methods: {
+        onCheckboxClicked() {
+            this.$emit('onListChecked', this.checklist)
+        },
         handleSaveItem() {
             let listItem = {
                 isChecked: false,

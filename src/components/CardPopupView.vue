@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="checklist-container">
-                    <CheckListView class="checklist-view" v-for="checklist in cardCheckLists" :key="checklist.id" :checklist="checklist" @onAddListItem="onAddListItem"/> 
+                    <CheckListView class="checklist-view" v-for="checklist in cardCheckLists" :key="checklist.id" :checklist="checklist" @onAddListItem="onAddListItem" @onListChecked="onListChecked"/> 
                 </div>
 
                 <label class="attachmentsTitleLabel" v-if=" this.attachments.length > 0">Attachments</label>
@@ -257,6 +257,15 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
+        async onListChecked(checklist) {
+            let checklistIndex = _.findIndex(this.cardCheckLists, function(o) { return o._id === checklist._id });
+            this.cardCheckLists[checklistIndex].lists = checklist.lists
+            let params = {
+                checkListId: checklist._id, 
+                lists: checklist.lists
+            }
+            await APIService.updateChecklist(params)
+        },
         async onAddListItem(listItem, checkListId) {
             let checklistIndex = _.findIndex(this.cardCheckLists, function(o) { return o._id === checkListId });
             this.cardCheckLists[checklistIndex].lists.push(listItem)
