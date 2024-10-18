@@ -112,12 +112,12 @@
              <label class="seeMoreMembersLabel" v-if="members.length > 8">See more</label>
 
 
-             <label class="memberLabel">Action</label>
-             <ButtonCard imageIcon="priority.png" title="Priority level"/>
+             <!-- <label class="memberLabel">Action</label> -->
+             <label class="memberLabel">Manage</label>
+             <!-- <ButtonCard imageIcon="priority.png" title="Priority level"/> -->
              <ButtonCard imageIcon="assignee.png" title="Assign" @click="handleAssign"/>
              <ButtonCard imageIcon="move.png" title="Move"/>
 
-             <label class="memberLabel">Manage</label>
              <ButtonCard imageIcon="tags.png" title="Tags" @click="handleTagTapped"/>
              <date-picker v-model="selectedDate" @update:model-value="handleSaveDate"  time-picker-inline >
                <template #trigger>
@@ -129,9 +129,8 @@
              <ButtonCard imageIcon="fileAttachment.png" title="Attachments" @click="handleAttachmentTapped"/>
              <label class="memberLabel">Connect</label>
              <ButtonCard imageIcon="share.png" title="Share"/>
-             <ButtonCard imageIcon="copyTemplate.png" title="Copy URL"/>
              <label class="memberLabel">Archive</label>
-             <ButtonCard imageIcon="archive.png" title="Delete"/>
+             <ButtonCard imageIcon="archive.png" title="Delete" @click="handleDeleteCard"/>
              </div>
         </div>
 
@@ -159,7 +158,27 @@
            <div class="memberCarView">
            </div>
        </v-overlay>
-    
+
+    <v-dialog
+      v-model="isDeleteCard"
+      max-width="400"
+      persistent>
+      <v-card
+        :text="dialogMsg"
+        title="Card Action"
+      >
+        <template v-slot:actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="isDeleteCard = false">
+            Disagree
+          </v-btn>
+
+          <v-btn @click="didConfirmDialog">
+            Agree
+          </v-btn>
+        </template>
+      </v-card>
+    </v-dialog>
     </div>
     </PopupRouterView>
   </template>
@@ -209,7 +228,7 @@ export default {
     var isTracked = ref(true)
     var card = ref(null)
     var list = ref(null)
-    var cardDesc = ref("Test description")
+    var cardDesc = ref(null)
     var currentUser = ref(null)
     var isTagTapped = ref(false)
     var boardTags = ref([])
@@ -239,10 +258,12 @@ export default {
     var assignees = ref([])
     var assigneeIds = ref([])
     var cardCheckLists = ref([])
+    var isDeleteCard = ref(false)
+    var dialogMsg = ref("Are you sure you want to delete card?")
     return { 
           members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names, commentEditorHeight, descEditorHeight, selectedAttachment,
           currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment, isMemberCardVisible, isCheckListTapped, 
-          isDescReadonly, comment, allCardComments, isAssign, assignees, assigneeIds, cardCheckLists
+          isDescReadonly, comment, allCardComments, isAssign, assignees, assigneeIds, cardCheckLists, isDeleteCard, dialogMsg
         }
     },
     async mounted() {
@@ -257,6 +278,19 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
+        async didConfirmDialog() {
+            this.isDeleteCard = false 
+            let params = {
+                cardId: this.card._id
+            }
+          await APIService.deleteCard(params)
+          this.getCardBy(this.card._id)
+          this.$router.go(-1)
+        },
+        handleDeleteCard() {
+            this.dialogMsg = `Are you sure you want to delete ${this.card.cardName} card ?`
+            this.isDeleteCard = true 
+        },
         async onListChecked(checklist) {
             let checklistIndex = _.findIndex(this.cardCheckLists, function(o) { return o._id === checklist._id });
             this.cardCheckLists[checklistIndex].lists = checklist.lists

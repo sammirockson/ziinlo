@@ -655,6 +655,13 @@ export default {
   font-size: 14px;
   color: var(--color-dark-blue);
   max-lines: 2;
+  outline: none;
+}
+.addListInputField:focus, .cardNameField:focus {
+    outline: none;
+    border-color: inherit;
+  -webkit-box-shadow: none;
+  box-shadow: none;
 }
 
 .createListContainer  {
