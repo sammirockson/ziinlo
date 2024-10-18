@@ -1,8 +1,8 @@
 <template>
     <div class="commentsView">
         <div class="commentsCell" v-for="(comment, index) in allCardComments" :key="index">
-            <img :src="comment.commenter.picture" class="profileImage">
-            <div class="commentContainer">
+            <img v-if="comment.commenter != null" :src="comment.commenter.picture" class="profileImage">
+            <div class="commentContainer" v-if="comment.commenter != null">
               <div class="profileNameAndDateView">
               <label class="commenterLabel">{{ comment.commenter.fullName }}</label>
               <label class="commentDateLabel">{{ getDateFormat(comment.createdAt) }}</label>

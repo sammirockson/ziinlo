@@ -1,7 +1,7 @@
 <template>
     <div class="boardNavItems">
     <div class="leftContentView">
-        <img src="../assets/menu_icon.png" class="menu-icon" @click="handleMenuTapped">
+        <!-- <img src="../assets/menu_icon.png" class="menu-icon" @click="handleMenuTapped"> -->
        <label class="boardNameLabel">{{ boardName }}</label>
        <div class="taskNotificationContainer">
             <button @click="handleCreateBoard()">       
@@ -36,11 +36,11 @@
     <v-overlay v-model="isMemberVisible" class="align-top justify-end overLayContainer"  contained>
         <MemberOverlayView class="membersOverlayContainer" :boardId="boardId"></MemberOverlayView>
     </v-overlay>
-    <v-app style="background-color: brown;">
+    <!-- <v-app style="background-color: brown;">
        <v-navigation-drawer v-model="isMenuVisible" :width="isMenuVisible ? '100%' : '0'" class="pr-0 ma-0" border="0">
          <SideBarView class="sideBar" @handleMenuTapped="handleSideBarTapped"></SideBarView>
        </v-navigation-drawer>
-    </v-app>
+    </v-app> -->
    </div>
 </template>
 <script>
@@ -283,7 +283,7 @@ export default {
     justify-content: right;
     align-items: center;
     height: 100%;
-    width: 100px;
+    max-width: 100px;
     float: right;
     padding-right: 10px;
     direction: ltr;  /* This is to get the stack with left on top */

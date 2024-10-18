@@ -1,10 +1,12 @@
 <template>
     <div>
-        <!-- <NavBar :isExpanded="this.isSideBarExpanded"/> -->
         <BoardNavItemsView class="boardBNavBar" :boardId="this.board.id" :boardName="this.board.name" @handleSearchBoard="handleSearchBoard"></BoardNavItemsView>
         <div class="mainBoardConentView">
             <div class="boardListsContainer" id="boardListsContainer">
                  <div v-if="this.board != null" class="listContainer" id="listContainer"v-for="(list, index) in this.board.lists" :key="list.id">
+                    <div class="list-option-view" v-if="optionIndex == index" @blur="handleListOptionBlur">
+                        <ListDropdownView class="list-dropdown" @onListOptionTapped="onListOptionTapped" :list="list"></ListDropdownView>
+                    </div>
                     <div class="createNewList" :style="{display: list.headerType ==  `creatingList` ? 'flex' : 'none'}">
                             <textarea name="text" v-model="newListName" @input="dynamicTextArea(index)" placeholder="Create New List" class="createNewListField" id="createNewListField_id"></textarea>
                             <button v-if="isSavingCard" class="addListBtn buttonload">
@@ -23,11 +25,10 @@
                             <div class="colorBadge"></div>
                             <textarea type="text" v-on:blur="didEditListName(list.listName, list._id, list.id)"  @input="listNameTextAreaGrow(list.id)" class="cardNameField" :id="list.id" v-model="list.listName"></textarea>
                          </div>
-                         <img src="@/assets/three_dots.png" class="listNameLabel"></img>
+                         <img src="@/assets/three_dots.png" class="listNameLabel" @click="handleListOptionTapped(index)"></img>
                      </div>
                      <div class="listBackgroundView" :id="'listBgView' + list._id" v-if="this.isBtmViewVisible(list)">
                      <div class="cardAndFooterContainer">
-                        <!-- <RouterLink :to="`/b` + this.board._id + `/c` +  card._id"  style="text-decoration: none; color: inherit;"> -->
                         <DraggableView v-model="list.cards" 
                              group="allCards" 
                              item-key="id"
@@ -38,7 +39,6 @@
                             <CardView :card="element" :boardId="this.board.id" :allMembers="this.allMembers" :tags="this.getCardTags(element)"></CardView>
                            </template>
                        </DraggableView>
-                      <!-- </RouterLink> -->
                         <div v-if="list.isCreateCard == true" class="createListContainer">
                             <textarea name="text" v-model="newCardName" @input="autoGrow(index)" placeholder="Give your card a name" class="addListInputField" :id="`newCardField_` + index"></textarea>
                             <button v-if="isSavingCard" class="addListBtn buttonload">
@@ -46,25 +46,11 @@
                             </button>
                            <button v-else class="addListBtn" @click="handleCreateCard(list, index)">Add Card</button>
                         </div>
-                      <!-- <div v-else v-if="list.cards != null && list.cards.length > 0 || list.isAddCard == true" class="listFooterView" @click="handleAddCard(list, index)">
-                        <span id="addIcon" class="material-symbols-outlined">add</span>
-                        <div class="footerTitleContainer">
-                            <button class="addCardLabel">New Card</button>
-                        </div>
-                       </div> -->
-                        
-                      
                     </div>
                     
                  </div>
                    <div class="bottomView" :id="'bottomView_' + list._id" v-if="this.isBtmViewVisible(list)" :class="{'is-create-card': list.isCreateCard}">
-                       <div v-if="list.isCreateCard == true" class="createListTipFooterView">
-                            <!-- <textarea name="text" v-model="newCardName" @input="autoGrow(index, list)" placeholder="Give your card a name" class="addListInputField" :id="`newCardField_` + index"></textarea>
-                            <button v-if="isSavingCard" class="addListBtn buttonload">
-                               <i class="fa fa-circle-o-notch fa-spin"></i> Adding... 
-                            </button>
-                           <button v-else class="addListBtn" @click="handleCreateCard(list, index)">Add Card</button> -->
-                        </div>
+                       <div v-if="list.isCreateCard == true" class="createListTipFooterView"></div>
                       <div v-else v-if="list.cards != null && list.cards.length > 0 || list.isAddCard == true || list.isCreateCard == true" class="listFooterView" @click="handleAddCard(list, index)">
                         <span id="addIcon" class="material-symbols-outlined">add</span>
                         <div class="footerTitleContainer">
@@ -73,11 +59,36 @@
                        </div>
                    </div>
                 </div>
-
-                
            </div>
         </div>
         <RouterView/>
+        <v-overlay v-model="isBlur" @click="dismissCover" class="align-center justify-center" :persistent="true" activator="#commentEditor" contained opacity="0.05" style="z-index: 99;">
+       </v-overlay>
+       <v-dialog
+      v-model="dialog"
+      max-width="400"
+      persistent
+    >
+      <template>
+      </template>
+
+      <v-card
+        :text="dialogMsg"
+        :title="dialogTitle"
+      >
+        <template v-slot:actions>
+          <v-spacer></v-spacer>
+
+          <v-btn @click="dialog = false">
+            Disagree
+          </v-btn>
+
+          <v-btn @click="didConfirmDialog">
+            Agree
+          </v-btn>
+        </template>
+      </v-card>
+    </v-dialog>
     </div>
 </template>
 <script>
@@ -85,6 +96,7 @@ import NavBar from '@/components/NavBarView.vue'
 import DraggableView from 'vuedraggable'
 import CardView from '@/views/CardView.vue'
 import BoardNavItemsView from './BoardNavItemsView.vue'
+import ListDropdownView from './ListDropdownView.vue'
 import APIService from '@/APIService';
 import _ from 'lodash'
 
@@ -97,7 +109,7 @@ export default {
     inject: ["eventBus", "cryptojs"],
     props: ["isExpanded"],
     components: {
-        NavBar, CardView, DraggableView, BoardNavItemsView
+        NavBar, CardView, DraggableView, BoardNavItemsView, ListDropdownView
     }, 
     setup() {
         var isSideBarExpanded = ref(true)
@@ -116,12 +128,54 @@ export default {
         var dblists = ref([])
         var allLists = ref([])
         var allMembers = ref([])
+        var optionIndex = ref(-1)
+        var isBlur = ref(false)
+        var dialog = ref(false)
+        var dialogTitle = ref('Delete Action')
+        var dialogMsg = ref('Are you sure you want to delete?')
+        var listtoDelete = ref(Object)
         return { 
-            isSideBarExpanded, board, dblists, allLists, newCardName, newListName, isCardTapped, currentUser,
-            boardId, selectedCard, selectedList, allCards, isSavingCard, allBoardTags, isRefreshBoard, allMembers
+            isSideBarExpanded, board, dblists, allLists, newCardName, newListName, isCardTapped, currentUser, optionIndex, dialogTitle, dialogMsg,
+            boardId, selectedCard, selectedList, allCards, isSavingCard, allBoardTags, isRefreshBoard, allMembers, isBlur, dialog, listtoDelete
         }
     },
     methods: {
+        async didConfirmDialog() {
+            this.dialog = false
+            let params = {
+              listId: this.listtoDelete._id
+            }
+            await APIService.deleteList(params)
+            this.getBoardBy(this.boardId)
+        },
+        onListOptionTapped(index, list) {
+            this.dismissCover()
+            let listIndex = list.cards.length
+            if (index == 0) { // Add card
+                this.handleAddCard(list, listIndex)
+            } else if (index == 1) { // Move list
+
+            } else if (index == 2) { // Move cards
+
+            } else if (index == 3) { // Delete cards
+
+            } else if (index == 4) { // Delete list
+                this.listtoDelete = list
+                this.dialogMsg = `Are you sure you want to delete ${list.listName} list?`
+                this.dialog = true 
+            }
+        },
+        dismissCover() {
+            this.isBlur = false 
+            this.optionIndex = -1
+        },
+        handleListOptionBlur() {
+            console.log('handleListOptionBlur')
+        },
+        handleListOptionTapped(listIndex) {
+            this.optionIndex = listIndex
+            this.isBlur = true 
+        },
         async getAllMembers() {
           let routeParams = this.$route.params
           let params = {
@@ -286,6 +340,7 @@ export default {
             // this.getBoardBy(this.boardId)
         },
         handleCardTapped(card, list) {
+            this.optionIndex = -1
             let path = "/b/" + this.boardId
             this.$router.push(
                 {
@@ -464,6 +519,24 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.list-option-view {
+    height: 220px;
+    width: 94.5%;
+    background-color: transparent;
+    z-index: 99999999999;
+    position: absolute;
+    border-radius: 12px;
+    margin-top: 54px;
+    .list-dropdown {
+        width: 70%;
+        margin-left: 25%;
+        height: 220px;
+        background-color: white;
+        // margin-top: 54px;
+        border-radius: 8px;
+        box-shadow: var(--box-shadow);
+    }
+}
 .drag {
   transform: rotate(5deg);
 }

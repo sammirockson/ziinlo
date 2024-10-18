@@ -26,6 +26,12 @@ class APIService {
       await this.baseRequest("board/addDescriptionToCard", params)
     }
 
+
+    async deleteList(params) {
+        let path = "board/deleteList"
+        return await this.baseRequest(path, params)
+    }
+
     async updateChecklist(params) {
         let path = "board/updateCardChecklist"
         return await this.baseRequest(path, params)
