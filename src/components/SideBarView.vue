@@ -1,5 +1,5 @@
 <template>
-    <div class="sideContentView">
+      <div class="sideContentView">
         <div class="topNav">
         <img src="@/assets/logo.png" class="logo">
         <label class="titleLabel" :style="{display: isSideBarExpanded ? 'block' : 'none'}">Dashboard</label>
@@ -61,9 +61,16 @@ export default {
         var selectedMenuItem = ref("board")
         var isLogginOut = ref(false)
         var isSideBarExpanded = ref(false)
-        return { menuItems, selectedMenuItem, isLogginOut, isSideBarExpanded}
+        var isCoverViewVisible = ref(false)
+        return { menuItems, selectedMenuItem, isLogginOut, isSideBarExpanded, isCoverViewVisible}
     }, 
+    mounted() {
+        this.isCoverViewVisible = true 
+    },
     methods: {
+        handleClose() {
+            console.log('did tap close')
+        },
         handleLogOut() {
             this.isLogginOut = false 
             // this.$router.push({path: "/auth"})
@@ -86,20 +93,17 @@ export default {
     },
     watch: { 
         cachedMenuKey: function(newVal, oldVal) { 
-          console.log('Prop changed: ', newVal, ' | was: ', oldVal)
           this.selectedMenuItem = newVal
         }, 
         isExpanded: function(newVal, oldVal) {
-            console.log('Prop changed isSideBarExpanwded: ', newVal)
             this.isSideBarExpanded = newVal
         }
     },
     mounted() {
-        // {name: "Home", id: "home", icon: "home.png", activeIcon: "homeActive.png"}, 
-        // {name: "Settings", id: "setting", icon: "setting.svg", activeIcon: "setting_active.svg"}
         this.menuItems = [
-            {name: "Board", id: "board", icon: "board.png", activeIcon: "boardActive.png"}, 
-            {name: "Chat", id: "chat", icon: "chat.png", activeIcon: "chatActive.png"}, {name: "Calendar", id: "calendar", icon: "calendar.png", activeIcon: "calendarActive.png"},
+            {name: "Board", id: "board", icon: "board.png", activeIcon: "boardActive.png"},
+            // {name: "Chat", id: "chat", icon: "chat.png", activeIcon: "chatActive.png"}, 
+            {name: "Time & Attendance", id: "attendance", icon: "calendar.png", activeIcon: "calendarActive.png"},
         ]
     }
 }
@@ -253,12 +257,20 @@ export default {
     overflow: hidden;
 }
 
+.coverView {
+    width: 100vw;
+    height: 100vh;
+    background-color: transparent;
+}
+
 .sideContentView {
+    /* width: 100px;
+    height: 100vh; */
     display: flex;
     flex-direction: column;
     padding-left: 20px;
     padding-right: 10px;
-    background-color: white;
+    /* background-color: white; */
 }
 
 .topNav {
@@ -270,9 +282,9 @@ export default {
 
 .logo {
   display: block;
-  width: 40px;
-  height: 40px;
-  margin-left: 10px;
+  width: 44px;
+  height: 44px;
+  margin-left: 5px;
 }
 
 .titleLabel {

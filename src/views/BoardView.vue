@@ -93,7 +93,7 @@ export default {
 
 .fullBoardContainer {
     background-color: var(--color-background);
-    background: url("@/assets/card_bg_1.jpg");
+    background: url("https://res.cloudinary.com/doorhob/image/upload/v1729072509/nctzphhcookd0dvplxal.jpg");
     background-position: center center;
     /* background-repeat: no-repeat; */
     object-fit: cover;

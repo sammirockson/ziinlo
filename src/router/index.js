@@ -13,6 +13,7 @@ import FeaturesView from '@/components/FeaturesView.vue'
 import TemplatesView from '@/components/TemplatesView.vue'
 import AboutView from '@/components/AboutView.vue'
 import PaymentView from '@/components/PaymentView.vue'
+import AttendanceView from '@/views/AttendanceView.vue'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     name: 'login',
     props: true, 
     component: LoginView
+  },
+  {
+    path: '/attendance',
+    name: 'attendance',
+    component: AttendanceView
   },
   {
     path: '/signup/:subscription?',

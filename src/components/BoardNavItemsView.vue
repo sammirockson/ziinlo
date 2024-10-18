@@ -1,7 +1,7 @@
 <template>
     <div class="boardNavItems">
     <div class="leftContentView">
-        <img src="../assets/menu_icon.png" class="menu-icon">
+        <img src="../assets/menu_icon.png" class="menu-icon" @click="handleMenuTapped">
        <label class="boardNameLabel">{{ boardName }}</label>
        <div class="taskNotificationContainer">
             <button @click="handleCreateBoard()">       
@@ -36,6 +36,11 @@
     <v-overlay v-model="isMemberVisible" class="align-top justify-end overLayContainer"  contained>
         <MemberOverlayView class="membersOverlayContainer" :boardId="boardId"></MemberOverlayView>
     </v-overlay>
+    <v-app style="background-color: brown;">
+       <v-navigation-drawer v-model="isMenuVisible" :width="isMenuVisible ? '100%' : '0'" class="pr-0 ma-0" border="0">
+         <SideBarView class="sideBar" @handleMenuTapped="handleSideBarTapped"></SideBarView>
+       </v-navigation-drawer>
+    </v-app>
    </div>
 </template>
 <script>
@@ -61,12 +66,24 @@ export default {
         var searchText = ref('')
         var remainingCount = ref(0)
         var boardId = ref('')
-        return { isMemberVisible, members, isCreateBoard, searchText, remainingCount, boardId }
+        var isMenuVisible = ref(false)
+        return { isMemberVisible, members, isCreateBoard, searchText, remainingCount, boardId, isMenuVisible }
     }, 
     async mounted() {
         this.fetchMembers()
     },
     methods: {
+        handleSideBarTapped(itemId) {
+            if (itemId === 'attendance') {
+                this.$router.push({path: '/attendance'})
+            } else if (itemId === 'board') {
+                let path = "/b/" + this.boardId
+                this.$router.push({path: path})
+            }
+        },
+        handleMenuTapped() {
+            this.isMenuVisible = true 
+        },
         handleSearch() {
             this.$emit('handleSearchBoard', this.searchText)
         },
@@ -120,6 +137,10 @@ export default {
 }
 </script>
 <style scoped>
+.sideBar {
+    width: 100px;
+    height: 100vh;
+}
 .menu-icon {
     width: 32px;
     height: 32px;
@@ -332,7 +353,7 @@ export default {
 .boardNavItems {
     display: flex;
     height: 100%;
-    width: 100%;
+    width: 100vw;
     justify-content: space-between;
     padding-right: 15px;
     padding-left: 15px;
