@@ -58,6 +58,9 @@ export default {
      font-weight: 400;
      margin-top: 10px;
    }
+   .list-cell:last-child {
+    color: red;
+   }
 }
 
 </style>

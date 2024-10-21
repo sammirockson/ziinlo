@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="checklist-container">
-                    <CheckListView class="checklist-view" v-for="checklist in cardCheckLists" :key="checklist.id" :checklist="checklist" @onAddListItem="onAddListItem" @onListChecked="onListChecked"/> 
+                    <CheckListView class="checklist-view" v-for="checklist in cardCheckLists" :key="checklist.id" :checklist="checklist" @onAddListItem="onAddListItem" @onListChecked="onListChecked" @onDeleteCheckList="onDeleteCheckList"/> 
                 </div>
 
                 <label class="attachmentsTitleLabel" v-if=" this.attachments.length > 0">Attachments</label>
@@ -116,7 +116,7 @@
              <label class="memberLabel">Manage</label>
              <!-- <ButtonCard imageIcon="priority.png" title="Priority level"/> -->
              <ButtonCard imageIcon="assignee.png" title="Assign" @click="handleAssign"/>
-             <ButtonCard imageIcon="move.png" title="Move"/>
+             <ButtonCard imageIcon="move.png" title="Move" @click="handleMoveCard"/>
 
              <ButtonCard imageIcon="tags.png" title="Tags" @click="handleTagTapped"/>
              <date-picker v-model="selectedDate" @update:model-value="handleSaveDate"  time-picker-inline >
@@ -147,7 +147,7 @@
         </v-overlay>
 
         <v-overlay v-model="isCheckListTapped" class="align-center justify-center overLayContainer" style="padding-left: 500px" contained>
-            <AddCheckListView :card="this.card._id" class="attachmentContainerView" @fileUploadComplete="handleDidUploadFile" :cardId="this.card._id"/>
+            <AddCheckListView class="attachmentContainerView" :cardId="this.card._id" @didCreateCheckList="didCreateCheckList"/>
         </v-overlay>
 
         <v-overlay v-model="isShowFileView" class="align-center justify-center overLayContainer" contained>
@@ -155,9 +155,12 @@
         </v-overlay>
 
         <v-overlay v-model="isMemberCardVisible" class="align-center justify-center" activator="#commentEditor" contained opacity="0">
-           <div class="memberCarView">
-           </div>
+           <div class="memberCarView"></div>
        </v-overlay>
+
+       <v-overlay v-model="isMoveCard" class="align-center justify-center overLayContainer" style="padding-left: 500px" contained>
+          <CardMoveView :from-list="this.allLists" :to-list="this.allLists"/>
+        </v-overlay>
 
     <v-dialog
       v-model="isDeleteCard"
@@ -191,6 +194,7 @@ import { BASE_URL, USER_CACHE_KEY } from '@/config'
 import AssigneeView from '@/components/AssigneeView.vue'
 import CommentsView from '@/components/CommentsView.vue'
 import AssignOverlayView from './AssignOverlayView.vue';
+import CardMoveView from './CardMoveView.vue';
 
 import ButtonCard from '@/components/ButtonCard.vue'
 import DescriptionViewFrom from '@/components/DescriptionViewForm.vue'
@@ -221,7 +225,7 @@ export default {
   inject: ["cryptojs"],
   components: {
     PopupOverlay, TextEditorView, AttachmentView, VTimePicker, VueEditor, AssigneeView, CommentEditorView, MemberOverlayView, AssignOverlayView, CheckListView,
-    PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView, AddCheckListView, Editor, DescriptionEditor, ReadOnlyEditor
+    PopupRouterView, FileViewer, ButtonCard, DescriptionViewFrom, TagContainerView, CommentsView, AddCheckListView, Editor, DescriptionEditor, ReadOnlyEditor, CardMoveView
   },
   setup() {
     var members = ref([])
@@ -259,11 +263,13 @@ export default {
     var assigneeIds = ref([])
     var cardCheckLists = ref([])
     var isDeleteCard = ref(false)
+    var isMoveCard = ref(false)
+    var allLists = ref([])
     var dialogMsg = ref("Are you sure you want to delete card?")
     return { 
           members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names, commentEditorHeight, descEditorHeight, selectedAttachment,
           currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment, isMemberCardVisible, isCheckListTapped, 
-          isDescReadonly, comment, allCardComments, isAssign, assignees, assigneeIds, cardCheckLists, isDeleteCard, dialogMsg
+          isDescReadonly, comment, allCardComments, isAssign, assignees, assigneeIds, cardCheckLists, isDeleteCard, dialogMsg, isMoveCard, allLists
         }
     },
     async mounted() {
@@ -278,6 +284,22 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
+        handleMoveCard() {
+            this.isMoveCard = true 
+        },
+        async onDeleteCheckList(checklist) {
+            let params = {
+                checkList_Id: checklist._id, 
+                checkListId: checklist.id, 
+                card_id: this.card._id
+            }
+            await APIService.deleteCheckList(params)
+            this.getCardBy(this.card._id)
+        },
+        didCreateCheckList() {
+            this.isCheckListTapped = false 
+            this.getCardBy(this.card._id)
+        },
         async didConfirmDialog() {
             this.isDeleteCard = false 
             let params = {
@@ -520,6 +542,7 @@ export default {
                    this.updateViewCount()
                    this.getCardComments()
                    this.getCardAssignees()
+                   this.getBoardBy()
                 }
               }
              }
@@ -585,7 +608,16 @@ export default {
          }
          var fullURL = BASE_URL + "board/updateCard"
          await axios.post(fullURL, params).then((response) => {})
-        }
+        }, 
+        async getBoardBy() {
+         var params = {
+            boardId: this.boardId
+         }
+        let boardResp = await APIService.getBoardById(params)
+        let apiBoard = boardResp.board
+        this.allLists = apiBoard.lists
+        console.log('all lists: ', this.allLists)
+      }
     }, 
     watch: { 
         list(newVal, oldVal) { 

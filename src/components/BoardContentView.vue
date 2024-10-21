@@ -8,7 +8,10 @@
                         <ListDropdownView class="list-dropdown" @onListOptionTapped="onListOptionTapped" :list="list"></ListDropdownView>
                     </div>
                     <div class="createNewList" :style="{display: list.headerType ==  `creatingList` ? 'flex' : 'none'}">
+                        <div class="create-new-list-view">
+                            <div class="list-color-picker" :style="{backgroundColor: this.listHeaderColor}" @click="handleListColorPicker"></div>
                             <textarea name="text" v-model="newListName" @input="dynamicTextArea(index)" placeholder="Create New List" class="createNewListField" id="createNewListField_id"></textarea>
+                        </div>
                             <button v-if="isSavingCard" class="addListBtn buttonload">
                                <i class="fa fa-circle-o-notch fa-spin"></i> Creating... 
                             </button>
@@ -22,7 +25,7 @@
                      </div>
                      <div class="listHeaderView" :id="`headerMotherContainer_` + list.id" :style="{display: list.headerType ==  `showListName` ? 'flex' : 'none'}">
                          <div class="badgeAndTitleContainer">
-                            <div class="colorBadge"></div>
+                            <div class="colorBadge" :style="{backgroundColor: list.listBadgeColor}"></div>
                             <textarea type="text" v-on:blur="didEditListName(list.listName, list._id, list.id)"  @input="listNameTextAreaGrow(list.id)" class="cardNameField" :id="list.id" v-model="list.listName"></textarea>
                          </div>
                          <img src="@/assets/three_dots.png" class="listNameLabel" @click="handleListOptionTapped(index)"></img>
@@ -64,6 +67,11 @@
         <RouterView/>
         <v-overlay v-model="isBlur" @click="dismissCover" class="align-center justify-center" :persistent="true" activator="#commentEditor" contained opacity="0.05" style="z-index: 99;">
        </v-overlay>
+
+       <v-overlay v-model="isListColorPicker" class="align-center justify-center" :persistent="true" contained opacity="0.5">
+          <ListHeaderColorPickerView @didCloseListColorPicker="didCloseListColorPicker"/>
+       </v-overlay>
+
        <v-dialog
       v-model="dialog"
       max-width="400"
@@ -98,6 +106,7 @@ import CardView from '@/views/CardView.vue'
 import BoardNavItemsView from './BoardNavItemsView.vue'
 import ListDropdownView from './ListDropdownView.vue'
 import APIService from '@/APIService';
+import ListHeaderColorPickerView from './ListHeaderColorPickerView.vue'
 import _ from 'lodash'
 
 import { ref } from 'vue'
@@ -109,7 +118,7 @@ export default {
     inject: ["eventBus", "cryptojs"],
     props: ["isExpanded"],
     components: {
-        NavBar, CardView, DraggableView, BoardNavItemsView, ListDropdownView
+        NavBar, CardView, DraggableView, BoardNavItemsView, ListDropdownView, ListHeaderColorPickerView
     }, 
     setup() {
         var isSideBarExpanded = ref(true)
@@ -134,12 +143,24 @@ export default {
         var dialogTitle = ref('Delete Action')
         var dialogMsg = ref('Are you sure you want to delete?')
         var listtoDelete = ref(Object)
+        var listHeaderColor = ref("#FFA500")
+        var isListColorPicker = ref(false)
         return { 
-            isSideBarExpanded, board, dblists, allLists, newCardName, newListName, isCardTapped, currentUser, optionIndex, dialogTitle, dialogMsg,
-            boardId, selectedCard, selectedList, allCards, isSavingCard, allBoardTags, isRefreshBoard, allMembers, isBlur, dialog, listtoDelete
+            isSideBarExpanded, board, dblists, allLists, newCardName, newListName, 
+            isCardTapped, currentUser, optionIndex, dialogTitle, dialogMsg, isListColorPicker,
+            boardId, selectedCard, selectedList, allCards, isSavingCard, allBoardTags, isRefreshBoard,
+            allMembers, isBlur, dialog, listtoDelete, listHeaderColor
         }
     },
     methods: {
+        didCloseListColorPicker(selectedColor) {
+            this.isListColorPicker = false 
+            this.listHeaderColor = selectedColor
+            console.log('selected color: ', selectedColor)
+        },
+        handleListColorPicker() {
+            this.isListColorPicker = true 
+        },
         async didConfirmDialog() {
             this.dialog = false
             let params = {
@@ -325,11 +346,11 @@ export default {
             if (addedCard !== undefined) {
                 console.log(`${cardName} has been moved to: `, list.listName, 'list')
                 // Send notification to members of the card
-                this.$gtag.event('Moved card', {
-                   'event_category': 'Card',
-                   'event_label': `${cardName} has been moved to: ${list.listName} list`,
-                   'value': 1
-               })
+            //     this.$gtag.event('Moved card', {
+            //        'event_category': 'Card',
+            //        'event_label': `${cardName} has been moved to: ${list.listName} list`,
+            //        'value': 1
+            //    })
             }
         }) 
       }
@@ -359,7 +380,8 @@ export default {
           isCreateList: false,
           headerType: "showListName",
           id: Date.now(), 
-          owner: this.currentUser.id 
+          owner: this.currentUser.id, 
+          listBadgeColor: this.listHeaderColor 
         }
         var fullURL = BASE_URL + "board/newList"
         console.log("full url: ", fullURL, "params: ", params)
@@ -519,6 +541,19 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.create-new-list-view {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    .list-color-picker {
+        width: 8px;
+        height: 30px;
+        border-radius: 8px;
+        margin-left: 5px;
+        margin-top: auto;
+        margin-bottom: auto
+    }
+}
 .list-option-view {
     height: 220px;
     width: 94.5%;
@@ -657,6 +692,9 @@ export default {
   max-lines: 2;
   outline: none;
 }
+.createNewListField {
+    width: 180px;
+}
 .addListInputField:focus, .cardNameField:focus {
     outline: none;
     border-color: inherit;
@@ -744,7 +782,6 @@ export default {
 .colorBadge {
     width: 4px;
     height: 20px;
-    background-color: orange;
     border-radius: var(--border-radius-1);
     margin-top: auto;
     margin-bottom: auto;

@@ -32,6 +32,7 @@ export default {
             }
             await APIService.createNewChecklist(params)
             this.checklistTitle = ''
+            this.$emit('didCreateCheckList')
         }
     }
 }

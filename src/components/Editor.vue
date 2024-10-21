@@ -50,7 +50,7 @@
           Strike,
           TextAlign,
           Link,
-          Image,
+          BulletList,
           Text,
          OrderedList
       ],

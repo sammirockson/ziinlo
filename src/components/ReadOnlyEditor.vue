@@ -17,6 +17,7 @@
     Image,
     OrderedList, // use with ListItem
     TextAlign,
+    BulletList
   } from "element-tiptap";
 
   export default {
@@ -38,7 +39,8 @@
         Strike,
         TextAlign,
         Link,
-        Image,
+        BulletList,
+        // Image,
         Text,
         OrderedList        
       ],

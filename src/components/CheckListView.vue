@@ -5,12 +5,12 @@
             <img src="../assets/checklisticon.png" alt="">
           <label for="">{{ checklist.name }}</label>
         </div>
-        <button>Delete</button>
+        <button @click="handleDeleteCheckList(checklist)">Delete</button>
      </div>
      <v-progress-linear :model-value="progress" rounded="lg"></v-progress-linear>
      <div class="list-view">
         <div class="list-cell" v-for="(list, index) in checklist.lists">
-            <v-checkbox v-model="checklist.lists[index].isChecked" @click="onCheckboxClicked($event)"></v-checkbox>
+            <v-checkbox v-model="checklist.lists[index].isChecked" @click="onCheckboxClicked(index)"></v-checkbox>
             <label for="">{{ list.name }}</label>
         </div>
      </div>
@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import _ from 'lodash';
 export default {
     props: {
         checklist: {
@@ -34,13 +35,26 @@ export default {
     }, 
     data() {
         return {
-            progress: 20, 
             isAddItem: false, 
             list: ''
         }
     }, 
+    computed: {
+        progress() {
+            let lists = this.checklist.lists
+            let checkedLists = _.filter(lists, function(o) { return o.isChecked == true });
+            let percentage = (checkedLists.length / lists.length) * 100
+            return percentage
+        }
+    },
     methods: {
-        onCheckboxClicked() {
+        handleDeleteCheckList() {
+            this.$emit('onDeleteCheckList', this.checklist)
+        },
+        onCheckboxClicked(index) {
+            let isChecked = this.checklist.lists[index].isChecked
+            console.log('isChecked: ', isChecked)
+            this.checklist.lists[index].isChecked = !isChecked
             this.$emit('onListChecked', this.checklist)
         },
         handleSaveItem() {

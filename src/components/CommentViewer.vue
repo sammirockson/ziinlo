@@ -27,7 +27,8 @@
     HardBreak,
     History,
     Fullscreen,
-    CodeView
+    CodeView,
+    BulletList
   } from "element-tiptap";
 
   export default {
@@ -44,12 +45,13 @@
         Text,
         Paragraph,
         Bold,
+        BulletList,
         // Italic,
         // Underline,
         // Strike,
         TextAlign,
         Link,
-        Image,
+        // Image,
         OrderedList     
       ]
     })
