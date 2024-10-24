@@ -33,15 +33,15 @@
                     <label class="dueDateTitelLabel">{{ formatDate(card) }}</label>
                 </div>
 
-                <div class="statusContainer">
+                <div class="statusContainer" v-if="assignees.length > 0">
                     <div class="statusIconTitleView">
                         <img src="@/assets/assignee.png" alt="">
                         <label for="">Assignee</label>
                     </div>
-                    <div class="assigneeContainerView" v-if="assignees.length > 0">
+                    <div class="assigneeContainerView">
                         <v-chip-group selected-class="text-primary" column>
                         <v-chip  v-for="(assignee, index) in this.assignees" :key="index" style="border-radius: 19px;">
-                            <AssigneeView :title="assignee.fullName" :imageIcon="assignee.picture" class="asigneeCellView"></AssigneeView>
+                            <AssigneeView :title="assignee.fullName" :imageIcon="assignee.picture.length > 0 ? assignee.picture : require('../assets/placeholder.png')" class="asigneeCellView"></AssigneeView>
                        </v-chip>
                       </v-chip-group>
                     </div>
@@ -128,7 +128,7 @@
              <ButtonCard imageIcon="checklist.png" title="Checklist" @click="handleCheckListTapped"/>
              <ButtonCard imageIcon="fileAttachment.png" title="Attachments" @click="handleAttachmentTapped"/>
              <label class="memberLabel">Connect</label>
-             <ButtonCard imageIcon="share.png" title="Share"/>
+             <ButtonCard imageIcon="share.png" title="Share" @click="handleShare"/>
              <label class="memberLabel">Archive</label>
              <ButtonCard imageIcon="archive.png" title="Delete" @click="handleDeleteCard"/>
              </div>
@@ -159,7 +159,7 @@
        </v-overlay>
 
        <v-overlay v-model="isMoveCard" class="align-center justify-center overLayContainer" style="padding-left: 500px" contained>
-          <CardMoveView :from-list="this.allLists" :to-list="this.allLists"/>
+          <CardMoveView :selectedFromList="this.list"  :from-list="[this.list]" :to-list="this.allLists" :cardId="this.card.id" @didMoveCard="onMoveCard"/>
         </v-overlay>
 
     <v-dialog
@@ -284,18 +284,33 @@ export default {
       this.getCardBy(card_id)
     },
     methods: {
-        handleMoveCard() {
-            this.isMoveCard = true 
-        },
-        async onDeleteCheckList(checklist) {
-            let params = {
-                checkList_Id: checklist._id, 
-                checkListId: checklist.id, 
-                card_id: this.card._id
-            }
-            await APIService.deleteCheckList(params)
+     handleShare() {
+        navigator.share({
+          title: 'Ziinlo invitation',
+          text: 'Invite colleagues, friends and family to contribute to your board',
+          url: this.$router.currentRoute.value.fullPath 
+        }).then(() => {
+         console.log('Successful share');
+         }).catch((error) => {
+          console.log('Error sharing:', error);
+        });
+     },
+    onMoveCard() {
+            this.isMoveCard = false
             this.getCardBy(this.card._id)
-        },
+    },
+    handleMoveCard() {
+            this.isMoveCard = true 
+    },
+    async onDeleteCheckList(checklist) {
+        let params = {
+        checkList_Id: checklist._id, 
+        checkListId: checklist.id, 
+        card_id: this.card._id
+    }
+    await APIService.deleteCheckList(params)
+        this.getCardBy(this.card._id)
+   },
         didCreateCheckList() {
             this.isCheckListTapped = false 
             this.getCardBy(this.card._id)
@@ -538,6 +553,7 @@ export default {
                     this.members.push({'fullName': memberFilter.length > 0 ? 'Leave' : 'Join', '_id': 'joinRemove'})
                    }
                   
+                   console.log('list object: ', this.list)
                    this.fetchTags()
                    this.updateViewCount()
                    this.getCardComments()
@@ -615,8 +631,10 @@ export default {
          }
         let boardResp = await APIService.getBoardById(params)
         let apiBoard = boardResp.board
-        this.allLists = apiBoard.lists
-        console.log('all lists: ', this.allLists)
+        if (this.list != undefined) {
+            let currentListId = _.get(this.list, 'id')
+            this.allLists = _.filter(apiBoard.lists, function(o) { return o.id !== currentListId });
+        }
       }
     }, 
     watch: { 
