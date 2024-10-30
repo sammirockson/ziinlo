@@ -56,7 +56,6 @@ export default {
             this.$emit('didTapGetStarted')
         }, 
         didSelectNavItem(navItem) {
-            console.log('navItem: ', navItem)
             if (navItem.id === 'features') { // Template
                 this.$router.push({path: '/'})
             } else if (navItem.id === 'pricing') { // Pricing

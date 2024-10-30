@@ -173,15 +173,31 @@
         <template v-slot:actions>
           <v-spacer></v-spacer>
           <v-btn @click="isDeleteCard = false">
-            Disagree
+            No
           </v-btn>
 
           <v-btn @click="didConfirmDialog">
-            Agree
+            Yes
           </v-btn>
         </template>
       </v-card>
     </v-dialog>
+    <v-dialog
+      v-model="isDeleteCheckList"
+      max-width="400"
+      persistent>
+      <v-card
+        :text="deleteChecklistMsg"
+        title="Card Action"
+      >
+        <template v-slot:actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="isDeleteCheckList = false">No</v-btn>
+          <v-btn @click="handleDeleteCheckList">Yes</v-btn>
+        </template>
+      </v-card>
+    </v-dialog>
+    
     </div>
     </PopupRouterView>
   </template>
@@ -266,10 +282,14 @@ export default {
     var isMoveCard = ref(false)
     var allLists = ref([])
     var dialogMsg = ref("Are you sure you want to delete card?")
+    var deleteChecklistMsg = ref("Are you sure you want to delete checklist?")
+    var isDeleteCheckList = ref(false)
+    var checklistToDelete = ref(null)
     return { 
           members, isTracked, card, cardDesc, list, isAttachmentTapped, isLoading, boardId, attachments, isShowFileView, names, commentEditorHeight, descEditorHeight, selectedAttachment,
           currentUser, isTagTapped, boardTags, cardTags, isDateTapped, selectedDate, value, time, timeStep, isEditingDesc, isEditingComment, isMemberCardVisible, isCheckListTapped, 
-          isDescReadonly, comment, allCardComments, isAssign, assignees, assigneeIds, cardCheckLists, isDeleteCard, dialogMsg, isMoveCard, allLists
+          isDescReadonly, comment, allCardComments, isAssign, assignees, assigneeIds, cardCheckLists, isDeleteCard, dialogMsg, isMoveCard, allLists, isDeleteCheckList, deleteChecklistMsg, 
+          checklistToDelete
         }
     },
     async mounted() {
@@ -302,32 +322,37 @@ export default {
     handleMoveCard() {
             this.isMoveCard = true 
     },
-    async onDeleteCheckList(checklist) {
-        let params = {
-        checkList_Id: checklist._id, 
-        checkListId: checklist.id, 
-        card_id: this.card._id
-    }
-    await APIService.deleteCheckList(params)
-        this.getCardBy(this.card._id)
+     onDeleteCheckList(checklist) {
+        this.checklistToDelete = checklist
+        this.deleteChecklistMsg = `Are you sure you want to ${checklist.name} checklist?`
+        this.isDeleteCheckList = true 
    },
-        didCreateCheckList() {
-            this.isCheckListTapped = false 
-            this.getCardBy(this.card._id)
-        },
-        async didConfirmDialog() {
-            this.isDeleteCard = false 
-            let params = {
-                cardId: this.card._id
-            }
-          await APIService.deleteCard(params)
-          this.getCardBy(this.card._id)
-          this.$router.go(-1)
-        },
-        handleDeleteCard() {
-            this.dialogMsg = `Are you sure you want to delete ${this.card.cardName} card ?`
-            this.isDeleteCard = true 
-        },
+   async handleDeleteCheckList() {
+     let params = {
+        checkList_Id: this.checklistToDelete._id, 
+        checkListId: this.checklistToDelete.id, 
+        card_id: this.card._id
+     }
+     await APIService.deleteCheckList(params)
+     this.getCardBy(this.card._id)
+   },
+   didCreateCheckList() {
+     this.isCheckListTapped = false 
+     this.getCardBy(this.card._id)
+   },
+   async didConfirmDialog() {
+    this.isDeleteCard = false 
+    let params = {
+        cardId: this.card._id
+    }
+    await APIService.deleteCard(params)
+    this.getCardBy(this.card._id)
+    this.$router.go(-1)
+   },
+   handleDeleteCard() {
+    this.dialogMsg = `Are you sure you want to delete ${this.card.cardName} card ?`
+    this.isDeleteCard = true 
+   },
         async onListChecked(checklist) {
             let checklistIndex = _.findIndex(this.cardCheckLists, function(o) { return o._id === checklist._id });
             this.cardCheckLists[checklistIndex].lists = checklist.lists
@@ -538,7 +563,6 @@ export default {
         await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
             let data = response.data
-            console.log('card detail: ', data)
             if (data.statusCode == 200) {
                 let resp = data.resp
                 if (resp != null) {
@@ -552,8 +576,6 @@ export default {
                     let memberFilter = this.members.filter(member => member.id === this.currentUser.id)
                     this.members.push({'fullName': memberFilter.length > 0 ? 'Leave' : 'Join', '_id': 'joinRemove'})
                    }
-                  
-                   console.log('list object: ', this.list)
                    this.fetchTags()
                    this.updateViewCount()
                    this.getCardComments()

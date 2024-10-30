@@ -78,7 +78,6 @@ export default {
         assigneeIds: this.assigneeIds, 
         assigner: this.currentUser.id // current user id
       }
-      console.log('params for update assignees: ', params)
       await APIService.updateAssignees(params)
     },
     async fetchMembers() {

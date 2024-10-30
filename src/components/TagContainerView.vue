@@ -65,7 +65,6 @@ export default {
     },
     watch: { 
         boardTags(newVal, oldVal) { 
-           console.log('boardTags popover prop changed: ', newVal, ' | was: ', oldVal)
         //    this.boardId = newVal
         }
     },

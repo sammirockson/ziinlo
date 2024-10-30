@@ -45,7 +45,6 @@ export default {
     },
     methods: {
       callback: function(response){
-        console.log(response)
 //         {
 //     "reference": "O8rDqLt48Z",
 //     "trans": "4227058879",

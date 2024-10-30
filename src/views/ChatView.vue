@@ -19,7 +19,6 @@ export default {
     },
     watch: { 
         isExpanded: function(newVal, oldVal) {
-            console.log('Prop changed isSideBarExpanwded: ', newVal)
             this.isSideBarExpanded = newVal
         }
     },  

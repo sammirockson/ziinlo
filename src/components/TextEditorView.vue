@@ -19,7 +19,6 @@ export default {
     mounted() {
         document.getElementById('editor').addEventListener('input', function(){
           let scrollHeight = this.scrollHeight
-          console.log("auto grow not working: ", scrollHeight)
           if (scrollHeight > 340) {
              this.style.height = scrollHeight + "px";
           }
@@ -150,7 +149,6 @@ export default {
         getCurrentTagName(el) {
             let targetText =  el.target.text
             let isURL =  targetText != undefined && targetText.length > 5
-            console.log("url: ", targetText, "isURL: ", isURL)
             if (isURL) {
                 // open
                 window.open(targetText,'_newtab')
@@ -165,7 +163,6 @@ export default {
             el.target.focus()
         }, 
         handleURLTapped(url) {
-            console.log("url tapped: ", url)
         }
     }
 }

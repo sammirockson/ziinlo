@@ -47,14 +47,6 @@
       </div>
   
       <textarea type="text"  @input="autoGrow()" class="cardNameField" id="cardNameId"></textarea>
-
-      <!-- <v-sheet class="pa-4 text-center">
-        <v-textarea
-          v-model="value"
-          auto-grow
-          full-width
-        ></v-textarea>
-      </v-sheet> -->
 </template>
 <script>
 import { ref } from 'vue'
@@ -71,7 +63,6 @@ export default {
             element.style.height = (element.scrollHeight) + "px";
         },
         handleOverlayClosed() {
-            console.log("close overlay tapped")
             this.$emit('overlayDismissed')
         }
     }

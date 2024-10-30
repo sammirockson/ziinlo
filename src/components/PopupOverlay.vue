@@ -7,7 +7,6 @@
     name: 'PopupOverlay', 
     methods: {
         handleOverlayTapped() {
-            console.log("handleOverlayTapped")
             this.$router.go(-1)
         }
     }

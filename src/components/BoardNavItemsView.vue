@@ -32,9 +32,13 @@
         <span class="material-symbols-sharp" id="darmMode">dark_mode</span>
     </div> -->
     <img src="@/assets/notification-white.svg" class="notificationIcon">
+    <img src="../assets/totalCustomers.png" class="user-profile" @click="handleProfileTapped">
     </div>
     <v-overlay v-model="isMemberVisible" class="align-top justify-end overLayContainer"  contained>
         <MemberOverlayView class="membersOverlayContainer" :boardId="boardId"></MemberOverlayView>
+    </v-overlay>
+    <v-overlay v-model="isProfileVisible" class="align-top justify-end overLayContainer" opacity="0"  contained>
+        <UserProfileDropDownView class="profile-list-dropdown"></UserProfileDropDownView>
     </v-overlay>
     <!-- <v-app style="background-color: brown;">
        <v-navigation-drawer v-model="isMenuVisible" :width="isMenuVisible ? '100%' : '0'" class="pr-0 ma-0" border="0">
@@ -48,6 +52,7 @@ import { ref } from 'vue'
 import APIService from '@/APIService';
 import MemberOverlayView from './MemberOverlayView.vue';
 import CreateNewBoardView from './CreateNewBoardView.vue'
+import UserProfileDropDownView from './UserProfileDropDownView.vue';
 import SideBarView from './SideBarView.vue';
 export default {
     props: {
@@ -57,7 +62,7 @@ export default {
         }
     },
     components: {
-        MemberOverlayView, CreateNewBoardView, SideBarView
+        MemberOverlayView, CreateNewBoardView, SideBarView, UserProfileDropDownView
     },
     setup() {
         var isMemberVisible = ref(false)
@@ -67,12 +72,19 @@ export default {
         var remainingCount = ref(0)
         var boardId = ref('')
         var isMenuVisible = ref(false)
-        return { isMemberVisible, members, isCreateBoard, searchText, remainingCount, boardId, isMenuVisible }
+        var isProfileVisible = ref(false)
+        return { 
+            isMemberVisible, members, isCreateBoard, isProfileVisible,
+            searchText, remainingCount, boardId, isMenuVisible 
+        }
     }, 
     async mounted() {
         this.fetchMembers()
     },
     methods: {
+        handleProfileTapped() {
+            this.isProfileVisible = true 
+        },
         handleSideBarTapped(itemId) {
             if (itemId === 'attendance') {
                 this.$router.push({path: '/attendance'})
@@ -136,7 +148,15 @@ export default {
     // http://localhost:8080/invitation/b/1722579902069/i/66a6f66276e1d70286f59bec
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
+ .profile-list-dropdown {
+    width: 340px;
+    height: 540px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+    margin: 55px 10px 0 0;
+  }
 .sideBar {
     width: 100px;
     height: 100vh;
@@ -189,7 +209,7 @@ export default {
     margin-bottom: auto;
     font-weight: 500;
 }
-.notificationIcon {
+.notificationIcon, .user-profile {
     width: 24px;
     height: 24px;
     border-radius: 4px;
@@ -198,6 +218,13 @@ export default {
     object-fit: contain;
     margin-right: 10px;
 }
+
+.user-profile {
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+}
+
 .searchContainer {
     width: calc(100% - 340px);
     height: 50px;
@@ -343,12 +370,12 @@ export default {
 }
 .right-container {
     display: flex;
-    width: 550px;
+    width: 630px;
 }
 .leftContentView {
     display: flex;
     align-items: center;
-    width: calc(100% - 850px);
+    width: calc(100% - 880px);
 }
 .boardNavItems {
     display: flex;

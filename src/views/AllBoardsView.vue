@@ -4,7 +4,10 @@
         <label>My Boards</label>
         <img src="../assets/add.svg" @click="onPrepareToCreateBoard">
       </div>
-        <div class="boardContentView">
+      <button v-if="isLoading" class="loadingBtn buttonload">
+            <i class="fa fa-circle-o-notch fa-spin"></i> Loading... 
+        </button>
+        <div v-else class="boardContentView">
             <v-row style="overflow: hidden;">
              <v-col v-for="board in boards" :key="board" cols="auto"> 
                <div class="productGridCellWithBorder"  @click="handleBoardTapped(board)">
@@ -14,6 +17,7 @@
           </v-col>
         </v-row>
        </div>
+       
       <v-overlay  v-model="isCreateBoard" :persistent="isPeristent" class="align-center justify-center" contained>
         <CreateNewBoardView @closeOverlay="onCloseOverlay"/>
      </v-overlay>
@@ -32,13 +36,17 @@ export default {
       CreateNewBoardView
     }, 
     setup() {
+       var isLoading = ref(false)
         var isSideBarExpanded = ref(false)
         var selectedTaskBoardType = ref("All Team")
         var boards = ref([])
         var currentUser = ref({})
         var isCreateBoard = ref(false)
         var isPeristent = ref(false)
-        return { isSideBarExpanded, boards, selectedTaskBoardType, currentUser, isCreateBoard, isPeristent}
+        return { 
+          isSideBarExpanded, boards, selectedTaskBoardType, 
+          currentUser, isCreateBoard, isPeristent, isLoading
+        }
     },
     methods: {
       onCloseOverlay() {
@@ -64,7 +72,6 @@ export default {
        }
       },
       handleBoardTapped(board) {
-        console.log("board: ", board)
         let path = "/b/" + board.id
         this.$router.push({path: path})
       },
@@ -72,19 +79,17 @@ export default {
         this.selectedTaskBoardType = item
       },
     async fetchBoards() {
+      this.isLoading = true 
         var params = {
             owner: this.currentUser.id
         }
         var fullURL = BASE_URL + "board/my"
-        console.log("full url: ", fullURL, "params: ", params)
         await axios.post(fullURL, params).then((response) => {
-          console.log("board response: ", response)
+          this.isLoading = false
           if (response.data != null) {
             let data = response.data
-            console.log("resp data: ", data)
             if (data.statusCode == 200) {
                 let allBoard = data.resp
-                console.log("boards: ", allBoard)
                 this.boards = allBoard
                 if (allBoard.length === 0) {
                   this.isPeristent = true 
@@ -106,6 +111,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.loadingBtn {
+  margin-top: 200px;
+}
     .productCellImage {
     height: 200px;
     width: 232px;

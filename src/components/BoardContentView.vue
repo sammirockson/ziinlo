@@ -88,11 +88,11 @@
           <v-spacer></v-spacer>
 
           <v-btn @click="dialog = false">
-            Disagree
+            No
           </v-btn>
 
           <v-btn @click="didConfirmDialog">
-            Agree
+            Yes
           </v-btn>
         </template>
       </v-card>
@@ -156,7 +156,6 @@ export default {
         didCloseListColorPicker(selectedColor) {
             this.isListColorPicker = false 
             this.listHeaderColor = selectedColor
-            console.log('selected color: ', selectedColor)
         },
         handleListColorPicker() {
             this.isListColorPicker = true 
@@ -191,7 +190,6 @@ export default {
             this.optionIndex = -1
         },
         handleListOptionBlur() {
-            console.log('handleListOptionBlur')
         },
         handleListOptionTapped(listIndex) {
             this.optionIndex = listIndex
@@ -249,7 +247,6 @@ export default {
             }
         },
      async didEditListName(listName, list_id, listId) {
-        console.log("didEditListName: ", listName)
         var params = {
             list_id: list_id, 
             listName: listName, 
@@ -258,10 +255,8 @@ export default {
          await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
              let data = response.data
-             console.log("list update resp data: ", data)
              let contId = "headerMotherContainer_" + listId
             let badgeAndTitleContainer = document.getElementById(contId) 
-            console.log("lstid: ", contId, "element: ", badgeAndTitleContainer == null)
             if (badgeAndTitleContainer != null ) {
                 badgeAndTitleContainer.style.height = "60px";
             }
@@ -279,7 +274,6 @@ export default {
         await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
             let data = response.data
-            console.log("resp data: ", data)
             if (data.statusCode == 200) {
                 console.log("list and card info updated: ", data.resp)
               }
@@ -384,13 +378,10 @@ export default {
           listBadgeColor: this.listHeaderColor 
         }
         var fullURL = BASE_URL + "board/newList"
-        console.log("full url: ", fullURL, "params: ", params)
         await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
             let data = response.data
-            console.log("resp data: ", data)
             if (data.statusCode == 200) {
-                console.log("created new list: ", data.resp)
                 this.getBoardBy(this.boardId)
               }
              }
@@ -422,13 +413,10 @@ export default {
              owner: this.currentUser.id  // Change ASAP
          }
          var fullURL = BASE_URL + "board/newCard"
-         console.log("full url: ", fullURL, "params: ", params)
          await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
             let data = response.data
-            console.log("card resp data: ", data)
             if (data.statusCode == 200) {
-                console.log("created new card: ", data.resp)
                 this.getBoardBy(this.boardId)
               }
              }
@@ -463,11 +451,9 @@ export default {
         let apiBoard = boardResp.board
         this.allBoardTags = boardResp.tags
         if (apiBoard === undefined) {
-            console.log('go home because undefined', apiBoard)
             this.$router.push({path: '/boards'}) 
         } else {
             let members = apiBoard.members.filter(member => member == userId)
-            console.log("members: ", members, "userId: ", userId)
             if (members.length > 0 ) {
                 apiBoard.lists.push({ id: "listPlaceholder", listName: "Add New List", headerType: "addList", footerType: "add", isAddCard: false, isCreateList: false, cards: []})
                 apiBoard.lists.sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt))
@@ -485,7 +471,6 @@ export default {
                    'value': 1
                })
             } else {
-                console.log("You're not part of this board, request invitation from the owner")
                 this.$router.push({path: '/boards'}) 
             }
         }
@@ -499,7 +484,6 @@ export default {
         await axios.post(fullURL, params).then((response) => {
           if (response.data != null) {
             let data = response.data
-            console.log("card data: ", data)
             if (data.statusCode == 200) {
                 let resp = data.resp
                 if (resp != null) {
@@ -516,7 +500,6 @@ export default {
     },
     watch: { 
         '$route' () {
-          console.log("routed called")
           this.getBoardBy(this.boardId)
           this.getAllMembers()
         }

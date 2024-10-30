@@ -66,7 +66,7 @@
   --bg-color: #111;
 }
 
-#app {
+#app, v-btn, v-label, v-card-text  {
   font-family: 'Poppins', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -75,7 +75,7 @@
   background-color: var(--color-background);
 }
 
-body, label, p, h1, h2, h3, h4, h5, v-btn, v-label {
+body, label, p, h1, h2, h3, h4, h5, v-btn, v-label, v-card-text {
   font-family: 'Poppins', Helvetica, Arial, sans-serif;
   color: var(--color-dark-primary);
 }
@@ -103,33 +103,4 @@ nav a.router-link-exact-active {
   color: #42b983;
 }
 
-// .dp__instance_calendar {
-//   .dp__range_end, .dp__range_start, .dp__active_date {
-//     color: var(--gold);
-//     background: transparent;
-//     border: 0px solid transparent;
-//   }
-
-//   .dp__today {
-//     border: 0px solid transparent;
-//   }
-// }
-
-// .dp__main {
-//     // Helps date picker input align height with UI
-//   .dp__input_wrap input {
-//     height: var(--calendar-field-height);
-//   }
-//   .dp__menu_inner, .dp__instance_calendar {
-//     background: #19242E;
-//     border-radius: var(--border-radius-1);
-//   }
-//   .dp__overlay_container {
-//     background: #19242E;
-//   }
-// }
-
 </style>
-
-
-<!-- https://github.com/Leecason/element-tiptap -->

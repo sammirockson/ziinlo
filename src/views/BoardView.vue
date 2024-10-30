@@ -23,7 +23,6 @@ export default {
     }, 
     methods: {
         handleChangeContainer(menuId) {
-         console.log("menuId: ", menuId)
          this.containerType = menuId
        }, 
         handleBoardTypeTapped(item) {
@@ -39,7 +38,6 @@ export default {
     },
     watch: { 
         isExpanded: function(newVal, oldVal) {
-            console.log('Prop changed isSideBarExpanwded: ', newVal)
             this.isSideBarExpanded = newVal
         }
     }, 

@@ -97,7 +97,6 @@ export default {
             }
         }, 
         handleContact() {
-           console.log("contact us tapped")
            var element = document.getElementById("app");
            element.scrollTop = element.scrollHeight;
         }

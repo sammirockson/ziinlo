@@ -58,15 +58,13 @@ export default {
     }, 
     mounted() {
         let userCacheString = localStorage.getItem(USER_CACHE_KEY)
-            if (userCacheString == null) {
-                // this.$router.push({path: "/home"})
-            } else {
-            let userCache = JSON.parse(userCacheString)
-            let decryptionToken = userCache.token
-            let encryptedUserData = userCache.user
-            let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
-            let cacheInfoObject = JSON.parse(decryptedData)
-            this.currentUser = cacheInfoObject.user
+            if (userCacheString != null) { 
+              let userCache = JSON.parse(userCacheString)
+              let decryptionToken = userCache.token
+              let encryptedUserData = userCache.user
+              let decryptedData = CryptoJS.AES.decrypt(encryptedUserData, decryptionToken).toString(CryptoJS.enc.Utf8)
+              let cacheInfoObject = JSON.parse(decryptedData)
+              this.currentUser = cacheInfoObject.user
         }
     },
     methods: {

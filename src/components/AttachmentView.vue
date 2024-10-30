@@ -20,15 +20,16 @@
           <img src="@/assets/uploadCloudDark.png" class="cloud">
           <div v-if="isDragging">Release to drop a file.</div>
           <div class="uploader" v-else> 
-          <b>Drop</b> a file or <b>Tap</b> to upload.<br>PNG, JPG, JPEG, PPTX, PDF, DOCX, XLSX
+            <b>Tap</b> to upload or <b>Drop</b> a file.<br>png jpg jpeg pptx pdf <br> docx xlsx mov mp4
           </div>
         </label>
       </div>
-      <img v-if="localeFileURL != null || remoteFileURL != null" class="preview-img"  :src="localeFileURL == null ? remoteFileURL : localeFileURL"/>
+      <img v-if="isPreviewable" class="preview-img"  :src="localeFileURL == null ? remoteFileURL : localeFileURL"/>
+      <label v-else-if="selectedFile != null">{{ selectedFile.name }}</label>
       <button v-if="isUploading" class="uploadBtn buttonload">
             <i class="fa fa-circle-o-notch fa-spin"></i> Uploading... 
         </button>
-      <button v-else class="uploadBtn" @click="handleUploadFile">Upload File</button>
+      <button v-else class="uploadBtn" @click="handleUploadFile" :disabled="selectedFile == null" :class="{'is-disabled': selectedFile == null}">Upload File</button>
     </div>
 </template>
 
@@ -47,7 +48,8 @@ export default {
         var selectedFile = ref(null)
         var card_id = ref("")
         var isUploading = ref(false)
-        return {isDragging, localeFileURL, selectedFile, remoteFileURL, card_id, isUploading}
+        var isPreviewable = ref(false)
+        return {isDragging, localeFileURL, selectedFile, remoteFileURL, card_id, isUploading, isPreviewable}
     }, 
     methods: {
         async handleUploadFile() {
@@ -75,27 +77,15 @@ export default {
                 }
               })
             }
-
-            // if (this.remoteFileURL != null) {
-            //   var postJson = {
-            //      card_id: this.card_id, 
-            //      remoteFileURL: this.remoteFileURL
-            //   }
-            //   let fullURL = BASE_URL + "files/remoteURL"
-            //   this.isUploading = true 
-            //   await axios.post(fullURL, postJson).then((response) => {
-            //     this.isUploading = false 
-            //     this.remoteFileURL = null
-            //      console.log("upload file response: ", response)
-            //   })
-            // }
         },
       onChange() {
         let file = this.$refs.file.files[0]
-        console.log("dropped file: ", file)
         this.selectedFile = file
         this.localeFileURL = this.generateURL(file)
         this.remoteFileURL = null
+        let fileTypes = this.selectedFile.name.split(".")
+        let fileType = fileTypes.pop().toLowerCase()
+        this.isPreviewable = ['jpg', 'jpeg', 'png'].includes(fileType)
       },
       dragover(e) {
         e.preventDefault();
@@ -131,7 +121,7 @@ export default {
     },
 }
 </script>
-<style scoped>
+<style  lang="scss" scoped>
 .cloud {
   width: 40px;
   height: 40px;
@@ -162,12 +152,15 @@ export default {
   background-color: var(--color-bar-dark);
   border: 0px solid transparent;
   border-radius: var(--border-radius-1);
+  &.is-disabled {
+    background-color: var(--color-info-light);
+  }
 }
 
   .dropFileMainView {
     display: flex;
     flex-direction: column;
-    height: 750px;
+    height: 800px;
     width: 300px;
     overflow: hidden;
   }
@@ -207,12 +200,13 @@ export default {
 }
 
 .preview-img {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   margin-top: 15px;
   margin-bottom: 8px;
   object-fit: contain;
   margin-right: auto;
   margin-left: auto;
+  overflow: hidden;
 }
 </style>

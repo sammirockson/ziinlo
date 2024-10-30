@@ -69,7 +69,6 @@ export default {
     },
     methods: {
         handleClose() {
-            console.log('did tap close')
         },
         handleLogOut() {
             this.isLogginOut = false 
