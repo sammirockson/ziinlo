@@ -1,7 +1,7 @@
 <template>
     <div class="boardNavItems">
-    <div class="leftContentView">
-        <!-- <img src="../assets/menu_icon.png" class="menu-icon" @click="handleMenuTapped"> -->
+    <div class="left-contentView">
+        <img src="../assets/menu_icon.png" class="menu-icon" @click="handleMenuTapped">
        <label class="boardNameLabel">{{ boardName }}</label>
        <div class="taskNotificationContainer">
             <button @click="handleCreateBoard()">       
@@ -40,11 +40,12 @@
     <v-overlay v-model="isProfileVisible" class="align-top justify-end overLayContainer" opacity="0"  contained>
         <UserProfileDropDownView class="profile-list-dropdown"></UserProfileDropDownView>
     </v-overlay>
-    <!-- <v-app style="background-color: brown;">
-       <v-navigation-drawer v-model="isMenuVisible" :width="isMenuVisible ? '100%' : '0'" class="pr-0 ma-0" border="0">
-         <SideBarView class="sideBar" @handleMenuTapped="handleSideBarTapped"></SideBarView>
-       </v-navigation-drawer>
-    </v-app> -->
+    
+    <v-layout>
+        <v-navigation-drawer v-model="isMenuVisible" :width="isMenuVisible ? '100%' : '0'" class="pr-0 ma-0" border="0" temporary>
+            <SideBarView @handleMenuTapped="handleSideBarTapped"/>
+        </v-navigation-drawer> 
+      </v-layout>
    </div>
 </template>
 <script>
@@ -85,16 +86,12 @@ export default {
         handleProfileTapped() {
             this.isProfileVisible = true 
         },
-        handleSideBarTapped(itemId) {
-            if (itemId === 'attendance') {
-                this.$router.push({path: '/attendance'})
-            } else if (itemId === 'board') {
-                let path = "/b/" + this.boardId
-                this.$router.push({path: path})
-            }
+        handleSideBarTapped() {
+            this.isMenuVisible = false
         },
         handleMenuTapped() {
             this.isMenuVisible = true 
+            console.log('isMenuVisible: ', this.isMenuVisible)
         },
         handleSearch() {
             this.$emit('handleSearchBoard', this.searchText)
@@ -372,10 +369,10 @@ export default {
     display: flex;
     width: 630px;
 }
-.leftContentView {
+.left-contentView {
     display: flex;
     align-items: center;
-    width: calc(100% - 880px);
+    width: 100%;
 }
 .boardNavItems {
     display: flex;

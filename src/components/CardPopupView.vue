@@ -315,74 +315,74 @@ export default {
           console.log('Error sharing:', error);
         });
      },
-    onMoveCard() {
+     onMoveCard() {
             this.isMoveCard = false
             this.getCardBy(this.card._id)
-    },
-    handleMoveCard() {
+     },
+     handleMoveCard() {
             this.isMoveCard = true 
-    },
+     },
      onDeleteCheckList(checklist) {
         this.checklistToDelete = checklist
-        this.deleteChecklistMsg = `Are you sure you want to ${checklist.name} checklist?`
+        this.deleteChecklistMsg = `Are you sure you want to delete ${checklist.name} checklist?`
         this.isDeleteCheckList = true 
-   },
-   async handleDeleteCheckList() {
-     let params = {
+     },
+     async handleDeleteCheckList() {
+       let params = {
         checkList_Id: this.checklistToDelete._id, 
         checkListId: this.checklistToDelete.id, 
         card_id: this.card._id
-     }
-     await APIService.deleteCheckList(params)
-     this.getCardBy(this.card._id)
-   },
-   didCreateCheckList() {
-     this.isCheckListTapped = false 
-     this.getCardBy(this.card._id)
-   },
-   async didConfirmDialog() {
-    this.isDeleteCard = false 
-    let params = {
+      }
+      await APIService.deleteCheckList(params)
+      this.getCardBy(this.card._id)
+     },
+     didCreateCheckList() {
+      this.isCheckListTapped = false 
+      this.getCardBy(this.card._id)
+     },
+     async didConfirmDialog() {
+      this.isDeleteCard = false 
+      let params = {
         cardId: this.card._id
-    }
-    await APIService.deleteCard(params)
-    this.getCardBy(this.card._id)
-    this.$router.go(-1)
-   },
-   handleDeleteCard() {
-    this.dialogMsg = `Are you sure you want to delete ${this.card.cardName} card ?`
-    this.isDeleteCard = true 
-   },
-        async onListChecked(checklist) {
-            let checklistIndex = _.findIndex(this.cardCheckLists, function(o) { return o._id === checklist._id });
-            this.cardCheckLists[checklistIndex].lists = checklist.lists
-            let params = {
-                checkListId: checklist._id, 
-                lists: checklist.lists
-            }
-            await APIService.updateChecklist(params)
-        },
-        async onAddListItem(listItem, checkListId) {
-            let checklistIndex = _.findIndex(this.cardCheckLists, function(o) { return o._id === checkListId });
-            this.cardCheckLists[checklistIndex].lists.push(listItem)
-            let params = {
-                checkListId: checkListId, 
-                lists: this.cardCheckLists[checklistIndex].lists
-            }
-            await APIService.updateChecklist(params)
-        },
-    onAssignMembers(assignees, assigneeIds) {
+     }
+      await APIService.deleteCard(params)
+      this.getCardBy(this.card._id)
+      this.$router.go(-1)
+     },
+     handleDeleteCard() {
+      this.dialogMsg = `Are you sure you want to delete ${this.card.cardName} card ?`
+      this.isDeleteCard = true 
+     },
+     async onListChecked(checklist) {
+        let checklistIndex = _.findIndex(this.cardCheckLists, function(o) { return o._id === checklist._id });
+        this.cardCheckLists[checklistIndex].lists = checklist.lists
+        let params = {
+            checkListId: checklist._id, 
+            lists: checklist.lists
+        }
+        await APIService.updateChecklist(params)
+     },
+     async onAddListItem(listItem, checkListId) {
+        let checklistIndex = _.findIndex(this.cardCheckLists, function(o) { return o._id === checkListId });
+        this.cardCheckLists[checklistIndex].lists.push(listItem)
+          let params = {
+            checkListId: checkListId, 
+            lists: this.cardCheckLists[checklistIndex].lists
+          }
+        await APIService.updateChecklist(params)
+     },
+     onAssignMembers(assignees, assigneeIds) {
         this.assignees = assignees
         this.assigneeIds = assigneeIds
-    },
-    handleAssign() {
+     },
+     handleAssign() {
         this.isAssign = true 
-    },
-    handleDidTapDescription() {
+     },
+     handleDidTapDescription() {
         this.isDescReadonly = false
         this.$forceUpdate()
-    },
-    async handleSaveComment() {
+     },
+     async handleSaveComment() {
         let userid = this.currentUser.id
         let params = {
             cardId: this.card.id, 
@@ -395,12 +395,11 @@ export default {
         this.isEditingComment = false
         await APIService.addComment(params)
         this.getCardComments()
-
-    },
-    didUpdateCommentEditor(comment) {
+     },
+     didUpdateCommentEditor(comment) {
         this.comment = comment
-    },
-    async handleJoinRemove(tappedMember) {
+     },
+     async handleJoinRemove(tappedMember) {
         if (tappedMember._id == 'joinRemove') {
                // If user is a member, remove from card else add to card
         var cardMembers = this.card.members
@@ -423,40 +422,40 @@ export default {
          }
           await APIService.updateCardMembership(params)
           this.getCardBy(this.card._id)
-         }
-        },
-        didUpdateDescEditor(cardDesc) {
-            this.card.description = cardDesc
-        },
-        handleCheckListTapped() {
-            this.isCheckListTapped = true
-        },
-        handleShowMemberCard(isVisible) {
-            this.isMemberCardVisible = isVisible 
-        },
-        handleCancelComment() {
-            this.isEditingComment = false
-        },
-        handleEnableWriteComment() {
-            this.isEditingComment = true 
-        },
-        formatFileSize(attachment) {
-          let size =  (attachment.size / 1024) / 1000
-          return size.toFixed(2)
-        },
-        dismissFileViewer() {
-            this.isShowFileView = false
-        },
-        handleFileBrowserTapped(attachment) {
-            this.selectedAttachment = attachment
-            this.isShowFileView = true 
-        },
-        handleDidUploadFile(updatedCard) {
-            this.card = updatedCard
-            this.attachments = updatedCard.attachments
-        },
-        async handleSaveTag(tag) {
-         var params = {
+       }
+     },
+     didUpdateDescEditor(cardDesc) {
+        this.card.description = cardDesc
+     },
+     handleCheckListTapped() {
+        this.isCheckListTapped = true
+      },
+     handleShowMemberCard(isVisible) {
+        this.isMemberCardVisible = isVisible 
+      },
+     handleCancelComment() {
+        this.isEditingComment = false
+     },
+     handleEnableWriteComment() {
+        this.isEditingComment = true 
+     },
+     formatFileSize(attachment) {
+        let size =  (attachment.size / 1024) / 1000
+        return size.toFixed(2)
+     },
+     dismissFileViewer() {
+        this.isShowFileView = false
+     },
+     handleFileBrowserTapped(attachment) {
+        this.selectedAttachment = attachment
+        this.isShowFileView = true 
+     },
+     handleDidUploadFile(updatedCard) {
+        this.card = updatedCard
+        this.attachments = updatedCard.attachments
+      },
+     async handleSaveTag(tag) {
+        var params = {
             boardId: this.boardId, 
             cardId: this.card.id,
             name: tag.name, 
@@ -468,17 +467,17 @@ export default {
           if (response.data != null) {
              let data = response.data
             }
-          })
-        }, 
-        handleCancelDescEditing() {
-            this.isEditingDesc = false 
-            this.isDescReadonly = true 
-        },
-        handleDescEdit() {
-            this.isEditingDesc = true 
-        },
-        async handleSaveDate() {
-          let dueDateMilliSec = this.selectedDate.getTime()
+        })
+     }, 
+     handleCancelDescEditing() {
+        this.isEditingDesc = false 
+        this.isDescReadonly = true 
+     },
+     handleDescEdit() {
+        this.isEditingDesc = true 
+     },
+     async handleSaveDate() {
+       let dueDateMilliSec = this.selectedDate.getTime()
           var params = {
             card_id: this.card._id, 
             dueDate: dueDateMilliSec
@@ -486,34 +485,34 @@ export default {
         await APIService.updateDueDate(params)
         this.card.dueDate = dueDateMilliSec
         this.selectedDate = null
-      },
-      async handleTagChanged(tag) {
-            if (tag.isChecked) {
-                this.cardTags.push(tag)
-            } else {
-                this.cardTags = this.cardTags.filter(item => item.id != tag.id);
-            }
-          var tags = []
-          for (var index in this.cardTags) {
-             let cardTag = this.cardTags[index]
-             tags.push(cardTag.id)
-           }
-          var params = {
-            card_id: this.card._id, 
-            tags: tags
-          }
-          var fullURL = BASE_URL + "board/addTagsToCard"
-          await axios.post(fullURL, params).then((response) => {
+     },
+     async handleTagChanged(tag) {
+        if (tag.isChecked) {
+            this.cardTags.push(tag)
+        } else {
+            this.cardTags = this.cardTags.filter(item => item.id != tag.id);
+        }
+        var tags = []
+        for (var index in this.cardTags) {
+            let cardTag = this.cardTags[index]
+            tags.push(cardTag.id)
+        }
+        var params = {
+           card_id: this.card._id, 
+           tags: tags
+        }
+        var fullURL = BASE_URL + "board/addTagsToCard"
+        await axios.post(fullURL, params).then((response) => {
             if (response.data != null) {
              let data = response.data
             }
-          })
-        },
-      isTagChecked(tag) {
-          let tagFiler = this.cardTags.filter(item => item.id == tag.id)
-          return tagFiler.length > 0
-      },
-      async fetchTags() {
+        })
+     },
+     isTagChecked(tag) {
+        let tagFiler = this.cardTags.filter(item => item.id == tag.id)
+        return tagFiler.length > 0
+     },
+     async fetchTags() {
           var params = {
             boardId: this.boardId
           }
@@ -532,7 +531,7 @@ export default {
              }
             }
           })
-        },
+     },
       handleGoBack() {
         let path = "/b/" + this.boardId
         this.$router.push({path: path})

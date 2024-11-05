@@ -14,6 +14,7 @@ import TemplatesView from '@/components/TemplatesView.vue'
 import AboutView from '@/components/AboutView.vue'
 import PaymentView from '@/components/PaymentView.vue'
 import AttendanceView from '@/views/AttendanceView.vue'
+import ChatView from '@/views/ChatView.vue'
 
 const routes = [
   {
@@ -36,6 +37,11 @@ const routes = [
     path: '/attendance',
     name: 'attendance',
     component: AttendanceView
+  },
+  {
+    path: '/chat',
+    name: 'chat',
+    component: ChatView
   },
   {
     path: '/signup/:subscription?',

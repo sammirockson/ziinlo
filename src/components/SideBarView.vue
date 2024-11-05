@@ -1,36 +1,23 @@
 <template>
       <div class="sideContentView">
         <div class="topNav">
-        <img src="@/assets/logo.png" class="logo">
-        <label class="titleLabel" :style="{display: isSideBarExpanded ? 'block' : 'none'}">Dashboard</label>
+          <img src="@/assets/logo.png" class="logo">
+          <label class="titleLabel">Ziinlo</label>
         </div>
-        <div class="containerView" :style="{width: isSideBarExpanded ? '210px' : '80px'}">
-        <table>
+        <div class="containerView">
+         <table>
            <tbody>
-              <tr v-for="item in menuItems" :key="item.id" @click="handleRowClicked(item)">
-                 <div v-if="item.id == selectedMenuItem" class="tableRowActive"  :style="{width: isSideBarExpanded ? '210px' : '50px'}">
-                    <img :src="require(`../../src/assets/${item.activeIcon}`)" class="menuIconActive">
-                    <label class="menutTitleLabelActive" :style="{display: isSideBarExpanded ? 'block' : 'none'}">{{ item.name }}</label>
-                 </div>
-                 <div v-else class="tableRow">
-                    <img :src="require(`../../src/assets/${item.icon}`)" class="menuIcon">
-                    <label class="menutTitleLabel" :style="{display: isSideBarExpanded ? 'block' : 'none'}">{{ item.name }}</label>
+              <tr>
+                 <div class="tableRow" v-for="item in menuItems" :key="item.id" @click="handleRowClicked(item)" :class="{'is-active': item.id === selectedMenuId}">
+                     <img :src="require(`../../src/assets/${item.icon}`)" class="menuIcon" :class="item.id">
+                     <label class="menutTitleLabel">{{ item.name }}</label>
                  </div>
               </tr>
            </tbody>
-        </table>
+         </table>
         </div>
 
-        <div class="logoutContainer" @click="handleLogoutTapped" :style="{width: isSideBarExpanded ? '200px' : '52px'}">
-            <img src="@/assets/totalCustomers.png" class="profileImage">
-            <div class="nameRoleContainer" :style="{display: isSideBarExpanded ? 'flex' : 'none'}">
-                <label class="nameLabel">User Name</label>
-                <label class="roleLabel">Admin/Member</label>
-            </div>
-            <img src="@/assets/arrow-down.png" class="dropDownArrow" :style="{display: isSideBarExpanded ? 'block' : 'none'}">
-        </div>
-
-        <div class="subscriptionPlanContainer" :style="{display: isSideBarExpanded ? 'flex' : 'none'}">
+        <div class="subscriptionPlanContainer">
             <label class="nameLabel">Upgrade Your Plan</label>
             <label class="roleLabel">Upgrade your plan today to unlock a world of enhanced features</label>
             <button> <img src="@/assets/seePlansActive.png" alt=""> See plans</button>
@@ -52,31 +39,30 @@
 </template>
 <script>
 import { ref } from 'vue'
-import { SIDE_BAR_MENU_ITEM_KEY, PICKMORE_MERCHANT_KEY, USER_CACHE_KEY } from '@/config'
+import { USER_CACHE_KEY } from '@/config'
 
 export default {
-    props: ["cachedMenuKey", "isExpanded"],
+    props: {
+        selectedMenuId: {
+            type: String, 
+            default: ''
+        }
+    },
     setup() {
         var menuItems = ref([])
-        var selectedMenuItem = ref("board")
         var isLogginOut = ref(false)
-        var isSideBarExpanded = ref(false)
-        var isCoverViewVisible = ref(false)
-        return { menuItems, selectedMenuItem, isLogginOut, isSideBarExpanded, isCoverViewVisible}
+        return { menuItems, isLogginOut}
     }, 
     mounted() {
         this.isCoverViewVisible = true 
     },
     methods: {
-        handleClose() {
-        },
         handleLogOut() {
             this.isLogginOut = false 
             // this.$router.push({path: "/auth"})
               // log out user and go to login page
             localStorage.removeItem(USER_CACHE_KEY)
             this.$router.push({path: "/login"})
-             // call log out API
         },
         handleCancelLogOut() {
             this.isLogginOut = false 
@@ -85,29 +71,30 @@ export default {
             this.isLogginOut = true
         },
         handleRowClicked(item) {
+            this.$emit('handleMenuTapped')
             this.selectedMenuItem = item.id
-            this.$emit('handleMenuTapped', item.id)
-            localStorage.setItem(SIDE_BAR_MENU_ITEM_KEY, item.id)
-        }
-    },
-    watch: { 
-        cachedMenuKey: function(newVal, oldVal) { 
-          this.selectedMenuItem = newVal
-        }, 
-        isExpanded: function(newVal, oldVal) {
-            this.isSideBarExpanded = newVal
+            var path = ''
+            if (item.id === 'board') {
+                path = '/boards'
+            } else if (item.id === 'chat') {
+                path = '/chat'
+            } else if (item.id === 'attendance') {
+                path = '/attendance'
+            }
+            this.$router.push({path: path})
+            // localStorage.setItem(SIDE_BAR_MENU_ITEM_KEY, item.id)
         }
     },
     mounted() {
         this.menuItems = [
-            {name: "Board", id: "board", icon: "board.png", activeIcon: "boardActive.png"},
-            // {name: "Chat", id: "chat", icon: "chat.png", activeIcon: "chatActive.png"}, 
-            {name: "Time & Attendance", id: "attendance", icon: "calendar.png", activeIcon: "calendarActive.png"},
+            {name: "All Boards", id: "board", icon: "board.png"},
+            {name: "Team Chat", id: "chat", icon: "chat.png"}, 
+            {name: "Attendance", id: "attendance", icon: "calendar.png"},
         ]
     }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .dropDownArrow {
     width: 28px;
     height: 28px;
@@ -170,7 +157,7 @@ export default {
     width: 210px;
     height: 150px;
     position: absolute;
-    bottom: 8rem;
+    bottom: 2rem;
 }
 
 .subscriptionPlanContainer button {
@@ -215,6 +202,7 @@ export default {
     color: white;
 }
 
+
 .menutTitleLabel {
     font-weight: 500;
     color: var(--color-dark);
@@ -227,14 +215,49 @@ export default {
 }
 
 .tableRow {
+    display: flex;
+    align-items: center;
     border-radius: var(--border-radius-2);
-    padding-top: 14px; 
+    &.is-active {
+      background-color: var(--color-bar-dark);
+      border-radius: var(--border-radius-2);
+      label {
+        color: white;
+      }
+     img {
+        &.chat {
+            content: url("../../src/assets/chatActive.png");
+        }
+        &.board {
+            content: url("../../src/assets/boardActive.png");
+        }
+        &.attendance {
+            content: url("../../src/assets/calendarActive.png");
+        }
+     }
+   }
 }
 
-.tableRowActive {
+.tableRowActive, .tableRow:hover {
     background-color: var(--color-bar-dark);
     border-radius: var(--border-radius-2);
-    padding-top: 12px; 
+}
+
+.tableRow:hover {
+    label {
+        color: white;
+    }
+    img {
+        &.chat {
+            content: url("../../src/assets/chatActive.png");
+        }
+        &.board {
+            content: url("../../src/assets/boardActive.png");
+        }
+        &.attendance {
+            content: url("../../src/assets/calendarActive.png");
+        }
+    }
 }
 
 .tableRow, .tableRowActive {
@@ -263,51 +286,33 @@ export default {
 }
 
 .sideContentView {
-    /* width: 100px;
-    height: 100vh; */
+    width: 240px;
     display: flex;
     flex-direction: column;
-    padding-left: 20px;
+    padding-left: 10px;
     padding-right: 10px;
-    /* background-color: white; */
 }
 
 .topNav {
     display: flex;
     flex-direction: row;
+    align-items: center;
     padding-top: 15px;
     padding-left: 2px;
 }
 
 .logo {
   display: block;
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
   margin-left: 5px;
+  object-fit: contain;
 }
 
 .titleLabel {
-  font-weight: 600;
-  font-size: 20px;
+  font-weight: 700;
+  font-size: 24px;
   margin-left: 8px;
 }
-
-/* 
-@media screen and (max-width: 1600px) {
-    .titleLabel {
-        display: none;
-    }
-    .menutTitleLabel, .menutTitleLabelActive, .dropDownArrow, .nameRoleContainer {
-        display: none;
-    }
-    .tableRowActive {
-        background-color: transparent;
-    }
-
-    .logoutContainer {
-        width: 52px;
-        margin-left: -8px;
-    }
-} */
 
 </style>

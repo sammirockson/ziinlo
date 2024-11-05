@@ -42,7 +42,6 @@ export default {
     props: { card: String },
     setup() {
         var isDragging = ref(false)
-        // var files = ref([])
         var localeFileURL = ref(null)
         var remoteFileURL = ref(null)
         var selectedFile = ref(null)

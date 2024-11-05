@@ -33,6 +33,7 @@
           return {
             currentUser: null,
             options: [
+               "Background",
                "Activities", 
                "My Cards",
                "Help"

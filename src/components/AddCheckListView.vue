@@ -1,7 +1,7 @@
 <template>
     <div class="addCheckListView">
         <label for="">Add CheckList</label>
-        <v-text-field type="text" class="textField" v-model="checklistTitle" required variant="outlined" label="Title"></v-text-field>
+        <v-text-field type="text" class="textField" v-model="checklistTitle" required variant="outlined" label="Name your checklist"></v-text-field>
         <button v-if="isAdding" class="addBtn buttonload">
             <i class="fa fa-circle-o-notch fa-spin"></i>Adding... 
         </button>
