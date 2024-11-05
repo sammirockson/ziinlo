@@ -58,7 +58,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .user-profile-container {
-  height: 50px;
+  height: 60px;
   width: 100%;
   display: flex;
   justify-content: center;

@@ -23,7 +23,18 @@
         <label for="">Username here</label>
         <img src="../assets/vertical_dot.svg">
       </div>
-       <div class="conversation-list"> </div>
+       <div class="conversation-list">
+         <div class="convo-cell" v-for="(msg, index) in messages" :key="msg.id">
+           <div class="bubble-container" v-if="isOdd(index)">
+             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAzBE_P3rPclK8gJnC-y1Mq7kNOvyL8yUHlg&s">
+             <label :innerHTML="msg.content"></label>
+           </div>
+           <div class="outgoing-bubble-container" v-else>
+             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAzBE_P3rPclK8gJnC-y1Mq7kNOvyL8yUHlg&s">
+             <label :innerHTML="msg.content"></label>
+           </div>
+         </div>
+       </div>
 
        <div class="bottom-input">
         <div class="attachment-sendbtn">
@@ -32,9 +43,9 @@
             <img src="../assets/video_icon.svg" alt="">
             <img src="../assets/doc_icon.svg" alt="">
           </div>
-          <img src="../assets/send.svg" alt="">
+          <img src="../assets/send.svg" @click="handleSendMsg">
         </div>
-        <Editor />
+        <Editor @didUpdateEditor="didUpdateCommentEditor"/>
        </div>
     </div>
   </div>
@@ -93,13 +104,75 @@ export default {
         {user: 'John Doe', id: 'chatTwo', isGroup: false},
         {user: 'Test', id: 'chatThree', isGroup: false},
         {user: 'Sam', id: 'chatFour', isGroup: true, groupName: 'Sunday Vibes'},
-      ]
+      ], 
+      messages: [
+        {content: "Some random text from my friend", id: 'msgOne'}, 
+        {content: "New text from my friend", id: 'msgTwo'}, 
+        {content: "Let us all send some cool messages", id: 'msgThree'}
+      ], 
+      currentMsg: null
+    }
+  }, 
+  methods: {
+    handleSendMsg() {
+      let msgObj = { content: this.currentMsg, id: 'msgAny'}
+      this.messages.push(msgObj)
+    },
+    didUpdateCommentEditor(msg) {
+      this.currentMsg = msg
+    },
+    isOdd(index) {
+      let results = index % 2
+      console.log('index: ', index, 'results: ', results)
+      return results === 1
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.conversation-list {
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  .convo-cell {
+    .bubble-container, .outgoing-bubble-container {
+      padding: 0 15px 0 15px;
+      display: flex;
+      min-height: 30px;
+      max-width: 90%;
+      margin-bottom: 4px;
+      gap: 10px;
+      label {
+        font-weight: 500;
+        font-size: 14px;
+        text-align: left;
+        background-color: var(--color-dark-primary);
+        padding: 10px;
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+        border-bottom-left-radius: 8px;
+        color: white;
+      }
+      img {
+       height: 30px;
+       width: 30px;
+       border-radius: 4px;
+      }
+    }
+    .outgoing-bubble-container {
+      float: right;
+      flex-direction: row-reverse;
+      label {
+        color: var(--dark-primary);
+        background-color: orange;
+        border-top-right-radius: 0;
+        border-top-left-radius: 8px;
+      }
+    }
+  }
+}
+
 .bottom-input {
   position: relative;
   .attachment-sendbtn {
@@ -110,7 +183,7 @@ export default {
     padding: 0 15px 0 15px;
     z-index: 999;
     height: 40px;
-    width: 280px;
+    width: 240px;
     right: 0;
     top: 8px;
     background-color: white;
@@ -136,11 +209,16 @@ export default {
   height: calc(100vh - 100px);
   overflow: scroll;
   padding-bottom: 40px;
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+.chat-list::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
 }
 .search-container {
   display: flex;
   align-items: center;
-  height: 50px;
+  height: 60px;
   width: 100%;
   padding-left: 8px;
   padding-right: 8px;
@@ -187,7 +265,7 @@ export default {
       .chat-header-container {
         display: flex;
         justify-content: space-between;
-        height: 50px;
+        height: 60px;
         width: 100%;
         padding: 0 15px 0 15px;
         align-items: center;
