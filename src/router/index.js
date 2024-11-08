@@ -6,8 +6,8 @@ import LoginView from '@/views/LoginView.vue'
 import SignUpView from '@/views/SignUp.vue'
 import CardPopupView from '@/components/CardPopupView.vue'
 import InvitationView from '@/views/InvitationView.vue'
-import InvoiceView from '@/components/InvoiceCreator.vue'
 import LandingPageView from '@/views/LandingPageView.vue'
+
 import PricingView from '@/views/PricingView.vue'
 import FeaturesView from '@/components/FeaturesView.vue'
 import TemplatesView from '@/components/TemplatesView.vue'
@@ -15,6 +15,11 @@ import AboutView from '@/components/AboutView.vue'
 import PaymentView from '@/components/PaymentView.vue'
 import AttendanceView from '@/views/AttendanceView.vue'
 import ChatView from '@/views/ChatView.vue'
+import NotFoundView from '@/components/NotFoundView.vue'
+
+// Future features
+import InvoiceView from '@/components/InvoiceCreator.vue'
+import DrawingBoardView from '@/views/DrawingBoardView.vue'
 
 const routes = [
   {
@@ -38,6 +43,16 @@ const routes = [
     name: 'attendance',
     component: AttendanceView
   },
+  // {
+  //   path: '/draw',
+  //   name: 'draw',
+  //   component: DrawingBoardView
+  // },
+  // {
+  //   path: '/invoice',
+  //   name: 'invoice',
+  //   component: InvoiceView
+  // },
   {
     path: '/chat',
     name: 'chat',
@@ -96,7 +111,11 @@ const routes = [
     name: 'invitation',
     component: InvitationView
   },
-  
+  { 
+    path: '/:catchAll(.*)',
+    name: "NotFound",  
+    component: NotFoundView 
+  }
 ]
 
 const router = createRouter({
