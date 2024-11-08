@@ -12,6 +12,7 @@
    :preload="preload"
    :playsinline="true"
    ref="player"
+   :class="{'is-border-cropped': isBorderCropped}"
 />
 </template>
 <script>
@@ -28,12 +29,19 @@ export default {
        muted: { type: Boolean, required: false, default: false },
        poster: { type: String, required: false },
        preload: { type: String, required: false, default: "auto" },
+       isBorderCropped: { type: Boolean, default: true}
     }, 
     setup() {
         var isPlaying = ref(false)
         var isMuted = ref(false)
         return { isPlaying, isMuted }
     }, 
+    mounted() {
+      console.log('autoplay: ', this.autoplay)
+      if (this.autoplay === false) {
+        this.pause()
+      }
+    },
     methods: {
      play() {
       this.$refs.player.play();
@@ -63,9 +71,11 @@ export default {
     }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
     .videoContainer {
         object-fit: cover;
-        border-radius: var(--border-radius-2);
+        &.is-border-cropped {
+          border-radius: var(--border-radius-2);
+        }
     }
 </style>

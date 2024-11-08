@@ -57,9 +57,13 @@
       isEditable: false
     }), 
     methods: {
-        onEditorUpdate(updatedContent) {
-            this.$emit('didUpdateEditor', updatedContent)
-        }
+      clear() {
+        console.log('calling child component')
+        // this.content = ''
+      },
+      onEditorUpdate(updatedContent) {
+        this.$emit('didUpdateEditor', updatedContent)
+      }
     }
   };
   </script>

@@ -2,7 +2,7 @@
   <div class="chat-view">
     <div class="top-nav">
       <img src="../assets/menu_icon.png" class="menu-icon" @click="handleMenuTapped">
-      <h1>Test Chat App</h1>
+      <h1>Learn to Build a Chat App</h1>
     </div>
     <div class="chat-content-view">
         <div class="left-chat-history">

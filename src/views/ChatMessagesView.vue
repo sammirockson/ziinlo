@@ -26,12 +26,19 @@
        <div class="conversation-list">
          <div class="convo-cell" v-for="(msg, index) in messages" :key="msg.id">
            <div class="bubble-container" v-if="isOdd(index)">
-             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAzBE_P3rPclK8gJnC-y1Mq7kNOvyL8yUHlg&s">
-             <label :innerHTML="msg.content"></label>
+             <img class="profile-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAzBE_P3rPclK8gJnC-y1Mq7kNOvyL8yUHlg&s">
+             <label v-if="msg.type === 'text'" v-html="msg.content" class="incoming-bubble"></label>
+             <img class="image-file" v-else-if="msg.type === 'image'" :src="msg.imageURL">
+             <videoplayer class="videoContainer" v-else-if="msg.type === 'video'" :src="msg.videoURL" controls="true" height="380" width="300" :autoplay="false" :isBorderCropped="false" ref="chatVideoPlayer"></videoplayer>
+             <AttachmentCardView class="fileViewer" :class="{'is-outgoing': false}" v-else-if="msg.type === 'doc'" :attachment="msg.docAttachment"/>
+            
            </div>
            <div class="outgoing-bubble-container" v-else>
-             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAzBE_P3rPclK8gJnC-y1Mq7kNOvyL8yUHlg&s">
-             <label :innerHTML="msg.content"></label>
+             <img class="profile-image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAzBE_P3rPclK8gJnC-y1Mq7kNOvyL8yUHlg&s">
+             <label v-if="msg.type === 'text'" v-html="msg.content"></label>
+             <img class="image-file" :class="{'is-outgoing': true}" v-else-if="msg.type === 'image'" :src="msg.imageURL">
+             <videoplayer class="videoContainer" :class="{'is-outgoing': true}" v-else-if="msg.type === 'video'" :src="msg.videoURL" controls="true" height="380" width="300" :autoplay="false"  :isBorderCropped="false" ref="chatVideoPlayer"></videoplayer>
+             <AttachmentCardView class="fileViewer" :class="{'is-outgoing': true}" v-else-if="msg.type === 'doc'" :attachment="msg.docAttachment"/>
            </div>
          </div>
        </div>
@@ -39,23 +46,55 @@
        <div class="bottom-input">
         <div class="attachment-sendbtn">
           <div class="add-attchment">
-            <img src="../assets/add_image.svg" alt="">
-            <img src="../assets/video_icon.svg" alt="">
-            <img src="../assets/doc_icon.svg" alt="">
+            <img src="../assets/add_image.svg" @click="handleAddImageFile">
+            <img src="../assets/video_icon.svg" @click="handleAddVideoFile">
+            <img src="../assets/doc_icon.svg" @click="handleAddDocs">
           </div>
           <img src="../assets/send.svg" @click="handleSendMsg">
         </div>
-        <Editor @didUpdateEditor="didUpdateCommentEditor"/>
+        <ChatInputField :readonly="readonly" @didUpdateEditor="didUpdateCommentEditor" v-on:keyup.enter="handleSendMsg" ref="msgeditor"/>
        </div>
+
+       <input
+          type="file"
+          name="file"
+          id="imageFileInput"
+          class="hidden-input"
+          @change="onImageChange"
+          ref="imageFfile"
+          accept=".jpg ,.jpeg ,.png"
+        />
+        <input type="file"
+          name="file"
+          id="videoFileInput"
+          class="hidden-input"
+          @change="onVideoChange"
+          ref="videoFile"
+          accept=".mp4, .mov"
+        />
+        <input
+          type="file"
+          name="file"
+          id="docFileInput"
+          class="hidden-input"
+          @change="onDocChange"
+          ref="docFile"
+          accept=".docx, .pptx, .xlsx, .pdf, .zip, .rar"
+        />
     </div>
   </div>
 </template>
 
 <script>
-import Editor from "../components/Editor.vue";
+import ChatInputField from '@/components/ChatInputField.vue';
+import Videoplayer from "@/components/Videoplayer.vue"
+import FileViewer from '@/components/FileViewer.vue';
+import AttachmentCardView from '@/components/AttachmentCardView.vue';
+import _ from 'lodash';
+
 export default {
   components: {
-    Editor
+    ChatInputField, Videoplayer, FileViewer, AttachmentCardView
   },
   data() {
     return {
@@ -106,35 +145,123 @@ export default {
         {user: 'Sam', id: 'chatFour', isGroup: true, groupName: 'Sunday Vibes'},
       ], 
       messages: [
-        {content: "Some random text from my friend", id: 'msgOne'}, 
-        {content: "New text from my friend", id: 'msgTwo'}, 
-        {content: "Let us all send some cool messages", id: 'msgThree'}
+        {content: "Some random text from my friend", type: 'text', id: 'msgOne'}, 
+        {content: "New text from my friend", type: 'text', id: 'msgTwo'}, 
+        {content: "Let us all send some cool messages", type: 'text', id: 'msgThree'}
       ], 
-      currentMsg: null
+      currentMsg: null, 
+      readonly: true, 
     }
   }, 
   methods: {
-    handleSendMsg() {
-      let msgObj = { content: this.currentMsg, id: 'msgAny'}
+    onDocChange() {
+      let file = this.$refs.docFile.files[0]
+      if (file === null || file === undefined) {
+         return 
+      }
+      const fileName = _.get(file, 'name')
+      const fileSize = _.get(file, 'size')
+      const fileType = fileName.split(".").pop()
+      console.log('fileType: ', fileType, 'fileName: ', fileName)
+      const docURLFile = this.generateURL(file)
+      const docAttachment = {
+        fileType: fileType.toLowerCase(), 
+        fileURL: docURLFile, 
+        fileName: fileName, 
+        size: fileSize
+      }
+      let msgObj = { docAttachment: docAttachment, type: 'doc', id: 'msgDoc'}
       this.messages.push(msgObj)
+      this.scrollToBottom()
+    },
+    onVideoChange() {
+      let file = this.$refs.videoFile.files[0]
+      if (file === null || file === undefined) {
+         return 
+      }
+      const videoFileURL = this.generateURL(file)
+      let msgObj = {videoURL: videoFileURL, type: 'video', id: 'msgVideo'}
+      this.messages.push(msgObj)
+      this.scrollToBottom()
+      setTimeout(async ()=> {
+        const videoPlayers = this.$refs.chatVideoPlayer
+        for (var index in videoPlayers) {
+          const vidPlayer = videoPlayers[index]
+          vidPlayer.pause()
+        }
+      }, 300)
+      // TODO: Upload to server and update local url
+    },
+    onImageChange() {
+      let file = this.$refs.imageFfile.files[0]
+      if (file === null || file === undefined) {
+         return 
+      }
+      const imageFileURL = this.generateURL(file)
+      console.log('file url: ', imageFileURL)
+      let msgObj = { imageURL: imageFileURL, type: 'image', id: 'msgImage'}
+      this.messages.push(msgObj)
+      this.scrollToBottom()
+      // TODO: Upload to server and update local url
+    },
+    handleAddDocs() {
+      const docFileInput = document.getElementById("docFileInput")
+      docFileInput.click()
+    },
+    handleAddVideoFile() {
+      const videoFileInput = document.getElementById("videoFileInput")
+      videoFileInput.click()
+    },
+    handleAddImageFile() {
+      const imageFileInput = document.getElementById("imageFileInput")
+      imageFileInput.click()
+    },
+    handleSendMsg() {
+      this.readonly = true
+      let msgObj = { content: this.currentMsg, type: 'text', id: 'msgAny'}
+      this.messages.push(msgObj)
+      this.currentMsg = 'none'
+      this.scrollToBottom()
+    },
+    scrollToBottom() {
+      setTimeout(async ()=> {
+        this.$refs.msgeditor.clear('none');
+        var convoList = document.getElementsByClassName('conversation-list')[0]
+        convoList.scrollTop = convoList.scrollHeight;
+        this.readonly = false
+      }, 100)
     },
     didUpdateCommentEditor(msg) {
       this.currentMsg = msg
     },
     isOdd(index) {
       let results = index % 2
-      console.log('index: ', index, 'results: ', results)
       return results === 1
-    }
+    }, 
+    generateURL(file) {
+       let fileSrc = URL.createObjectURL(file);
+      //  setTimeout(() => {
+      //    URL.revokeObjectURL(fileSrc);
+      //  }, 1000);
+       return fileSrc;
+    },
   }
 }
 </script>
-
+<style lang="scss">
+ .bubble-container {
+   label, p {
+     color: white;
+   }
+ }
+</style>
 <style lang="scss" scoped>
 .conversation-list {
   display: flex;
   flex-direction: column;
   padding-top: 20px;
+  max-height: calc(100% - 200px);
+  overflow-y: scroll;
   .convo-cell {
     .bubble-container, .outgoing-bubble-container {
       padding: 0 15px 0 15px;
@@ -148,21 +275,21 @@ export default {
         font-size: 14px;
         text-align: left;
         background-color: var(--color-dark-primary);
-        padding: 10px;
+        padding: 10px 12px 10px 12px;
         border-top-right-radius: 8px;
         border-bottom-right-radius: 8px;
         border-bottom-left-radius: 8px;
         color: white;
       }
-      img {
-       height: 30px;
-       width: 30px;
-       border-radius: 4px;
+      .profile-image {
+        height: 30px;
+        width: 30px;
+        border-radius: 4px;
       }
     }
     .outgoing-bubble-container {
-      float: right;
-      flex-direction: row-reverse;
+       float: right;
+       flex-direction: row-reverse;
       label {
         color: var(--dark-primary);
         background-color: orange;
@@ -171,10 +298,42 @@ export default {
       }
     }
   }
+  .image-file {
+    height: 250px;
+    width: 180px;
+    object-fit: cover;
+  }
+  .fileViewer {
+    height: 90px;
+    width: 320px;
+    background-color: var(--color-dark-primary);
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    &.is-outgoing {
+        background-color: orange;
+        border-top-right-radius: 0;
+        border-top-left-radius: 8px;
+    }
+  }
+  .videoContainer {
+    height: 380px;
+    width: 300px;
+  }
+  .image-file, .videoContainer {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    &.is-outgoing {
+      border-top-right-radius: 0;
+      border-top-left-radius: 8px;
+    }
+  }
 }
 
 .bottom-input {
   position: relative;
+  max-height: 300px;
   .attachment-sendbtn {
     position: absolute;
     display: flex;
@@ -183,7 +342,7 @@ export default {
     padding: 0 15px 0 15px;
     z-index: 999;
     height: 40px;
-    width: 240px;
+    width: 540px;
     right: 0;
     top: 8px;
     background-color: white;
@@ -315,6 +474,13 @@ export default {
         }
       }
     }
+ .hidden-input {
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+  }
 }
 
 </style>

@@ -100,37 +100,37 @@
              </div>
 
             <div class="controlsContainer">
-             <label class="memberTitleLabel">Members</label>
-             <div class="membersContainer" v-if="members != null">
-                <div class="memberCell" v-for="(member) in members" :key="member._id" @click="handleJoinRemove(member)">
+               <label class="memberTitleLabel">Members</label>
+               <div class="membersContainer" v-if="members != null">
+                 <div class="memberCell" v-for="(member) in members" :key="member._id" @click="handleJoinRemove(member)">
                     <img v-if="member._id == 'joinRemove'" :class="member.fullName" class="memberPhoto">
                    <img v-else :src="member.picture != null ? member.picture : require(`@/assets/placeholder.png`)" class="memberPhoto">
                    <label class="memberNameLabel" v-if="member._id == 'joinRemove'">{{ member.fullName }}</label>
                    <label class="memberNameLabel" v-else>{{ member.fullName }}</label>
-                </div>
-             </div>
-             <label class="seeMoreMembersLabel" v-if="members.length > 8">See more</label>
+                 </div>
+               </div>
+               <label class="seeMoreMembersLabel" v-if="members.length > 8">See more</label>
 
 
              <!-- <label class="memberLabel">Action</label> -->
-             <label class="memberLabel">Manage</label>
+               <label class="memberLabel">Manage</label>
              <!-- <ButtonCard imageIcon="priority.png" title="Priority level"/> -->
-             <ButtonCard imageIcon="assignee.png" title="Assign" @click="handleAssign"/>
-             <ButtonCard imageIcon="move.png" title="Move" @click="handleMoveCard"/>
+               <ButtonCard imageIcon="assignee.png" title="Assign" @click="handleAssign"/>
+               <ButtonCard imageIcon="move.png" title="Move" @click="handleMoveCard"/>
 
-             <ButtonCard imageIcon="tags.png" title="Tags" @click="handleTagTapped"/>
-             <date-picker v-model="selectedDate" @update:model-value="handleSaveDate"  time-picker-inline >
-               <template #trigger>
-                 <ButtonCard imageIcon="duedate.png" title="Due Date"/>
+               <ButtonCard imageIcon="tags.png" title="Tags" @click="handleTagTapped"/>
+               <date-picker v-model="selectedDate" @update:model-value="handleSaveDate"  time-picker-inline >
+                <template #trigger>
+                  <ButtonCard imageIcon="duedate.png" title="Due Date"/>
                </template>
-             </date-picker>
+              </date-picker>
              <!-- <ButtonCard imageIcon="poll.png" title="Poll"/> -->
-             <ButtonCard imageIcon="checklist.png" title="Checklist" @click="handleCheckListTapped"/>
-             <ButtonCard imageIcon="fileAttachment.png" title="Attachments" @click="handleAttachmentTapped"/>
-             <label class="memberLabel">Connect</label>
-             <ButtonCard imageIcon="share.png" title="Share" @click="handleShare"/>
-             <label class="memberLabel">Archive</label>
-             <ButtonCard imageIcon="archive.png" title="Delete" @click="handleDeleteCard"/>
+              <ButtonCard imageIcon="checklist.png" title="Checklist" @click="handleCheckListTapped"/>
+              <ButtonCard imageIcon="fileAttachment.png" title="Attachments" @click="handleAttachmentTapped"/>
+              <label class="memberLabel">Connect</label>
+              <ButtonCard imageIcon="share.png" title="Share" @click="handleShare"/>
+              <label class="memberLabel">Archive</label>
+              <ButtonCard imageIcon="archive.png" title="Delete" @click="handleDeleteCard"/>
              </div>
         </div>
 
