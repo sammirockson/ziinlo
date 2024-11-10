@@ -1,7 +1,6 @@
 <template>
     <div class="boardNavItems">
     <div class="left-contentView">
-        <img src="../assets/menu_icon.png" class="menu-icon" @click="handleMenuTapped">
        <label class="boardNameLabel">{{ boardName }}</label>
        <div class="taskNotificationContainer">
             <button @click="handleCreateBoard()">       
