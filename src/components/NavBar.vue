@@ -9,7 +9,7 @@
                 <a href="#" :class="{ active: index === selectedIndex}">{{ item.title }}</a>
             </div>
         </div>
-        <button class="contact-us" @click.prevent="handleContactUs" :class="{'is-visible': isContactVisible}">Contact Us</button>
+        <button class="contact-us" @click.prevent="handleLogin" :class="{'is-visible': isContactVisible}">Log In</button>
     </div> 
 </template>
 
@@ -39,8 +39,8 @@ export default {
         handleNavTapped(navItem) {
             this.$emit('didSelectNavItem', navItem)
         }, 
-        handleContactUs() {
-            this.$emit('onContactUs')
+        handleLogin() {
+            this.$router.push({path: '/login'})
         }
     }
 }

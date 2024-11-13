@@ -58,7 +58,7 @@
           '#80CBC4',
           '#9DEF8F',
         ]),
-        size: Math.ceil(Math.random() * Math.floor(10)),
+        size: 2,
         svg: null,
         path: null,
         points: [],
@@ -150,6 +150,7 @@
   
   <style lang="scss">
   .draw {
+    background-color: white;
     svg {
       background: #f1f3f5;
       cursor: crosshair;

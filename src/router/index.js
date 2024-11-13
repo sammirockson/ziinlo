@@ -20,6 +20,7 @@ import NotFoundView from '@/components/NotFoundView.vue'
 // Future features
 import InvoiceView from '@/components/InvoiceCreator.vue'
 import DrawingBoardView from '@/views/DrawingBoardView.vue'
+import WhiteBoardView from '@/views/WhiteBoardView.vue'
 
 const routes = [
   {
@@ -43,11 +44,11 @@ const routes = [
     name: 'attendance',
     component: AttendanceView
   },
-  // {
-  //   path: '/draw',
-  //   name: 'draw',
-  //   component: DrawingBoardView
-  // },
+  {
+    path: '/whiteboard',
+    name: 'whiteboard',
+    component: WhiteBoardView
+  },
   // {
   //   path: '/invoice',
   //   name: 'invoice',

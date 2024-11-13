@@ -80,16 +80,20 @@ export default {
                 path = '/chat'
             } else if (item.id === 'attendance') {
                 path = '/attendance'
+            } else if (item.id === 'whiteboard') {
+                path = '/whiteboard'
             }
             this.$router.push({path: path})
             // localStorage.setItem(SIDE_BAR_MENU_ITEM_KEY, item.id)
         }
     },
     mounted() {
+        // whiteboard
         this.menuItems = [
             {name: "All Boards", id: "board", icon: "board.png"},
-            {name: "Team Chat", id: "chat", icon: "chat.png"}, 
-            {name: "Attendance", id: "attendance", icon: "calendar.png"},
+            {name: "White Board", id: "whiteboard", icon: "blackboard.png"},
+            // {name: "Team Chat", id: "chat", icon: "chat.png"}, 
+            // {name: "Attendance", id: "attendance", icon: "calendar.png"},
         ]
     }
 }
@@ -184,6 +188,7 @@ export default {
     width: 24px;
     height: 24px;
     color: null;
+    object-fit: contain;
 }
 
 .menuIconActive {
@@ -234,6 +239,9 @@ export default {
         &.attendance {
             content: url("../../src/assets/calendarActive.png");
         }
+        &.whiteboard {
+            content: url("../../src/assets/blackboardActive.png");
+        }
      }
    }
 }
@@ -256,6 +264,9 @@ export default {
         }
         &.attendance {
             content: url("../../src/assets/calendarActive.png");
+        }
+        &.whiteboard {
+            content: url("../../src/assets/blackboardActive.png");
         }
     }
 }

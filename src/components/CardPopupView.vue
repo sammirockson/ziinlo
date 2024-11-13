@@ -827,6 +827,9 @@ export default {
     &.mov {
         content: url('../assets/movIcon.png');
     }
+    &.zip {
+        content: url('../assets/other_files.png');
+    }
 }
 .attachmentsTitleLabel {
     margin-top: 20px;

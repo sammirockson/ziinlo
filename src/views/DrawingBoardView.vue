@@ -19,7 +19,6 @@ export default {
       editor: null,
     }
   },
-
   mounted() {
     this.editor = new Editor({
       extensions: [
@@ -31,7 +30,6 @@ export default {
       ],
     })
   },
-
   beforeUnmount() {
     this.editor.destroy()
   }
