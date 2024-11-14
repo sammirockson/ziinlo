@@ -26,7 +26,10 @@ class APIService {
       await this.baseRequest("board/addDescriptionToCard", params)
     }
 
-
+    async sendInvitation(params) {
+        let path = "email/invite"
+        return await this.baseRequest(path, params)
+    }
     
     async moveCard(params) {
         let path = "board/moveCard"
@@ -133,8 +136,10 @@ class APIService {
             let fullURL = BASE_URL + path
             const response = await fetch(fullURL, options)
             let jsonResp = await response.json()
+            console.log('apiservice resp: ', jsonResp)
             return jsonResp.resp
         } catch (err) {
+            console.log('apiservice error: ', err)
         }
     }
 }

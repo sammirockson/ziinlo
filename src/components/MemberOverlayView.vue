@@ -1,8 +1,11 @@
 <template>
     <div class="memberOverlay">
         <div class="search-input-container">
-             <input type="email" class="invite-email-field" placeholder="Email address">
-            <button>Send Invite</button>
+             <input type="email" placeholder="example@mail.com" required v-model="emailAddress" class="invite-email-field">
+             <button v-if="isSendingInvite" class="login buttonload">
+                  <i class="fa fa-circle-o-notch fa-spin"></i> Logging in... 
+              </button>
+              <button v-else :disabled="!isValidEmail" :class="{'is-active': isValidEmail}" @click="handleSendInvite">Send Invite</button>
         </div>
         <div class="invitation-link-container">
             <img src="../assets/link.png">
@@ -23,6 +26,13 @@
               </div> 
            </div>
         </div>
+        <v-snackbar
+      v-model="isAlertVisible"
+      :timeout="snackbarTimeout"
+      rounded
+      >
+      Invitation link has been copied successfully
+    </v-snackbar>
     </div>
 </template>
 <script>
@@ -36,6 +46,9 @@ export default {
     props: {
         boardId: {
             type: String
+        }, 
+        boardName: {
+            type: String
         }
     },
     setup() {
@@ -43,8 +56,12 @@ export default {
         var searchResults = ref([])
         var searchText = ref("")
         var currentUser = ref(null)
+        var emailAddress = ref(null)
+        var isAlertVisible = ref(false)
+        var snackbarTimeout = ref(8000)
+        var isSendingInvite = ref(false)
         return {
-            members, searchText, searchResults, currentUser
+            members, searchText, searchResults, currentUser, emailAddress, isAlertVisible, snackbarTimeout, isSendingInvite
         }
     }, 
     watch: {
@@ -52,7 +69,28 @@ export default {
             this.searchResults = this.members.filter(object => object.fullName.includes(this.searchText))
         }
     },
+    computed: {
+        isValidEmail() {
+            const email = this.emailAddress
+            var regex = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
+            return regex.test(email)
+        }
+    },
     methods: {
+        async handleSendInvite() {
+            this.isSendingInvite = true
+            let currentUserId = this.currentUser._id
+            let invitationURL = `https://ziinlo.com/invitation/b/${this.boardId}/i/${currentUserId}`
+            const params = {
+                recipientsEmail: this.emailAddress, 
+                boardName: this.boardName, 
+                emailContentHtml: `You have been invited to join and contribute to ${this.boardName} board. Click this link ${invitationURL} to join the board`
+            }
+            console.log('email params: ', params)
+            await APIService.sendInvitation(params)
+            this.isSendingInvite = false
+            this.emailAddress = null
+        },
         handleCopyURL() {
             if (this.currentUser !== null) {
                 let currentUserId = this.currentUser._id
@@ -81,7 +119,7 @@ export default {
         document.body.appendChild(textarea);
         textarea.select();
         try {
-            alert('Copied')
+            this.isAlertVisible = true 
             return document.execCommand("copy"); 
         } catch (ex) {
             console.warn("Copy to clipboard failed.", ex);
@@ -196,6 +234,14 @@ export default {
 .search-input-container button  {
     height: 40px;
     width: 100px;
+    background-color: var(--color-light);
+    &.is-active {
+        background-color: var(--color-dark-theme);
+    }
+}
+
+.search-input-container button:disabled {
+    cursor: not-allowed;
 }
 
 .adminBtn img {

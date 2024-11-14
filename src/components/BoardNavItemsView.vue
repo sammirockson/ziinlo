@@ -35,7 +35,7 @@
     <img src="../assets/totalCustomers.png" class="user-profile" @click="handleProfileTapped">
     </div>
     <v-overlay v-model="isMemberVisible" class="align-top justify-end overLayContainer"  contained>
-        <MemberOverlayView class="membersOverlayContainer" :boardId="boardId"></MemberOverlayView>
+        <MemberOverlayView class="membersOverlayContainer" :boardId="boardId" :boardName="boardName"></MemberOverlayView>
     </v-overlay>
     <v-overlay v-model="isProfileVisible" class="align-top justify-end overLayContainer" opacity="0"  contained>
         <UserProfileDropDownView class="profile-list-dropdown"></UserProfileDropDownView>

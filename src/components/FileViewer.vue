@@ -5,6 +5,7 @@
         <videoplayer v-if="attachment != null && (attachment.fileType.toLowerCase() == 'mp4' ||  attachment.fileType.toLowerCase() == 'mov')" :src="attachment.fileURL" controls="true" height="800" width="1200"></videoplayer>
         <vue-office-docx v-if="attachment != null && (attachment.fileType.toLowerCase() == 'docx' || attachment.fileType.toLowerCase() == 'doc')" :src="attachment.fileURL" @rendered="rendered"  class="previewer"/>
         <vue-office-excel v-if="attachment != null && (attachment.fileType.toLowerCase() == 'xlsx' || attachment.fileType.toLowerCase() == 'xls')"  :src="attachment.fileURL" class="previewer"/>
+        <img v-if="attachment != null && attachment.fileType.toLowerCase() == 'zip'" src="../assets/other_files.png" class="download-zip" @click="handleDownloadZip">
         <img src="../assets/close-icon.png" class="close-icon" @click="dismissFileViewer">
     </div>
 </template>
@@ -18,7 +19,6 @@ import '@vue-office/docx/lib/index.css'
 
 import { ref } from 'vue'
 import PDF from "pdf-vue3";
-import axios from "axios";
 
 export default {
     props: { attachment: null }, 
@@ -30,6 +30,9 @@ export default {
         return { config }
     },
     methods: {
+        handleDownloadZip() {
+            window.open(this.attachment.fileURL, '_blank');
+        },
         dismissFileViewer() {
             this.$emit("dismissFileViewer")
         }
