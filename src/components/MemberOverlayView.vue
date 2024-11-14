@@ -2,8 +2,8 @@
     <div class="memberOverlay">
         <div class="search-input-container">
              <input type="email" placeholder="example@mail.com" required v-model="emailAddress" class="invite-email-field">
-             <button v-if="isSendingInvite" class="login buttonload">
-                  <i class="fa fa-circle-o-notch fa-spin"></i> Logging in... 
+             <button v-if="isSendingInvite" :class="{'is-active': isValidEmail}" class="buttonload">
+                  <i class="fa fa-circle-o-notch fa-spin"></i> Sending... 
               </button>
               <button v-else :disabled="!isValidEmail" :class="{'is-active': isValidEmail}" @click="handleSendInvite">Send Invite</button>
         </div>
@@ -89,7 +89,9 @@ export default {
             console.log('email params: ', params)
             await APIService.sendInvitation(params)
             this.isSendingInvite = false
-            this.emailAddress = null
+            setTimeout(() => {
+                this.emailAddress = null
+             }, 500);
         },
         handleCopyURL() {
             if (this.currentUser !== null) {
