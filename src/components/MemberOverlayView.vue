@@ -11,6 +11,20 @@
             <img src="../assets/link.png">
             <label>Anyone with the link can join the board <br><span @click="handleCopyURL">Copy link</span></label>
         </div>
+        <div class="email-content" id="emailContent" :style="{backgroundColor: '#848bc82e', padding: '30px'}">
+            <div class="header" :style="{display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px'}">
+                <img src="https://res.cloudinary.com/doorhob/image/upload/v1731568127/jtymxrrstj6vme9nw1g2.png" :style="{maxWidth: '34px', maxHeight: '34px', objectFit: 'contain', display: 'flex'}">
+                <label :style="{height: '34px', display: 'flex', gap: '8px', alignItems: 'center', fontWeight: '700', fontSize: '30px'}">Ziinlo</label>
+            </div>
+            <div class="invitation-content" >
+                <h1 :style="{fontSize: '24px', marginTop: '10px'}">{{ getFullName }} invited you to the {{ boardName }} board.</h1>
+                <label :style="{marginTop: '20px'}">Join the <b>{{ boardName }}</b> board to collaborate, manage project and reach new productivity levels.</label>
+                 <div class="join-btn-container" :style="{marginTop: '20px', marginBottom: '20px'}">
+                    <a :href="getInvitationURL"><button :style="{padding: '10px 20px 10px 20px', backgroundColor: '#1C2634', color: 'white', borderRadius: '8px', fontWeight: '600', borderColor: 'transparent'}">Join Board</button></a>
+                 </div>
+                 <label><b>What is Ziinlo?</b> It is more than work, its a way of managing projects and teams. Track tasks using Ziinlo cards, talk to your colleagues on Ziinlo chat and track your annual leaves.</label>
+            </div>
+        </div>
         <label class="memberTitleLabel">Members</label>
         <div class="separatorLineView"/>
         <div class="membersList">
@@ -40,6 +54,7 @@ import { USER_CACHE_KEY } from '@/config'
 import APIService from '@/APIService';
 import { ref } from 'vue'
 import CryptoJS from 'crypto-js'
+import { lab } from 'd3';
 
 export default {
     inject: ["cryptojs"],
@@ -70,21 +85,31 @@ export default {
         }
     },
     computed: {
+        getInvitationURL() {
+           let currentUserId = _.get(this.currentUser, '_id') 
+           let invitationURL = `https://ziinlo.com/invitation/b/${this.boardId}/i/${currentUserId}`
+           return invitationURL
+        },
         isValidEmail() {
             const email = this.emailAddress
             var regex = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
             return regex.test(email)
+        }, 
+        getFullName() {
+            return _.get(this.currentUser, 'fullName')
         }
     },
     methods: {
         async handleSendInvite() {
             this.isSendingInvite = true
-            let currentUserId = this.currentUser._id
-            let invitationURL = `https://ziinlo.com/invitation/b/${this.boardId}/i/${currentUserId}`
+            // let currentUserId = this.currentUser._id
+            // let invitationURL = `https://ziinlo.com/invitation/b/${this.boardId}/i/${currentUserId}`
+            const emailContent = document.getElementById('emailContent')
+            // `You have been invited to join and contribute to ${this.boardName} board. Click this link ${invitationURL} to join the board`
             const params = {
                 recipientsEmail: this.emailAddress, 
                 boardName: this.boardName, 
-                emailContentHtml: `You have been invited to join and contribute to ${this.boardName} board. Click this link ${invitationURL} to join the board`
+                emailContentHtml: emailContent.innerHTML
             }
             console.log('email params: ', params)
             await APIService.sendInvitation(params)
@@ -148,6 +173,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.email-content {
+    display: none;
+}
 .invitation-link-container {
     display: flex;
     margin-top: 15px;

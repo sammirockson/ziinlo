@@ -38,6 +38,7 @@
     "vue-cryptojs": "^2.4.7",
     "vue-demi": "^0.14.6",
     "vue-doc-preview": "^0.3.2",
+    "vue-email": "^0.8.11",
     "vue-google-oauth2": "^1.5.10",
     "vue-gtag": "^2.0.1",
     "vue-horizontal": "^1.0.2",
