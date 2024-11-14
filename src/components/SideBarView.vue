@@ -20,7 +20,7 @@
         <div class="subscriptionPlanContainer">
             <label class="nameLabel">Upgrade Your Plan</label>
             <label class="roleLabel">Upgrade your plan today to unlock a world of enhanced features</label>
-            <button> <img src="@/assets/seePlansActive.png" alt=""> See plans</button>
+            <button  @click="handleSeePlans"> <img src="@/assets/seePlansActive.png"> See plans</button>
         </div>
 
         <v-dialog v-model="isLogginOut" max-width="400">
@@ -57,6 +57,10 @@ export default {
         this.isCoverViewVisible = true 
     },
     methods: {
+        handleSeePlans() {
+            console.log('see plans')
+            this.$router.push({path: "/pricing"})
+        },
         handleLogOut() {
             this.isLogginOut = false 
             // this.$router.push({path: "/auth"})
@@ -162,6 +166,7 @@ export default {
     height: 150px;
     position: absolute;
     bottom: 2rem;
+    z-index: 99999;
 }
 
 .subscriptionPlanContainer button {
