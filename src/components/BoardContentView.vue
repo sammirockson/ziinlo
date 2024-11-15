@@ -520,6 +520,7 @@ export default {
         this.boardId = routeParams.boardId
         this.getBoardBy(this.boardId)
         this.getAllMembers()
+
     },
 }
 </script>

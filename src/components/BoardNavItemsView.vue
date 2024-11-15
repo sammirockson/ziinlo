@@ -30,15 +30,19 @@
     <!-- <div class="themeToggler" @click="handleThemeToggle">
         <span class="material-symbols-sharp active" id="lightMode">light_mode</span>
         <span class="material-symbols-sharp" id="darmMode">dark_mode</span>
-    </div> -->
-    <img src="@/assets/notification-white.svg" class="notificationIcon">
+    </div> notification-white.svg --> 
+    <img :src="require(isNotified ? '@/assets/notification-white.svg' : '@/assets/notification_default.png')" class="notificationIcon" @click="handleNotificationTapped">
     <img src="../assets/totalCustomers.png" class="user-profile" @click="handleProfileTapped">
     </div>
-    <v-overlay v-model="isMemberVisible" class="align-top justify-end overLayContainer"  contained>
+    <v-overlay v-model="isMemberVisible" class="align-top justify-end overLayContainer" opacity="0"  contained>
         <MemberOverlayView class="membersOverlayContainer" :boardId="boardId" :boardName="boardName"></MemberOverlayView>
     </v-overlay>
     <v-overlay v-model="isProfileVisible" class="align-top justify-end overLayContainer" opacity="0"  contained>
         <UserProfileDropDownView class="profile-list-dropdown"></UserProfileDropDownView>
+    </v-overlay>
+
+    <v-overlay v-model="isNotificationVisible" class="align-top justify-end overLayContainer" opacity="0.3"  contained>
+        <NotificationView :boardId="this.boardId" :boardMembers="this.allBoardMemberIds" @dismissNotification="dismissNotification"></NotificationView>
     </v-overlay>
     
     <v-layout>
@@ -55,6 +59,9 @@ import MemberOverlayView from './MemberOverlayView.vue';
 import CreateNewBoardView from './CreateNewBoardView.vue'
 import UserProfileDropDownView from './UserProfileDropDownView.vue';
 import SideBarView from './SideBarView.vue';
+import NotificationView from './NotificationView.vue';
+import _ from 'lodash';
+
 export default {
     props: {
         boardName: {
@@ -63,7 +70,7 @@ export default {
         }
     },
     components: {
-        MemberOverlayView, CreateNewBoardView, SideBarView, UserProfileDropDownView
+        MemberOverlayView, CreateNewBoardView, SideBarView, UserProfileDropDownView, NotificationView
     },
     setup() {
         var isMemberVisible = ref(false)
@@ -74,15 +81,24 @@ export default {
         var boardId = ref('')
         var isMenuVisible = ref(false)
         var isProfileVisible = ref(false)
+        var isNotificationVisible = ref(false)
+        var allBoardMemberIds = ref([])
+        var isNotified = ref(false)
         return { 
-            isMemberVisible, members, isCreateBoard, isProfileVisible,
-            searchText, remainingCount, boardId, isMenuVisible 
+            isMemberVisible, members, isCreateBoard, isProfileVisible, allBoardMemberIds,
+            searchText, remainingCount, boardId, isMenuVisible , isNotificationVisible, isNotified
         }
     }, 
     async mounted() {
         this.fetchMembers()
     },
     methods: {
+        dismissNotification() {
+            this.isNotificationVisible = false
+        },
+        handleNotificationTapped() {
+            this.isNotificationVisible = true
+        },
         handleProfileTapped() {
             this.isProfileVisible = true 
         },
@@ -131,6 +147,7 @@ export default {
             boardId: routeParams.boardId
          }
          let allMembers = await APIService.getBoardMembers(params)
+         this.allBoardMemberIds = _.map(allMembers, 'id')
          if (allMembers != null) {
             this.remainingCount = allMembers.length - 5
             this.members = allMembers.slice(0, 5);
