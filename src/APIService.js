@@ -141,6 +141,7 @@ class APIService {
             let fullURL = BASE_URL + path
             const response = await fetch(fullURL, options)
             let jsonResp = await response.json()
+            console.log('apiservice response: ', jsonResp)
             return jsonResp.resp
         } catch (err) {
             console.log('apiservice error: ', err)

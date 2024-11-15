@@ -26,10 +26,10 @@ export default {
     }, 
     methods: {
         getDateFormat(createdAt) {
-            let date = Dayjs(createdAt)
-            let today = new Date()
-            let isAfterToday = date.isAfter(today, 'day')
-           return isAfterToday ? Dayjs(createdAt).format('DD-MM-YYYY ddd HH:mm A') : Dayjs(createdAt).format('ddd HH:mm A') 
+           const formattedDate = new Date(createdAt).toLocaleDateString('en-US', {
+                month: 'short', day: 'numeric' , hour: 'numeric', minute: 'numeric'
+           })
+           return formattedDate
         }
     }
 }

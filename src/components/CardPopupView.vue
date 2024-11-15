@@ -30,7 +30,14 @@
                         <img src="@/assets/duedate.png" alt="">
                         <label for="">Due Date</label>
                     </div>
-                    <label class="dueDateTitelLabel">{{ formatDate(card) }}</label>
+                    <div class="dueDateContainer" v-if="card.dueDate != null">
+                      <img src="@/assets/clock.png" class="clockIcon">
+                      <label class="dueDateLabel">{{ new Date(card.dueDate).toLocaleDateString('en-US', {
+                        month: 'short', day: 'numeric' , hour: 'numeric', minute: 'numeric'
+                       }) }}</label>
+                    </div>
+                    <!-- <label class="dueDateTitelLabel">{{ formatDate(card) }}</label> -->
+                    
                 </div>
 
                 <div class="statusContainer" v-if="assignees.length > 0">
@@ -208,7 +215,7 @@ import FileViewer from '@/components/FileViewer.vue'
 import PopupRouterView from './PopupRouterView.vue';
 import { BASE_URL, USER_CACHE_KEY } from '@/config'
 import AssigneeView from '@/components/AssigneeView.vue'
-import CommentsView from '@/components/CommentsView.vue'
+import CommentsView from '@/views/CommentsView.vue'
 import AssignOverlayView from './AssignOverlayView.vue';
 import CardMoveView from './CardMoveView.vue';
 
@@ -682,6 +689,27 @@ export default {
 
 
 <style lang="scss" scoped>
+.dueDateContainer {
+    /* width: 124px; */
+    width: 135px;
+    height: 30px;
+    margin-top: 8px;
+    border-radius: var(--border-radius-1);
+    background-color: #FC6363;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .dueDateLabel {
+    color: white;
+    font-weight: 500;
+    font-size: 13px;
+    margin-left: 4px;
+    }
+    .clockIcon {
+    width: 14px;
+    height: 14px;
+}
+}
 .memberCarView {
     height: 500px;
     width: 300px;

@@ -8,7 +8,7 @@
             <i class="fa fa-circle-o-notch fa-spin"></i> Loading... 
         </button>
         <div v-else class="boardContentView">
-            <v-row style="overflow: hidden;">
+            <v-row>
              <v-col v-for="board in boards" :key="board" cols="auto"> 
                <div class="productGridCellWithBorder"  @click="handleBoardTapped(board)">
                   <img src="@/assets/board_placeholder.png" class="productCellImage">
@@ -141,11 +141,15 @@ export default {
 }
 
 .boardContentView {
+  display: flex;
+  justify-content: center;
+  // align-items: center;
     width: 80%;
-    height: 80%;
+    max-height: 80%;
     display: flex;
-    margin: auto;
-    padding: 50px 0 0 0;
+    padding: 20px 0 0 0;
+    overflow-y: scroll;
+    margin: 20px auto 100px auto;
 }
 
 .allBoards {

@@ -152,7 +152,21 @@ export default {
             allMembers, isBlur, dialog, listtoDelete, listHeaderColor
         }
     },
+    updated() {
+        this.getBoardBy(this.boardId)
+    },
     methods: {
+        async cardMovedAPI(cardId, currentListId, destinateListId, cards) {
+          const params = {
+              cardId: cardId, 
+              currentListId: currentListId, 
+              newListLocationId: destinateListId, 
+              userId: this.currentUser.id, 
+              cards: cards
+          }
+          console.log('moving card params: ', params)
+         await APIService.moveCard(params)
+      },
         didCloseListColorPicker(selectedColor) {
             this.isListColorPicker = false 
             this.listHeaderColor = selectedColor
@@ -288,8 +302,7 @@ export default {
             list_id: list_id
         }
         var fullURL = BASE_URL + "board/updateList"
-        await axios.post(fullURL, params).then((response) => {
-        })
+        await axios.post(fullURL, params).then((response) => {})
       },
       onCardMoved(e) {
        console.log("onCardMoved: ", e) 
@@ -334,19 +347,20 @@ export default {
 
       if (e.added != null) {
         let card_id = _.get(e.added.element, '_id')
+        let cardId = _.get(e.added.element, 'id')
         let cardName = _.get(e.added.element, 'cardName')
-        _.forEach(this.board.lists, function(list) {
+        for (const listIndex in this.board.lists) {
+            const list = this.board.lists[listIndex]
             let addedCard = _.find(list.cards, { '_id': card_id})
             if (addedCard !== undefined) {
-                console.log(`${cardName} has been moved to: `, list.listName, 'list')
-                // Send notification to members of the card
-            //     this.$gtag.event('Moved card', {
-            //        'event_category': 'Card',
-            //        'event_label': `${cardName} has been moved to: ${list.listName} list`,
-            //        'value': 1
-            //    })
+                const cardListId = _.get(e.added.element, 'listId')
+                const cardList = _.find(this.board.lists, { 'id': cardListId})
+                const destinationListId = list._id
+                const currentListId = _.get(cardList, '_id')
+                console.log(`${cardName} has been moved to: `, list.listName, 'list.', 'currentListId: ', currentListId, 'destinationListId: ', destinationListId)
+                this.cardMovedAPI(cardId, currentListId, destinationListId)
             }
-        }) 
+        }
       }
     },
         handleOverlayDismissed() {
@@ -426,12 +440,6 @@ export default {
         handleAddCard(list, index) {
             list.isCreateCard = true 
             this.board[index] = list
-
-            // let bottomViewId = 'bottomView_' + list._id
-            // let bottomView = document.getElementById(bottomViewId)
-            // let bottomViewHeight = element.scrollHeight + 100
-            // bottomView.style.height = (300) + "px";
-
             setTimeout(()=>{
                 let listBgViewId = "listBgView" + list._id
                 var myDiv = document.getElementById(listBgViewId);

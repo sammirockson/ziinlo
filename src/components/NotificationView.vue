@@ -6,7 +6,7 @@
                 <img :src="notification.notifier.picture">
                 <label>{{ notification.notifier.fullName }}</label>
             </div>
-            <label class="content-label">{{ notification.content }}</label>
+            <label class="content-label" v-html="notification.content"></label>
             <span class="timeStampLabel"> {{ new Date(notification.createdAt).toLocaleDateString('en-US', {
                 month: 'short', day: 'numeric' , hour: 'numeric', minute: 'numeric'
             })
