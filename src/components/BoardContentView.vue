@@ -152,9 +152,6 @@ export default {
             allMembers, isBlur, dialog, listtoDelete, listHeaderColor
         }
     },
-    updated() {
-        this.getBoardBy(this.boardId)
-    },
     methods: {
         async cardMovedAPI(cardId, currentListId, destinateListId, cards) {
           const params = {
