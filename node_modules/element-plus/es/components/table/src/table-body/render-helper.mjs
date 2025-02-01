@@ -1,11 +1,12 @@
 import { inject, computed, h } from 'vue';
 import { merge } from 'lodash-unified';
-import '../../../../hooks/index.mjs';
 import { getRowIdentity } from '../util.mjs';
 import { TABLE_INJECTION_KEY } from '../tokens.mjs';
 import useEvents from './events-helper.mjs';
 import useStyles from './styles-helper.mjs';
+import TdWrapper from './td-wrapper.mjs';
 import { useNamespace } from '../../../../hooks/use-namespace/index.mjs';
+import { isBoolean, isPropAbsent } from '../../../../utils/types.mjs';
 
 function useRender(props) {
   const parent = inject(TABLE_INJECTION_KEY);
@@ -81,7 +82,7 @@ function useRender(props) {
           indent: treeRowData.level * indent.value,
           level: treeRowData.level
         };
-        if (typeof treeRowData.expanded === "boolean") {
+        if (isBoolean(treeRowData.expanded)) {
           data.treeNode.expanded = treeRowData.expanded;
           if ("loading" in treeRowData) {
             data.treeNode.loading = treeRowData.loading;
@@ -93,11 +94,10 @@ function useRender(props) {
       }
       const baseKey = `${getKeyOfRow(row, $index)},${cellIndex}`;
       const patchKey = columnData.columnKey || columnData.rawColumnKey || "";
-      const tdChildren = cellChildren(cellIndex, column, data);
       const mergedTooltipOptions = column.showOverflowTooltip && merge({
         effect: tooltipEffect
       }, tooltipOptions, column.showOverflowTooltip);
-      return h("td", {
+      return h(TdWrapper, {
         style: getCellStyle($index, cellIndex, row, column),
         class: getCellClass($index, cellIndex, row, column, colspan - 1),
         key: `${patchKey}${baseKey}`,
@@ -105,7 +105,9 @@ function useRender(props) {
         colspan,
         onMouseenter: ($event) => handleCellMouseEnter($event, row, mergedTooltipOptions),
         onMouseleave: handleCellMouseLeave
-      }, [tdChildren]);
+      }, {
+        default: () => cellChildren(cellIndex, column, data)
+      });
     }));
   };
   const cellChildren = (cellIndex, column, data) => {
@@ -153,8 +155,8 @@ function useRender(props) {
           level: cur.level,
           display: true
         };
-        if (typeof cur.lazy === "boolean") {
-          if (typeof cur.loaded === "boolean" && cur.loaded) {
+        if (isBoolean(cur.lazy)) {
+          if (isBoolean(cur.loaded) && cur.loaded) {
             treeRowData.noLazyChildren = !(cur.children && cur.children.length);
           }
           treeRowData.loading = cur.loading;
@@ -175,7 +177,7 @@ function useRender(props) {
               loading: false
             };
             const childKey = getRowIdentity(node, rowKey.value);
-            if (childKey === void 0 || childKey === null) {
+            if (isPropAbsent(childKey)) {
               throw new Error("For nested data item, row-key is required.");
             }
             cur = { ...treeData.value[childKey] };
@@ -183,8 +185,8 @@ function useRender(props) {
               innerTreeRowData.expanded = cur.expanded;
               cur.level = cur.level || innerTreeRowData.level;
               cur.display = !!(cur.expanded && innerTreeRowData.display);
-              if (typeof cur.lazy === "boolean") {
-                if (typeof cur.loaded === "boolean" && cur.loaded) {
+              if (isBoolean(cur.lazy)) {
+                if (isBoolean(cur.loaded) && cur.loaded) {
                   innerTreeRowData.noLazyChildren = !(cur.children && cur.children.length);
                 }
                 innerTreeRowData.loading = cur.loading;

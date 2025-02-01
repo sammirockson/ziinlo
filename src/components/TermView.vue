@@ -300,7 +300,7 @@ export default {
 
 #content {
   background-color: white;
-  width: 900px;
+  width: 96%;
   margin-right: auto;
   margin-left: auto;
 }
