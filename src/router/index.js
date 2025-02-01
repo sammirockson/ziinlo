@@ -16,6 +16,7 @@ import PaymentView from '@/components/PaymentView.vue'
 import AttendanceView from '@/views/AttendanceView.vue'
 import ChatView from '@/views/ChatView.vue'
 import NotFoundView from '@/components/NotFoundView.vue'
+import TermView from '@/components/TermView.vue'
 
 // Future features
 import InvoiceView from '@/components/InvoiceCreator.vue'
@@ -48,6 +49,11 @@ const routes = [
     path: '/whiteboard',
     name: 'whiteboard',
     component: WhiteBoardView
+  },
+  {
+    path: '/terms',
+    name: 'terms',
+    component: TermView
   },
   // {
   //   path: '/invoice',
