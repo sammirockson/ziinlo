@@ -1,12 +1,12 @@
 <template>
   <div id="container">
-    <h2 id="header">Noomi Terms Of Service</h2>
+    <h2 id="header">Tuku Terms Of Service</h2>
     <body id="body">
       <div id="content">
         <label id="summaryTitle"> <br />SUMMARY </label>
 
         <p id="summary">
-          Thank you for using Noomi! We respect your concerns about privacy and appreciate
+          Thank you for using Tuku! We respect your concerns about privacy and appreciate
           your trust and confidence in us.
           <br />Here is a summary of the information contained in this terms of service
           ("Terms of service"). This summary is to help you navigate the Terms of service and
@@ -14,21 +14,21 @@
           to jump directly to particular sections in the Terms of service.
         </p>
 
-        <p id="summaryTitle"><br />WHAT INFORMATION DO YOU NEED TO PROVIDE NOOMI?</p>
+        <p id="summaryTitle"><br />WHAT INFORMATION DO YOU NEED TO PROVIDE TUKU?</p>
 
         <p id="summary">
-          When you register for a Noomi account, we will need your email address and a
-          first name. You can further refine and populate your profile with additional
-          information. If you use certain functions available within Noomi (such as
+          When you register for a Tuku account, we will need your phone number and a
+          full name. You can further refine and populate your profile with additional
+          information. If you use certain functions available within Tuku (such as
           sending photos), we will process your information to provide these functions
         </p>
 
         <p id="summaryTitle"><br />HOW DO WE USE YOUR INFORMATION?</p>
 
         <p id="summary">
-          We use your information to provide Noomi services to you, allow you to
+          We use your information to provide Tuku services to you, allow you to
           communicate with other users, allow you to find nearby users, and to improve and
-          support your Noomi experience.
+          support your Tuku experience.
         </p>
 
         <p id="summaryTitle"><br />WHO DO WE SHARE YOUR DATA WITH?</p>
@@ -47,7 +47,7 @@
 
         <p id="summary">
           Our servers are located in United Kingdom. We also have support, engineering and
-          other teams that support the provision of Noomi services to you, located around
+          other teams that support the provision of Tuku services to you, located around
           the world (including China and the United States Of America), who will have
           access to your information. Rigorous internal control measures are in place to
           strictly limit access to your data by designated personnel.
@@ -77,7 +77,7 @@
         </p>
 
         <p id="summary">
-          Noomi does not tolerate inappropriate content or behavior on our Services.
+          Tuku does not tolerate inappropriate content or behavior on our Services.
 
 We are committed to maintaining a positive and respectful community, and we do not tolerate any inappropriate content or misconduct, whether on or off of the Services. We encourage you to report any inappropriate Member Content or misconduct by other users. You can report a user directly through the "Report User" link on a user's profile or in the messaging experience. You may also contact Customer Support. 
 
@@ -85,31 +85,31 @@ As set forth in our Terms of service, we may share data between our affiliates f
         </p>
 
         <p id="summary">
-          <br />Welcome to Noomi!
+          <br />Welcome to Tuku!
           <br />
-          <br />When you use the Noomi mobile app or the websites www.noomiapp.com
-          (together, "Noomi"), certain of your Personal Information (defined below) will
+          <br />When you use the Tuku mobile app or the websites www.Tukuapp.com
+          (together, "Tuku"), certain of your Personal Information (defined below) will
           be collected and processed by us. This Terms of service explains the when, how and
           why when it comes to processing of your Personal Information in connection with
-          Noomi, and sets out your choices and rights in relation to that Personal
+          Tuku, and sets out your choices and rights in relation to that Personal
           Information. In this Terms of service, "we", "our" or "us" refers to: if you are a
-          Noomi user in Ghana: Digate Technology Company Ltd. . The above entity is also
+          Tuku user in Ghana: Digate Technology Company Ltd. . The above entity is also
           the data controller for users located in the abovementioned jurisdiction. Any
           capitalised terms used in this Terms of service have the same meaning as the
-          equivalent defined terms in the Noomi Terms of Service, unless they are defined
+          equivalent defined terms in the Tuku Terms of Service, unless they are defined
           otherwise in this Terms of service.
           <br />
           <br />CONTACT
           <br />
           <br />If you have any questions or complaints regarding this Terms of service or
           the use of your Personal Information, please contact our Data Protection Officer
-          via email at data@Noomi.com(Attention: Data Protection Officer, Legal
+          via email at data@Tuku.com(Attention: Data Protection Officer, Legal
           Department). Please note that if you are a resident in Ghana, you have the right
           to lodge a complaint with your country's data protection authority. By using
-          Noomi you agree to the processing of your Personal Information in accordance
+          Tuku you agree to the processing of your Personal Information in accordance
           with this Terms of service. If you do not agree to the processing of your Personal
           Information in the way this Terms of service describes, please do not provide your
-          Personal Information when requested and stop using Noomi.
+          Personal Information when requested and stop using Tuku.
         </p>
 
         <p id="summaryTitle"><br />2. HOW DO WE USE YOUR INFORMATION?</p>
@@ -139,11 +139,11 @@ As set forth in our Terms of service, we may share data between our affiliates f
           group companies. We share your Personal Information within our group of
           companies, and these related group companies may only use your Personal
           Information in accordance with this Terms of service. The purpose is to enable us
-          provide Noomi services to you, assist us in carrying out the purposes set out
+          provide Tuku services to you, assist us in carrying out the purposes set out
           under the "How do we use your information?" section above, and carrying out our
-          obligations and enforcing our rights under the Noomi Terms of Service or this
+          obligations and enforcing our rights under the Tuku Terms of Service or this
           Terms of service; service providers. We engage service providers to supply
-          services to support or improve Noomi. These include SMS, payment card processing
+          services to support or improve Tuku. These include SMS, payment card processing
           and verification, location and mapping, customer service, and content delivery
           service providers. These service providers are required to provide the same or
           equal protection of user data as stated in this Terms of service and are
@@ -188,9 +188,9 @@ As set forth in our Terms of service, we may share data between our affiliates f
           providing the Personal Information we hold about you would reveal information
           about another person). You also have the right to correct that information if it
           is inaccurate or incomplete. You can access and correct your Personal
-          Information by logging into your Noomi account at any time. For example, you can
+          Information by logging into your Tuku account at any time. For example, you can
           delete certain Location Data via your device settings or the "Clear Location"
-          option within Noomi. If you want us to correct your Personal Information that
+          option within Tuku. If you want us to correct your Personal Information that
           you are unable to correct using your account, please complete the request form
           here. Where we agree to correct your Personal Information, we will use
           reasonable steps to inform any third party to whom we have disclosed the
@@ -199,11 +199,11 @@ As set forth in our Terms of service, we may share data between our affiliates f
           <br />
           <br />Erasure <br />This section also applies to users resident in Argentina,
           Canada, India and Russia. You can delete your account, or remove certain
-          Personal Information, by logging into your Noomi account and following the
+          Personal Information, by logging into your Tuku account and following the
           account deletion instructions here. Subsequent to account deletion, aggregated
           registration data is retained for spam prevention and systems security purposes.
           Note that we will not be able to delete your account if you have a positive
-          balance in your Weixin Pay or Noomi Pay account or are the administrator of an
+          balance in your Weixin Pay or Tuku Pay account or are the administrator of an
           Official Account or Mini Program. If there is any other Personal Information you
           believe we process that you would like us to erase, please complete the request
           form here. You may request that we erase the Personal Information we hold about
