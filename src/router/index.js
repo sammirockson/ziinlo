@@ -17,17 +17,26 @@ import AttendanceView from '@/views/AttendanceView.vue'
 import ChatView from '@/views/ChatView.vue'
 import NotFoundView from '@/components/NotFoundView.vue'
 import TermView from '@/components/TermView.vue'
+import VendorView from '@/components/VendorView.vue'
 
 // Future features
-import InvoiceView from '@/components/InvoiceCreator.vue'
-import DrawingBoardView from '@/views/DrawingBoardView.vue'
+// import InvoiceView from '@/components/InvoiceCreator.vue'
+// import DrawingBoardView from '@/views/DrawingBoardView.vue'
 import WhiteBoardView from '@/views/WhiteBoardView.vue'
+
+// "https://ziinlo.com/vendor?=vendorId/accessCode"
+// '/invitation/b/:boardId/i/:inviter'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+  },
+  {
+    path: '/vendor/:vendorId/:accessCode',
+    name: 'vendor',
+    component: VendorView, 
+    props: true
   },
   {
     path: '/home',
@@ -55,11 +64,6 @@ const routes = [
     name: 'terms',
     component: TermView
   },
-  // {
-  //   path: '/invoice',
-  //   name: 'invoice',
-  //   component: InvoiceView
-  // },
   {
     path: '/chat',
     name: 'chat',
